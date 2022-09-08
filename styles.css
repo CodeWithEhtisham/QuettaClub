@@ -1,0 +1,259 @@
+body {
+    height: 38rem;
+    margin: 0;
+}
+
+.row {
+    display: flex;
+}
+
+ul {
+    list-style-type: none;
+    background-color: rgb(255, 255, 255, .5);
+    display: flex;
+    box-shadow: 50px;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    margin: 5px;
+}
+
+li a {
+    text-decoration: none;
+    display: block;
+    color: black;
+    padding: 15px;
+    font-size: x-large;
+    font-family: sans-serif;
+    background-color: #4692e3;
+    border-radius: 10px;
+    margin: 10px 5px;
+    width: auto;
+    box-shadow: 50px;
+}
+
+.container {
+    height: 100%;
+    background-color: #fafafa;
+    padding: 10px;
+    background-image: url('images/bg-image.jpeg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+}
+
+.logo {
+    height: 5rem;
+    width: 5rem;
+    border-radius: 5rem;
+}
+
+.active a {
+    background-color: #1e659c;
+    color: white;
+}
+
+li a:hover {
+    background-color: #1e659c;
+    color: white;
+}
+
+.card {
+    background-color: white;
+    margin: 5px;
+    padding: .5rem 1rem;
+    border-radius: 5px;
+    box-shadow: 50px;
+}
+
+.title {
+    font-family: sans-serif;
+    text-align: center;
+    font-size: x-large;
+    color: #1e659c;
+}
+
+.form-group {
+    margin: 10px 0px;
+    justify-content: space-between;
+    display: flex;
+}
+
+.form-group label {
+    font-size: larger;
+    font-weight: 600;
+}
+
+.form-group input {
+    font-size: larger;
+    font-weight: normal;
+    padding: 5px;
+    align-self: flex-end;
+}
+
+.col-40 {
+    width: 40%;
+}
+
+.col-60 {
+    width: 60%;
+}
+
+.col-100 {
+    width: 100%;
+}
+
+.btn {
+    font-size: 20px;
+    padding: .5rem 2rem;
+    border-radius: 10px;
+    border: none;
+    background-color: #1e659c;
+    color: white;
+    cursor: pointer;
+}
+
+.cancel {
+    background-color: #95A5A6;
+    margin-left: 5px;
+}
+
+.flex {
+    justify-content: end;
+    display: flex;
+}
+
+.table-header {
+    background-color: #95A5A6;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.table {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table thead th {
+    position: sticky;
+    top: 0;
+}
+.table tbody tr {
+    overflow-y: auto;
+    overflow: scroll;
+}
+
+.table td,
+.table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #95A5A6;
+    color: white;
+}
+
+.table tr:hover {
+    background-color: #dfdfdf;
+    cursor: pointer;
+}
+
+.list-btn {
+    justify-content: flex-end;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 5px;
+}
+
+td a {
+    text-decoration: none;
+    color: white;
+    font-family: sans-serif;
+    background-color: #4692e3;
+    border-radius: 5px;
+    box-shadow: 50px;
+    padding: 5px;
+    font-size: 14px;
+}
+
+.list {
+    justify-content: flex-end;
+    display: grid;
+    align-items: center;
+    justify-content: end;
+    gap: 2px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    padding: 10px;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+    font-size: large;
+    font-weight: 500;
+    color: #566a7f;
+}
+
+.form-control {
+    display: block;
+    padding: 0.4375rem 0.875rem;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.53;
+    color: #697a8d;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #d9dee3;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    color: #697a8d;
+    background-color: #fff;
+    border-color: #1e659c;
+    outline: 0;
+    box-shadow: 0 0 0.25rem 0.05rem rgba(105, 108, 255, 0.1);
+}
+
+.ml-5 {
+    margin-left: 1rem;
+}
+
+.icon {
+    border: 1px solid #1e659c;
+    border-radius: 5px;
+    color: #1e659c;
+    cursor: pointer;
+    margin-top: 1rem;
+    padding: 4px;
+    height: 32px;
+}
+
+.icon:hover {
+    background-color: #1e659c;
+    color: white;
+}
+
+.search {
+    width: 100%;
+}
+
+.w-50 {
+    width: 50%;
+}
