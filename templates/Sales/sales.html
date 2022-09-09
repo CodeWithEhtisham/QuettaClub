@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quetta Club</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div>
+                <img src="{% static 'images/logo.jpg' %}" alt="Logo" class="logo">
+            </div>
+            <ul class="">
+                <li>
+                    <a href="{% url 'Customers:index' %}">
+                        <div>Dashboard</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'Customers:customers' %}">
+                        <div>Customers</div>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{% url 'Sales:sales' %}">
+                        <div>Sales</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'Sales:view_sales' %}">
+                        <div>View Sales</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <div class="card">
+                <h2 class="title">Bill Sale / Account</h2>
+                <h2>Sale Details</h2>
+                <form action="">
+                    <div class="grid col-100">
+                        <div class="grid-item">
+                            <label class="form-label">Bill No</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="grid-item">
+                            <label class="form-label">PoS No</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="grid-item">
+                            <label class="form-label">Month</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">Date</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">Rank</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">Name</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">Address</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">On Account of</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">Amount</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">Discount</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">Net Amount</label>
+                            <input class="form-control" type="text">
+                        </div>
+                        <div class="">
+                            <label class="form-label">Remarks</label>
+                            <input class="form-control" type="text">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="flex">
+                        <button class="btn">
+                            Save
+                        </button>
+                        <button class="btn cancel">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

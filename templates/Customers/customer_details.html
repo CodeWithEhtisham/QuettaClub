@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quetta Club</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div>
+                <img src="{% static 'images/logo.jpg' %}" alt="Logo" class="logo">
+            </div>
+            <ul class="">
+                <li>
+                    <a href="{% url 'Customers:index' %}">
+                        <div>Dashboard</div>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{% url 'Customers:customers' %}">
+                        <div>Customers</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'Sales:sales' %}">
+                        <div>Sales</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'Sales:view_sales' %}">
+                        <div>View Sales</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <!-- Add customer -->
+            <div class="card col-40">
+                <h3 class="title">
+                    Add Customers
+                </h3>
+                <form action="">
+                    <div>
+                        <div class="form-group">
+                            <label for="" class="form-label">Customer Name</label>
+                            <input type="text" class="form-control" placeholder="customer name">
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="form-label">Customer Rank</label>
+                            <input type="text" class="form-control" placeholder="customer rank">
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="form-label">Customer ID</label>
+                            <input type="text" class="form-control" placeholder="customer id">
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="flex">
+                        <button class="btn">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Customers -->
+            <div class="card col-60">
+                <div>
+                    <h2>Customers</h2>
+                    <table class="table">
+                        <thead class="table-header">
+                            <tr>
+                                <th>S No.</th>
+                                <th>Name</th>
+                                <th>Rank</th>
+                                <th>ID</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Sami shah Achackzai</td>
+                                <td>CEO</td>
+                                <td>2034343242423</td>
+                                <td>
+                                    <div class="list-btn">
+                                        <a href="" class="">All Bills</a>
+                                        <a href="" class="">Paid Bill</a>
+                                        <a href="" class="">Printer</a>
+                                        <a href="" class="">Export</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
