@@ -47,60 +47,61 @@
             <div class="card">
                 <h2 class="title">Bill Sale / Account</h2>
                 <h2>Sale Details</h2>
-                <form action="">
+                <form action="{% url 'Sales:sales' %}" method="post">
+                    {% csrf_token %}
                     <div class="grid col-100">
                         <div class="grid-item">
                             <label class="form-label">Bill No</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="bill_no">
                         </div>
                         <div class="grid-item">
                             <label class="form-label">PoS No</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="PoS_no">
                         </div>
                         <div class="grid-item">
                             <label class="form-label">Month</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="month">
                         </div>
                         <div class="">
                             <label class="form-label">Date</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="date" name="date">
                         </div>
                         <div class="">
                             <label class="form-label">Rank</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="rank" value="">
                         </div>
                         <div class="">
                             <label class="form-label">Name</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" value="">
                         </div>
                         <div class="">
                             <label class="form-label">Address</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="address">
                         </div>
                         <div class="">
                             <label class="form-label">On Account of</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="account_of">
                         </div>
                         <div class="">
                             <label class="form-label">Amount</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="amount">
                         </div>
                         <div class="">
                             <label class="form-label">Discount</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="discount">
                         </div>
                         <div class="">
                             <label class="form-label">Net Amount</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="net_amount">
                         </div>
                         <div class="">
                             <label class="form-label">Remarks</label>
-                            <input class="form-control" type="text">
+                            <input class="form-control" type="text" name="remarks">
                         </div>
                     </div>
                     <hr>
                     <div class="flex">
-                        <button class="btn">
+                        <button class="btn" name="Save" value="Save">
                             Save
                         </button>
                         <button class="btn cancel">

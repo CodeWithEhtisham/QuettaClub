@@ -94,19 +94,20 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for sale in sales_data %}
                             <tr>
-                                <td>1</td>
-                                <td>Sami shah Achackzai</td>
-                                <td>CEO</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
+                                <td>{{sale.id}}</td>
+                                <td>{{ sale.bill_no|default:"00" }}</td>
+                                <td>{{ sale.PoS_no|default:"00" }}</td>
+                                <td>{{ sale.month|default_if_none:"--" }}</td>
+                                <td>{{ sale.date|default_if_none:"--" }}</td>
+                                <td>Rank</td>
+                                <td>Name</td>
+                                <td>{{ sale.address|default_if_none:"--" }}</td>
+                                <td>{{ sale.account_of|default_if_none:"--" }}</td>
+                                <td>{{ sale.amount|default_if_none:"00" }}</td>
+                                <td>{{ sale.discount|default_if_none:"00" }}</td>
+                                <td>{{ sale.net_amount|default_if_none:"00" }}</td>
                                 <td>
                                     <div class="list">
                                         <a href="" class="">Edit</a>
@@ -116,51 +117,7 @@
                                     </div>
                                 </td>
                             </tr>
-
-                            <tr>
-                                <td>1</td>
-                                <td>Sami shah Achackzai</td>
-                                <td>CEO</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>
-                                    <div class="list">
-                                        <a href="" class="">Edit</a>
-                                        <a href="" class="">Paid</a>
-                                        <a href="" class="">Complemantery</a>
-                                        <a href="" class="">Cancelled</a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Sami shah Achackzai</td>
-                                <td>CEO</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>2034343242</td>
-                                <td>
-                                    <div class="list">
-                                        <a href="" class="">Edit</a>
-                                        <a href="" class="">Paid</a>
-                                        <a href="" class="">Complemantery</a>
-                                        <a href="" class="">Cancelled</a>
-                                    </div>
-                                </td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>

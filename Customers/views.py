@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from django.urls import path
-from django.http import HttpResponse
+from django.urls import path, reverse
+from django.http import HttpResponseRedirect
 from django.contrib import messages
 # from .forms import CustomersForm
 from .models import Customers
@@ -14,24 +14,24 @@ def customers(request):
     # form_class = CustomersForm
     # form = CustomersForm(request.POST, request.FILES or None)
     if request.method == 'POST':
-        # if form.is_valid():
-        customer_name=request.POST.get('customer_name')
-        customer_rank=request.POST.get('customer_rank')
-        customer_id=request.POST.get('customer_id')
-        customer_file=request.POST.get['customer_file']
-        # form=CustomersForm(customer_name=customer_name, customer_rank=customer_rank, customer_id=customer_id, customer_file=customer_file)
-        # form.save()
-        messages.success(request, 'Customer added successfully')
-        return redirect('Customers:customer_details')
-        # else:
-        #     print(form.errors)
-        #     messages.error(request, 'Error adding customer')
+        if request.POST.get('Save'):
+            try:
+                Customers(customer_name=request.POST.get('customer_name'),
+                          customer_rank=request.POST.get('customer_rank'),
+                          customer_id=request.POST.get('customer_id'),
+                          customer_file=request.FILES.get('customer_file')).save()
+
+                messages.success(request, 'Customer Added Successful')
+                return HttpResponseRedirect(reverse('Customers:customers'))
+            except Exception as e:  # Exception as e:
+                messages.error(request, 'Customer Added Failed')
+                return HttpResponseRedirect(reverse('Customers:customers'))
     else:
-        data = Customers.objects.all()
-        return render(request, "Customers/customers.html", {'data': data})
+        return render(request, 'Customers/customers.html', {'customers': Customers.objects.all().order_by("-id")})
+        
 
 def customer_details(request):
-    return render(request, "Customers/customer_details.html")
+    return render(request, "Customers/customer_details.html", {'customers': Customers.objects.all().order_by("-id")})
 
 
 

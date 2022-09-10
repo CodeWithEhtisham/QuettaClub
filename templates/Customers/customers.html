@@ -98,7 +98,7 @@
 
                     <hr>
                     <div class="flex">
-                        <button class="btn" type="submit" value="Save">
+                        <button class="btn" type="submit" value="Save" name="Save">
                             Save
                         </button>
                     </div>
@@ -120,11 +120,12 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for customer in customers %}
                             <tr>
-                                <td>1</td>
-                                <td>Sami shah Achackzai</td>
-                                <td>CEO</td>
-                                <td>2034343242423</td>
+                                <td>{{ customer.id|default:"1" }}</td>
+                                <td>{{ customer.customer_name|default_if_none:"--" }}</td>
+                                <td>{{ customer.customer_rank|default_if_none:"--" }}</td>
+                                <td>{{ customer.customer_id|default_if_none:"--" }}</td>
                                 <td>
                                     <div class="list-btn">
                                         <a href="{% url 'Customers:customer_details' %}" class="">All Bills</a>
@@ -134,6 +135,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
