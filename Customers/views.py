@@ -4,7 +4,20 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 # from .forms import CustomersForm
 from .models import Customers
+import pandas as pd
+from django.core.files.storage import FileSystemStorage
 
+
+def long_process(df):
+    try:
+        cols=['customer_name','customer_rank','customer_id']
+        df=df[cols[::-1]]
+        df=df.to_dict('records')
+        model_isntance = [Customers(**data) for data in df]
+        Customers.objects.bulk_create(model_isntance)
+        return True
+    except:
+        return False
 
 ##################################### Add & details Customer Functions ##########################################
 def index(request):
@@ -14,16 +27,38 @@ def customers(request):
     # form_class = CustomersForm
     # form = CustomersForm(request.POST, request.FILES or None)
     if request.method == 'POST':
-        if request.POST.get('Save'):
-            try:
+        try:
+            if request.POST.get('Save'):
                 Customers(customer_name=request.POST.get('customer_name'),
                           customer_rank=request.POST.get('customer_rank'),
                           customer_id=request.POST.get('customer_id'),
                           customer_file=request.FILES.get('customer_file')).save()
+            elif request.POST.get('customer_file_submit'):
+                # print("customer_file_submit")
+                csv= request.FILES['customer_file']
+                if not csv.name.split('.')[1] in ['csv', 'xlsx', 'xls']:
+                    messages.error(request, 'This is not a correct formate file')
+                else:
+                    myfile = request.FILES["customer_file"]        
+                    fs = FileSystemStorage()
+                    filename = fs.save(myfile.name, myfile)
+                    uploaded_file_url = fs.url(filename)
+                    excel_file = uploaded_file_url
+                    # print("."+excel_file)
+                    print(csv.name.split('.')[-1])
+                    if csv.name.split('.')[-1] in ['csv','CSV']:
+                        df = pd.read_csv("."+excel_file)
+                    elif csv.name.split('.')[-1] in ['xlsx','XLSX','xls','XLS']:
+                        print("excel")
+                        df = pd.read_excel("."+excel_file)
+                    else:
+                        raise Exception("File not found") 
+                    print('asdfadsf',df.shape)
 
                 messages.success(request, 'Customer Added Successful')
                 return HttpResponseRedirect(reverse('Customers:customers'))
-            except Exception as e:  # Exception as e:
+            
+        except Exception as e:  # Exception as e:
                 messages.error(request, 'Customer Added Failed')
                 return HttpResponseRedirect(reverse('Customers:customers'))
     else:
