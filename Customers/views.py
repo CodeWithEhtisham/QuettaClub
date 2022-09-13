@@ -10,10 +10,8 @@ from django.core.files.storage import FileSystemStorage
 
 def long_process(df):
     try:
-        print("long_process")
-        cols=['customer_name','customer_rank','customer_id']
+        cols=['Customer Name','Customer Rank','Customer ID']
         df=df[cols]
-        # print(df.shape)
         df=df.to_dict('records')
         print(df)
         model_isntance = [Customers(**data) for data in df]
@@ -31,8 +29,6 @@ def index(request):
     return render(request, "index.html")
 
 def customers(request):
-    # form_class = CustomersForm
-    # form = CustomersForm(request.POST, request.FILES or None)
     if request.method == 'POST':
         try:
             if request.POST.get('Save'):
@@ -51,7 +47,7 @@ def customers(request):
                     filename = fs.save(myfile.name, myfile)
                     uploaded_file_url = fs.url(filename)
                     excel_file = uploaded_file_url
-                    # print("."+excel_file)
+                    print("." + excel_file)
                     print(csv.name.split('.')[-1])
                     if csv.name.split('.')[-1] in ['csv','CSV']:
                         df = pd.read_csv("."+excel_file)
