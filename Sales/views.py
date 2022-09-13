@@ -6,9 +6,17 @@ from .models import Sales
 from Customers.models import Customers
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
-from datetime import datetime
+
 def long_process(df):
     try:
+        df.rename(columns=df.iloc[0], inplace = True)
+        df.drop(df.index[0], inplace = True)
+        print(df.columns)
+        # rename the columns
+        df.rename(columns={'Bill No': 'bill_no', 'POS NO': 'PoS_no', 'Month': 'month', 'Dated': 'date', 'Address': 'address', 'On Account Of': 'account_of', 'Amount': 'amount', 'Discount ': 'discount', 'Net Amount': 'net_amount', 'Remarks': 'remarks', 'Name': 'customer_name', 'Rank': 'customer_rank'}, inplace=True)
+        df['month'] = pd.to_datetime(df['month'], format='%d-%m').dt.strftime('%d-%B')
+        df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y').dt.strftime('%d-%m-%Y')
+
         df=df[['bill_no','PoS_no','month','date','address','account_of','amount','discount','net_amount','remarks','customer_name','customer_rank']]
         for index, row in df.iterrows():
             customer=Customers.objects.filter(customer_name=row['customer_name'],customer_rank=row['customer_rank']).first()
@@ -35,9 +43,9 @@ def sales(request):
     if request.method == 'POST':
         try:
             if request.POST.get('Save'):
-                print(request.POST.get('customer_name'))
+                # print(request.POST.get('customer_name'))
                 customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),customer_rank=request.POST.get('customer_rank')).first()
-                print(customer)
+                # print(customer)
                 Sales(bill_no=request.POST.get('bill_no'),
                       PoS_no=request.POST.get('PoS_no'),
                       month=request.POST.get('month'),
@@ -69,16 +77,16 @@ def sales(request):
                     if csv.name.split('.')[-1] in ['csv','CSV']:
                         print("csv")
                         df = pd.read_csv("."+excel_file)
-                        long_process(df)
+                        if long_process(df):
+                            messages.success(request, 'Sales csv Added Successful')
+                            return HttpResponseRedirect(reverse("Sales:sales"))
                     elif csv.name.split('.')[-1] in ['xlsx','XLSX','xls','XLS']:
                         print("excel")
                         df = pd.read_excel("."+excel_file)
-                        long_process(df)
-                    else:
-                        raise Exception("File not found") 
-                    print('asdfadsf',df.shape)
-                messages.success(request, 'sales Added Successful')
-                return HttpResponseRedirect(reverse("Sales:sales"))
+                        if long_process(df):
+                            messages.success(request, 'Sales excel Added Successful')
+                            return HttpResponseRedirect(reverse("Sales:sales"))
+                raise Exception("File not found") 
         except Exception as e:  # Exception as e:
                 messages.error(request, 'Sales Added Failed',e)
                 return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)

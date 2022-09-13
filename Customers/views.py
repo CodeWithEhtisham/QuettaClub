@@ -10,12 +10,16 @@ from django.core.files.storage import FileSystemStorage
 
 def long_process(df):
     try:
-        cols=['Customer Name','Customer Rank','Customer ID']
+        df.rename(columns=df.iloc[0], inplace = True)
+        df.drop(df.index[0], inplace = True)
+        # rename columns
+        df.rename(columns={'Name': 'customer_name', 'Rank': 'customer_rank', 'Ser No ': 'customer_id'}, inplace=True)
+        print(df.columns)
+        cols=['customer_name','customer_rank','customer_id']
         df=df[cols]
         df=df.to_dict('records')
         print(df)
         model_isntance = [Customers(**data) for data in df]
-        
         obj=Customers.objects.bulk_create(model_isntance)
         print(obj)
         print("success")
@@ -41,6 +45,7 @@ def customers(request):
                 csv= request.FILES['customer_file']
                 if not csv.name.split('.')[1] in ['csv', 'xlsx', 'xls']:
                     messages.error(request, 'This is not a correct formate file')
+                    return HttpResponseRedirect(reverse('Customers:customers'))
                 else:
                     myfile = request.FILES["customer_file"]        
                     fs = FileSystemStorage()
@@ -51,20 +56,20 @@ def customers(request):
                     print(csv.name.split('.')[-1])
                     if csv.name.split('.')[-1] in ['csv','CSV']:
                         df = pd.read_csv("."+excel_file)
-                        long_process(df)
+                        if long_process(df):
+                            messages.success(request, 'csv added to database')
+                            return HttpResponseRedirect(reverse('Customers:customers'))
                     elif csv.name.split('.')[-1] in ['xlsx','XLSX','xls','XLS']:
                         print("excel")
                         df = pd.read_excel("."+excel_file)
-                        long_process(df)
-                    else:
-                        raise Exception("File not found") 
-                    print('asdfadsf',df.shape)
+                        if long_process(df):
+                            messages.success(request, 'excel added to database')
+                            return HttpResponseRedirect(reverse('Customers:customers'))
+                    
+                    raise Exception("File not found") 
 
-                messages.success(request, 'Customer Added Successful')
-                return HttpResponseRedirect(reverse('Customers:customers'))
-            
         except Exception as e:  # Exception as e:
-                messages.error(request, 'Customer Added Failed')
+                messages.error(request, 'Customer Added Failed {}'.format(e))
                 return HttpResponseRedirect(reverse('Customers:customers'))
     else:
         return render(request, 'Customers/customers.html', {'customers': Customers.objects.all().order_by("-id")})
