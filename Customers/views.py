@@ -10,11 +10,11 @@ from django.core.files.storage import FileSystemStorage
 
 def long_process(df):
     try:
-        cols=['customer_name','customer_rank','customer_id']
-        df=df[cols[::-1]]
+        cols=['Customer Name','Customer Rank','Customer ID']
+        df=df[cols]
         df=df.to_dict('records')
-        model_isntance = [Customers(**data) for data in df]
-        Customers.objects.bulk_create(model_isntance)
+        model_instance = [Customers(**data) for data in df]
+        Customers.objects.bulk_create(model_instance)
         return True
     except:
         return False
@@ -24,8 +24,6 @@ def index(request):
     return render(request, "index.html")
 
 def customers(request):
-    # form_class = CustomersForm
-    # form = CustomersForm(request.POST, request.FILES or None)
     if request.method == 'POST':
         try:
             if request.POST.get('Save'):
@@ -44,13 +42,15 @@ def customers(request):
                     filename = fs.save(myfile.name, myfile)
                     uploaded_file_url = fs.url(filename)
                     excel_file = uploaded_file_url
-                    # print("."+excel_file)
+                    print("." + excel_file)
                     print(csv.name.split('.')[-1])
                     if csv.name.split('.')[-1] in ['csv','CSV']:
                         df = pd.read_csv("."+excel_file)
+                        long_process(df)
                     elif csv.name.split('.')[-1] in ['xlsx','XLSX','xls','XLS']:
                         print("excel")
                         df = pd.read_excel("."+excel_file)
+                        long_process(df)
                     else:
                         raise Exception("File not found") 
                     print('asdfadsf',df.shape)
