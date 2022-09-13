@@ -10,13 +10,20 @@ from django.core.files.storage import FileSystemStorage
 
 def long_process(df):
     try:
+        print("long_process")
         cols=['customer_name','customer_rank','customer_id']
-        df=df[cols[::-1]]
+        df=df[cols]
+        # print(df.shape)
         df=df.to_dict('records')
+        print(df)
         model_isntance = [Customers(**data) for data in df]
-        Customers.objects.bulk_create(model_isntance)
+        
+        obj=Customers.objects.bulk_create(model_isntance)
+        print(obj)
+        print("success")
         return True
-    except:
+    except Exception as e:
+        print("failed",e)
         return False
 
 ##################################### Add & details Customer Functions ##########################################
@@ -48,9 +55,11 @@ def customers(request):
                     print(csv.name.split('.')[-1])
                     if csv.name.split('.')[-1] in ['csv','CSV']:
                         df = pd.read_csv("."+excel_file)
+                        long_process(df)
                     elif csv.name.split('.')[-1] in ['xlsx','XLSX','xls','XLS']:
                         print("excel")
                         df = pd.read_excel("."+excel_file)
+                        long_process(df)
                     else:
                         raise Exception("File not found") 
                     print('asdfadsf',df.shape)

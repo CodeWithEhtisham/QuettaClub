@@ -47,6 +47,26 @@
             <div class="card">
                 <h2 class="title">Bill Sale / Account</h2>
                 <h2>Sale Details</h2>
+                <form action="{% url 'Sales:sales' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <h3 class="title">
+                            Add Sales
+                        </h3>
+
+                        <div class="choose_file ml-5">
+                            <button type="button" class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" height="24px">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                                </svg>
+                            </button>
+                            <input name="sale_file" type="file" accept=".xlsx, .xls, .csv" />
+                        </div>
+                    </div>
+                    <input type="submit" id="sale_file_submit" name="sale_file_submit">
+                </form>
                 <form action="{% url 'Sales:sales' %}" method="post">
                     {% csrf_token %}
                     <div class="grid col-100">
@@ -68,11 +88,11 @@
                         </div>
                         <div class="">
                             <label class="form-label">Rank</label>
-                            <input class="form-control" type="text" name="rank" value="">
+                            <input class="form-control" type="text" name="customer_rank" value="">
                         </div>
                         <div class="">
                             <label class="form-label">Name</label>
-                            <input class="form-control" type="text" value="">
+                            <input class="form-control" type="text" value="" name="customer_name">
                         </div>
                         <div class="">
                             <label class="form-label">Address</label>
