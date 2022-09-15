@@ -1,0 +1,6 @@
+"S NO.","bill_no","PoS_no","month","date","customer_rank","customer_name","address","account_of","amount","discount","net_amount","remarks"
+"5","3583","813298","June","Sept. 30, 2022","Rank","Name","Kuchlak","12000","50000","5000","45000","EditPaidComplemanteryCancelled"
+"4","7466","1122333","June","Sept. 22, 2022","Rank","Name","Kuchlak","12000","50000","5000","45000","EditPaidComplemanteryCancelled"
+"3","4133A","7883344","Januaray","Aug. 11, 2022","Rank","Name","Liaqat bazar","9800","25000","2000","23000","EditPaidComplemanteryCancelled"
+"2","GH748","79310","December","Sept. 16, 2022","Rank","Name","airport road","5000","12000","1500","10500","EditPaidComplemanteryCancelled"
+"1","3583","813298","Aug","Sept. 9, 2022","Rank","Name","quetta","812k","800","100","700","EditPaidComplemanteryCancelled"

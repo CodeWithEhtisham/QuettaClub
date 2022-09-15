@@ -8,6 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quetta Club</title>
     <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+    <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script> -->
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
@@ -49,22 +54,30 @@
                     <div class="row">
                         <h2>Customers</h2>
                         <div class="form-group ml-5 w-50">
-                            <select name="" id="" class="form-control">
+                            <select name="search_field" id="search_field" class="form-control">
                                 <option value="">Search By</option>
-                                <option value="">Bill No.</option>
-                                <option value="">PoS No</option>
-                                <option value="">Month</option>
-                                <option value="">Date</option>
-                                <option value="">Rank</option>
-                                <option value="">Name</option>
-                                <option value="">Address</option>
-                                <option value="">On Account of</option>
-                                <option value="">Amount</option>
-                                <option value="">Discount</option>
-                                <option value="">Net Amount</option>
-                                <option value="">Action</option>
+                                <option value="bill_no">Bill No.</option>
+                                <option value="pos_no">PoS No</option>
+                                <option value="month">Month</option>
+                                <option value="account_of">On Account of</option>
+                                <option value="date">Date</option>
+                                <option value="rank">Rank</option>
+                                <option value="name">Name</option>
+                                <option value="address">Address</option>
                             </select>
-                            <input type="text" name="" id="" class="form-control ml-5 search" placeholder="search ....">
+                            <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"  class="form-control ml-5 search" placeholder="search ....">
+                            <!-- <script>
+                                $(function () {
+                                    var availableTags = [
+                                        {% for data in sales_data %}
+                                    "{{data.customer_id.customer_name}}",
+                                    {% endfor %}
+                                    ];
+                                $("#tags").autocomplete({
+                                    source: availableTags
+                                });
+                          } );
+                            </script> -->
                         </div>
                         <!--  -->
                         <div class="choose_file ml-5">
@@ -82,37 +95,39 @@
                             <tr>&nbsp;
                             </tr>
                             <tr>
-                                <th>Ser No</th>
+                                <!-- <th>Ser No</th> -->
                                 <th>Bill No</th>
                                 <th>Month</th>
-                                <th>Dated</th>
                                 <th>Rank</th>
                                 <th>POS NO</th>
                                 <th>Name</th>
                                 <th>Address</th>
                                 <th>On Account Of</th>
+                                <th>Dated</th>
                                 <th>Amount</th>
                                 <th>Discount</th>
                                 <th>Net Amount</th>
                                 <th>Remarks</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for sale in sales_data %}
                             
                             <tr>
-                                <td>{{sale.id}}</td>
+                                <!-- <td>{{sale.id}}</td> -->
                                 <td>{{ sale.bill_no|default:"00" }}</td>
                                 <td>{{ sale.month|default_if_none:"--" }}</td>
-                                <td>{{ sale.date|default_if_none:"--" }}</td>
                                 <td>{{sale.customer_id.customer_rank}}</td>
                                 <td>{{ sale.PoS_no|default:"00" }}</td>
                                 <td>{{sale.customer_id.customer_name}}</td>
                                 <td>{{ sale.address|default_if_none:"--" }}</td>
                                 <td>{{ sale.account_of|default_if_none:"--" }}</td>
+                                <td>{{ sale.date|default_if_none:"--" }}</td>
                                 <td>{{ sale.amount|default_if_none:"00" }}</td>
                                 <td>{{ sale.discount|default_if_none:"00" }}</td>
                                 <td>{{ sale.net_amount|default_if_none:"00" }}</td>
+                                <td>{{ sale.remarks|default_if_none:" " }}</td>
                                 <td>
                                     <div class="list">
                                         <a href="" class="">Edit</a>
@@ -218,6 +233,7 @@
             document.body.removeChild(link);
         }
     </script>
+    <script src="{% static 'js/sales.js' %}"></script>
 </body>
 
 </html>

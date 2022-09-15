@@ -1,3 +1,5 @@
+from dataclasses import field
+from multiprocessing.sharedctypes import Value
 from django.shortcuts import render, redirect
 from django.urls import path, reverse
 from django.http import HttpResponseRedirect
@@ -6,6 +8,9 @@ from django.contrib import messages
 from .models import Customers
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializer import CustomersSerializer
 
 
 def long_process(df):
@@ -79,10 +84,28 @@ def customer_details(request):
     return render(request, "Customers/customer_details.html", {'customers': Customers.objects.all().order_by("-id")})
 
 
+@api_view(['GET'])
+def SearchCustomer(request):
+    field = request.GET.get('field')
+    value = request.GET.get('value')
+
+    try:
+        if field == 'Name':
+            return Response(CustomersSerializer(Customers.objects.filter(customer_name__icontains=value).order_by('-id'), many=True).data)
+        elif field == 'Rank':
+            return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
+        elif field == 'ID':
+            return Response(CustomersSerializer(Customers.objects.filter(customer_id__icontains=value).order_by('-id'), many=True).data)
+        # else:
+        #     customers = Customers.objects.all()
+    except Exception as e:
+        return Response({"message": "No data found {}".format(e)})
+
 
 index_template = [
     path('', index, name='index'),
     path('index/', index, name='index'),
     path('customers/', customers, name='customers'),
-    path('customer_details/', customer_details, name='customer_details')
+    path('customer_details/', customer_details, name='customer_details'),
+    path('SearchCustomer/', SearchCustomer, name='SearchCustomer'),
 ]

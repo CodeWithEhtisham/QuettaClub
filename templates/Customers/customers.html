@@ -6,6 +6,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script> -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+ 
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> -->
+ 
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet"
+        type="text/css" />
     <title>Quetta Club</title>
 
     <!-- CSS -->
@@ -61,6 +68,7 @@
             <div class="card col-40">
                 <form action="{% url 'Customers:customers' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
+                    
                     <div class="row">
                         <h3 class="title">
                             Add Customers
@@ -84,13 +92,18 @@
                     <div>
                         <div class="form-group">
 
-                            <label for="" class="form-label">Customer Name</label>
-                            <input type="text" class="form-control" name="customer_name" placeholder="customer name">
+                            <label for="" class="form-label">Customer Rank</label>
+                            <input type="text" class="form-control" name="customer_rank" placeholder="customer rank">
                             <!-- {{ form.customer_name }} -->
                         </div>
                         <div class="form-group">
-                            <label for="" class="form-label">Customer Rank</label>
-                            <input type="text" class="form-control" name="customer_rank" placeholder="customer rank">
+                            <label for="" class="form-label">Customer Name</label>
+                            <input type="text" class="form-control" name="customer_name" placeholder="customer name">
+                            <!-- {{form.customer_rank}} -->
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="form-label">Address</label>
+                            <input type="text" class="form-control" name="customer_address" placeholder="customer address">
                             <!-- {{form.customer_rank}} -->
                         </div>
                         <div class="form-group">
@@ -113,8 +126,8 @@
             <div class="card col-60">
                 <div>
                     
-                    <h2>Customers</h2>
-                    <div class="choose_file ml-5">
+                    <!-- <h2>Customers</h2> -->
+                    <!-- <div class="choose_file ml-5">
                         <button type="button" class="icon" onclick="download_table_as_csv('Customers_Data');">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke-width="1.5" stroke="currentColor" height="26px">
@@ -122,6 +135,29 @@
                                     d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
                             </svg>
                         </button>
+                    </div> -->
+                    <div class="row">
+                        <h2>Customers</h2>
+                        <div class="form-group ml-5 w-50">
+                            <select name="search_field" id="search_field" class="form-control">
+                                <option value="">Search By</option>
+                                <option value="Name">Name</option>
+                                <option value="Rank">Rank</option>
+                                <option value="ID">ID</option>
+                            </select>
+                            <input type="search" name="search_value" id="search_value" oninput="SearchCustomer();"  class="form-control ml-5 search" placeholder="search ....">
+                            
+                        </div>
+                        <!--  -->
+                        <div class="choose_file ml-5">
+                            <button type="button" class="icon" onclick="download_table_as_csv('Customers_Data');">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" height="26px">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <table class="table" id="Customers_Data">
                         <thead class="table-header">
@@ -189,7 +225,7 @@
             document.body.removeChild(link);
         }
     </script>
-    
+    <script src="{% static 'js/customer.js' %}"></script>
 </body>
 
 </html>

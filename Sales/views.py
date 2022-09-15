@@ -1,3 +1,4 @@
+from dataclasses import field
 from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
@@ -6,6 +7,9 @@ from .models import Sales
 from Customers.models import Customers
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializer import SalesSerializer
 
 def long_process(df):
     try:
@@ -96,10 +100,36 @@ def sales(request):
 
 def view_sales(request):
     return render(request, "Sales/view_sales.html",
-                  {'sales_data': Sales.objects.select_related('customer_id').order_by("-id")})
+                  {'sales_data': Sales.objects.select_related('customer_id').order_by("-bill_no")})
+
+@api_view(['GET'])
+def SearchbyName(request):
+    field = request.GET.get('field')
+    value = request.GET.get('value')
+    print(field,value)
+    try:
+        if field=='name':
+            return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
+        elif field=='rank':
+            return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
+        elif field=='bill_no':
+            return Response(SalesSerializer(Sales.objects.filter(bill_no__icontains=value).order_by('-id'), many=True).data)
+        elif field=='Pos_no':
+            return Response(SalesSerializer(Sales.objects.filter(PoS_no__icontains=value).order_by('-id'), many=True).data)
+        elif field=='month':
+            return Response(SalesSerializer(Sales.objects.filter(month__icontains=value).order_by('-id'), many=True).data)
+        elif field=='account_of':
+            return Response(SalesSerializer(Sales.objects.filter(account_of__icontains=value).order_by('-id'), many=True).data)
+        elif field=='date':
+            return Response(SalesSerializer(Sales.objects.filter(date__icontains=value).order_by('-id'), many=True).data)
+        elif field=='address':
+            return Response(SalesSerializer(Sales.objects.filter(address__icontains=value).order_by('-id'), many=True).data)
+    except Exception as e:
+        return Response({"message": "No data found {}".format(e)})
 
 
 sales_templates = [
     path('sales/', sales, name='sales'),
-    path('view_sales/', view_sales, name='view_sales')
+    path('view_sales/', view_sales, name='view_sales'),
+    path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
 ]
