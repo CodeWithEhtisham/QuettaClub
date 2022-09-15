@@ -79,31 +79,34 @@
                     </div>
                     <table class="table" id="Sales_data">
                         <thead class="table-header">
+                            <tr>&nbsp;
+                            </tr>
                             <tr>
-                                <th>S No.</th>
+                                <th>Ser No</th>
                                 <th>Bill No</th>
-                                <th>PoS No</th>
                                 <th>Month</th>
-                                <th>Date</th>
+                                <th>Dated</th>
                                 <th>Rank</th>
+                                <th>POS NO</th>
                                 <th>Name</th>
                                 <th>Address</th>
-                                <th>On Account of</th>
+                                <th>On Account Of</th>
                                 <th>Amount</th>
                                 <th>Discount</th>
                                 <th>Net Amount</th>
-                                <th>Action</th>
+                                <th>Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for sale in sales_data %}
+                            
                             <tr>
                                 <td>{{sale.id}}</td>
                                 <td>{{ sale.bill_no|default:"00" }}</td>
-                                <td>{{ sale.PoS_no|default:"00" }}</td>
                                 <td>{{ sale.month|default_if_none:"--" }}</td>
                                 <td>{{ sale.date|default_if_none:"--" }}</td>
                                 <td>{{sale.customer_id.customer_rank}}</td>
+                                <td>{{ sale.PoS_no|default:"00" }}</td>
                                 <td>{{sale.customer_id.customer_name}}</td>
                                 <td>{{ sale.address|default_if_none:"--" }}</td>
                                 <td>{{ sale.account_of|default_if_none:"--" }}</td>

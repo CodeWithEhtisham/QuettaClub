@@ -77,7 +77,7 @@
                             <input name="customer_file" type="file" accept=".xlsx, .xls, .csv" />
                         </div>
                     </div>
-                    <input type="submit" id="customer_file_submit" name="customer_file_submit">
+                    <input class="btn" type="submit" id="customer_file_submit" name="customer_file_submit">
                 </form>
                 <form action="{% url 'Customers:customers' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -112,8 +112,18 @@
             <!-- Customers -->
             <div class="card col-60">
                 <div>
+                    
                     <h2>Customers</h2>
-                    <table class="table">
+                    <div class="choose_file ml-5">
+                        <button type="button" class="icon" onclick="download_table_as_csv('Customers_Data');">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" height="26px">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                            </svg>
+                        </button>
+                    </div>
+                    <table class="table" id="Customers_Data">
                         <thead class="table-header">
                             <tr>
                                 <th>S No.</th>
@@ -148,6 +158,38 @@
         </div>
 
     </div>
+    <script>
+        function download_table_as_csv(Customers_Data, separator = ',') {
+            // Select rows from table_id
+            var rows = document.querySelectorAll('table#' + Customers_Data + ' tr');
+            // Construct csv
+            var csv = [];
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll('td, th');
+                for (var j = 0; j < cols.length; j++) {
+                    // Clean innertext to remove multiple spaces and jumpline (break csv)
+                    var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+                    // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+                    data = data.replace(/"/g, '""');
+                    // Push escaped string
+                    row.push('"' + data + '"');
+                }
+                csv.push(row.join(separator));
+            }
+            var csv_string = csv.join('\n');
+            // Download it
+            var filename = Customers_Data + '_' + new Date().toLocaleDateString() + '.csv';
+            var link = document.createElement('a');
+            link.style.display = 'none';
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+    
 </body>
 
 </html>

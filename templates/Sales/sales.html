@@ -65,7 +65,7 @@
                             <input name="sale_file" type="file" accept=".xlsx, .xls, .csv" />
                         </div>
                     </div>
-                    <input type="submit" id="sale_file_submit" name="sale_file_submit">
+                    <input class="btn" type="submit" id="sale_file_submit" name="sale_file_submit">
                 </form>
                 <form action="{% url 'Sales:sales' %}" method="post">
                     {% csrf_token %}
