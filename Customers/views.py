@@ -74,12 +74,35 @@ def customers(request):
                             return HttpResponseRedirect(reverse('Customers:customers'))
                     
                     raise Exception("File not found") 
+            # if request.POST.get('edit_customer'):
+            #     return render(request, "Customers/customer_update.html", {'customer_data': Customers.objects.filter(id=request.POST.get("cid"))[0]})
 
         except Exception as e:  # Exception as e:
                 messages.error(request, 'Customer Added Failed {}'.format(e))
                 return HttpResponseRedirect(reverse('Customers:customers'))
     else:
-        return render(request, 'Customers/customers.html', {'customers': Customers.objects.all().order_by("-id")})
+        return render(request, 'Customers/customers.html', 
+            {'customers': Customers.objects.all().order_by("-id")
+            })
+
+
+def customer_update(request):
+    if request.method == 'POST':
+        try:
+            if request.POST.get('update_customer'):
+                Customers.objects.filter(id=request.POST.get('cid')).update(
+                    customer_name=request.POST.get('customer_name'),
+                    customer_rank=request.POST.get('customer_rank'),
+                    customer_id=request.POST.get('customer_id'),
+                    customer_address=request.POST.get('customer_address'))
+                    
+                return HttpResponseRedirect(reverse('Customers:customers'))
+        except Exception as e:
+            messages.error(request, 'Customer Update Failed {}'.format(e))
+            return HttpResponseRedirect(reverse('Customers:customers'))
+    else:
+        return render(request, "Customers/customer_update.html", 
+        {'customer_data': Customers.objects.filter(id=request.GET.get("id")).first()})
         
 
 def customer_details(request):
@@ -110,4 +133,5 @@ index_template = [
     path('customers/', customers, name='customers'),
     path('customer_details/', customer_details, name='customer_details'),
     path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
+    path('customer_update/', customer_update, name='customer_update'),
 ]

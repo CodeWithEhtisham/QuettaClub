@@ -7,7 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quetta Club</title>
+    <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
@@ -25,19 +30,19 @@
                         <div>Dashboard</div>
                     </a>
                 </li>
-                <li class="">
+                <li>
                     <a href="{% url 'Customers:customers' %}">
                         <div>Customers</div>
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'Sales:sales' %}">
-                        <div>Bills</div>
+                        <div>Sales</div>
                     </a>
                 </li>
-                <li class="active">
+                <li class="">
                     <a href="{% url 'Sales:view_sales' %}">
-                        <div>View Bills</div>
+                        <div>View Sales</div>
                     </a>
                 </li>
                 <li class="">
@@ -49,75 +54,210 @@
         </div>
 
         <div class="row">
-            <!-- Add customer -->
-            <div class="card col-40">
-                <!-- <h3 class="title">
-                    Add Customers
-                </h3>
-                <form action="">
-                    <div>
-                        <div class="form-group">
-                            <label for="" class="form-label">Customer Name</label>
-                            <input type="text" class="form-control" placeholder="customer name">
-                        </div>
-                        <div class="form-group">
-                            <label for="" class="form-label">Customer Rank</label>
-                            <input type="text" class="form-control" placeholder="customer rank">
-                        </div>
-                        <div class="form-group">
-                            <label for="" class="form-label">Customer ID</label>
-                            <input type="text" class="form-control" placeholder="customer id">
-                        </div>
-                    </div>
-
-                    <hr>
-                    <div class="flex">
-                        <button class="btn">
-                            Save
-                        </button>
-                    </div>
-                </form>
-            </div> -->
-
-            <!-- Customers -->
-            <div class="card col-60">
+            <div class="card">
                 <div>
-                    <h2>Customers</h2>
-                    <table class="table">
+                    <div class="row">
+                        <h2>Customer Bills</h2>
+                        <div class="form-group ml-5">
+                            <select name="search_field" id="search_field" class="form-control">
+                                <option value="">Search By</option>
+                                <option value="bill_no">Bill No.</option>
+                                <option value="pos_no">PoS No</option>
+                                <option value="month">Month</option>
+                                <option value="account_of">On Account of</option>
+                                <option value="date">Date</option>
+                            </select>
+                            <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"  class="form-control ml-5 search" placeholder="search ....">
+                            <div class="form-data ml-5">
+                                
+                        </div>
+                        <div></div>
+                        
+                        <!--  -->
+                        
+                        <div class="form-data ml-5">
+                            <button type="button" class="icon" id="complement_bills">Paid Bills</button>
+                        </div>
+                        <div class="form-data ml-5">
+                            <button type="button" class="icon" id="complement_bills">Complemantery Bills</button>
+                        </div>
+                        <div class="form-data ml-5">
+                            <button type="button" class="icon" id="cancel_bills">Cancelled Bills</button>
+                        </div>
+                        <div class="form-data ml-5">
+                            <button type="button" class="icon" id="print_bills">Print</button>
+                        </div>
+                        <div class="choose_file ml-5">
+                            <button type="button" class="icon" onclick="download_table_as_csv('Sales_data');">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" height="26px">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <table class="table" id="Sales_data">
                         <thead class="table-header">
+                            <tr>&nbsp;
+                            </tr>
                             <tr>
-                                <th>S No.</th>
-                                <th>Name</th>
+                                <!-- <th>Ser No</th> -->
+                                <th>Bill No</th>
+                                <th>Month</th>
                                 <th>Rank</th>
-                                <th>ID</th>
-                                <th>Actions</th>
+                                <th>POS NO</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>On Account Of</th>
+                                <th>Dated</th>
+                                <th>Amount</th>
+                                <th>Discount</th>
+                                <th>Net Amount</th>
+                                <th>Remarks</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for customer in customers %}
+                            {% for sale in sales_data %}
+                            
+                            {% if sale.amount > 0 %}
                             <tr>
-                                <td>{{ customer.id|default:"1" }}</td>
-                                <td>{{ customer.customer_name|default_if_none:"--" }}</td>
-                                <td>{{ customer.customer_rank|default_if_none:"--" }}</td>
-                                <td>{{ customer.customer_id|default_if_none:"--" }}</td>
+                                <!-- <td>{{sale.id}}</td> -->
+                                <td>{{ sale.bill_no|default:"00" }}</td>
+                                <td>{{ sale.month|default_if_none:"--" }}</td>
+                                <td>{{sale.customer_id.customer_rank}}</td>
+                                <td>{{ sale.PoS_no|default:"00" }}</td>
+                                <td>{{sale.customer_id.customer_name}}</td>
+                                <td>{{ sale.address|default_if_none:"--" }}</td>
+                                <td>{{ sale.account_of|default_if_none:"--" }}</td>
+                                <td>{{ sale.date|default_if_none:"--" }}</td>
+                                <td>{{ sale.amount|default_if_none:"00" }}</td>
+                                <td>{{ sale.discount|default_if_none:"00" }}</td>
+                                <td>{{ sale.net_amount|default_if_none:"00" }}</td>
+                                <td>{{ sale.remarks|default_if_none:" " }}</td>
                                 <td>
-                                    <div class="list-btn">
-                                        <a href="" class="">All Bills</a>
-                                        <a href="" class="">Paid Bill</a>
-                                        <a href="" class="">Printer</a>
-                                        <a href="" class="">Export</a>
+                                    <div class="list">
+                                        <a href="" class="">Edit</a>
+                                        <button id="paid_modal" class="modal">Paid</button>
+                                        <a href="" class="">Complemantery</a>
+                                        <a href="" class="">Cancelled</a>
                                     </div>
                                 </td>
                             </tr>
+                            {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
-                </div>
-
-            </div>
         </div>
 
+        <!-- modal -->
+        <div class="modal-open">
+            <div class="modal-header">
+                <span class="close-btn">&times;</span>
+                <h1 class="modal-title">I am the Header</h1>
+            </div>
+            <div class="modal-content">
+                <label class="form-label">RV No</label>
+                <input class="form-control" type="text" name="rv_no">
+
+                <label class="form-label">Date</label>
+                <input class="form-control" type="date" name="paid_date">
+
+                <label class="form-label">Amount</label>
+                <input class="form-control" type="text" name="paid_amount">
+
+                <label class="form-label">Balance</label>
+                <input class="form-control" type="text" name="paid_balance">
+
+                <label class="form-label">Remaining</label>
+                <input class="form-control" type="text" name="remaining_balance">
+            </div>
+            
+            <div class="modal-footer">
+                <h2>I am the Footer</h2>
+            </div>
+        </div>
     </div>
+
+    <script>
+        let modalBtn = document.getElementById("paid_modal")
+        let modal = document.querySelector(".modal-open")
+        let closeBtn = document.querySelector(".close-btn")
+        modalBtn.onclick = function () {
+            modal.style.display = "block"
+        }
+        closeBtn.onclick = function () {
+            modal.style.display = "none"
+        }
+        window.onclick = function (e) {
+            if (e.target == modal) {
+                modal.style.display = "block"
+            }
+        }
+    </script>
+    <!-- <script>
+        function download_to_excel() {
+
+            var tab_text = "<table><tr>";
+            var textRange = '';
+            var j = 0;
+            var tab = document.getElementById('MyTableID_Value'); // id of table
+
+            for (j = 0; j < tab.rows.length; j++) {
+                tab_text += tab.rows[j].innerHTML + "</tr>";
+            }
+
+            tab_text += "</table>";
+
+            var a = document.createElement('a');
+            var data_type = 'data:application/vnd.ms-excel';
+            a.href = data_type + ', ' + encodeURIComponent(tab_text);
+            //setting the file name
+            a.download = 'file_name.xls';
+            //triggering the function
+            a.click();
+            //just in case, prevent default behaviour
+            e.preventDefault();
+
+        }
+    </script> -->
+
+    <script>
+        function download_table_as_csv(Sales_data, separator = ',') {
+            // Select rows from table_id
+            var rows = document.querySelectorAll('table#' + Sales_data + ' tr');
+            // Construct csv
+            var csv = [];
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll('td, th');
+                for (var j = 0; j < cols.length; j++) {
+                    // Clean innertext to remove multiple spaces and jumpline (break csv)
+                    var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+                    // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+                    data = data.replace(/"/g, '""');
+                    // Push escaped string
+                    row.push('"' + data + '"');
+                }
+                csv.push(row.join(separator));
+            }
+            var csv_string = csv.join('\n');
+            // Download it
+            var filename = Sales_data + '_' + new Date().toLocaleDateString() + '.csv';
+            var link = document.createElement('a');
+            link.style.display = 'none';
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+    <script src="{% static 'js/sales.js' %}"></script>
 </body>
 
 </html>
