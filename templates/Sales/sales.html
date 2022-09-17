@@ -83,11 +83,11 @@
                     <div class="grid col-100">
                         <div class="grid-item">
                             <label class="form-label">Bill No</label>
-                            <input class="form-control" type="text" name="bill_no">
+                            <input class="form-control" type="text" name="bill_no" id="bill_no" onchange="billCheck(this)">
                         </div>
                         <div class="grid-item">
                             <label class="form-label">PoS No</label>
-                            <input class="form-control" type="text" name="PoS_no">
+                            <input class="form-control" type="text" name="PoS_no" onchange="posCheck(this)">
                         </div>
                         <div class="grid-item">
                             <label class="form-label">Date</label>
@@ -109,34 +109,10 @@
                         </div>
                         <div class="">
                             <label class="form-label">Name</label>
-                            <input class="form-control" type="text" value="" name="customer_name" id="name" onkeydown="getCustomerName();">
+                            <input class="form-control" type="text" name="customer_name" id="name"
+                                onkeydown="getCustomerName();">
                         </div>
 
-                        <script>
-                            function getCustomerName() {
-                                let rank = $('#rank').find(":selected").text();
-                                let names = [];
-                                let ranks = [];
-                                {% for customer in customers %}
-                                names.push('{{ customer.customer_name }}');
-                                ranks.push('{{ customer.customer_rank }}');
-                                {% endfor %}
-                                console.log(names);
-                                console.log(ranks);
-                                var availableTags = [];
-                                for (let i = 0; i < names.length; i++) {
-                                        console.log(availableTags);
-                                        if (rank == ranks[i]) {
-                                            availableTags.push(names[i]);
-                                        }
-                                    }
-                                        
-                                          
-                            $("#name").autocomplete({
-                                source: availableTags
-                            });
-                      } ;
-                        </script>
 
                         <div class="">
                             <label class="form-label">Address</label>
@@ -178,9 +154,64 @@
 
     </div>
     <script>
+        var bill_nos = [];
+        {% for sale in sales %}
+        bill_nos.push('{{ sale.bill_no }}');
+        {% endfor %}
         var today = new Date();
         document.getElementById("today-date").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+        let names = [];
+        let ranks = [];
+        let pos = [];
+        {% for customer in customers %}
+        names.push('{{ customer.customer_name }}');
+        ranks.push('{{ customer.customer_rank }}');
+        pos.push('{{ customer.PoS_no }}');
+        {% endfor %}
+
+        // funciton for get customer name
+        function getCustomerName() {
+            let rank = $('#rank').find(":selected").text();
+            var availableTags = [];
+            for (let i = 0; i < names.length; i++) {
+                console.log(availableTags);
+                if (rank == ranks[i]) {
+                    availableTags.push(names[i]);
+                }
+            }
+            $("#name").autocomplete({
+                source: availableTags
+            });
+        };
+
+        // function for check duplicate bills
+        function billCheck(data) {
+            if (bill_nos.includes(data.value)) {
+                console.log("Bill No Already Exist");
+                document.getElementById("bill_no").style.border = "1px solid red";
+            }
+            else {
+                console.log("Bill No Not Exist");
+                document.getElementById("bill_no").style.border = "1px solid green";
+            }
+
+        }
+
+        // function for check duplicate pos
+        function posCheck(data) {
+            if (pos.includes(data.value)) {
+                console.log("PoS No Already Exist");
+                document.getElementById("PoS_no").style.border = "1px solid red";
+            }
+            else {
+                console.log("PoS No Not Exist");
+                document.getElementById("PoS_no").style.border = "1px solid green";
+            }
+
+        }
+
     </script>
+
 </body>
 
 </html>

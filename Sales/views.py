@@ -97,7 +97,7 @@ def sales(request):
                 return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)
 
     else:            
-        return render(request, "Sales/sales.html", {'customers': Customers.objects.all()})
+        return render(request, "Sales/sales.html", {'customers': Customers.objects.all(),'sales': Sales.objects.all()})
 
 def view_sales(request):
     return render(request, "Sales/view_sales.html",
