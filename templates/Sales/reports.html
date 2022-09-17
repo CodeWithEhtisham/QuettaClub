@@ -37,15 +37,15 @@
                 </li>
                 <li>
                     <a href="{% url 'Sales:sales' %}">
-                        <div>Sales</div>
-                    </a>
-                </li>
-                <li class="active">
-                    <a href="{% url 'Sales:view_sales' %}">
-                        <div>View Sales</div>
+                        <div>Bills</div>
                     </a>
                 </li>
                 <li class="">
+                    <a href="{% url 'Sales:view_sales' %}">
+                        <div>View Bills</div>
+                    </a>
+                </li>
+                <li class="active">
                     <a href="{% url 'Sales:reports' %}">
                         <div>Reports</div>
                     </a>
@@ -71,18 +71,7 @@
                                 <option value="address">Address</option>
                             </select>
                             <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"  class="form-control ml-5 search" placeholder="search ....">
-                            <!-- <script>
-                                $(function () {
-                                    var availableTags = [
-                                        {% for data in sales_data %}
-                                    "{{data.customer_id.customer_name}}",
-                                    {% endfor %}
-                                    ];
-                                $("#tags").autocomplete({
-                                    source: availableTags
-                                });
-                          } );
-                            </script> -->
+                            
                         </div>
                         <!--  -->
                         <div class="choose_file ml-5">

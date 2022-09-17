@@ -23,11 +23,12 @@ function update_table(data){
     let row;
     let all_rows = '';
     Object.keys(data).forEach(key => {
+        console.log(data[key]);
         elem = data[key];
         row = '<tr>' +
-        '<td>'+elem['id']+'</td>' +
-        '<td>'+elem['customer_name']+'</td>' +
         '<td>'+elem['customer_rank']+'</td>' +
+        '<td>'+elem['customer_name']+'</td>' +
+        '<td>'+elem['id']+'</td>' +
         '<td>'+elem['customer_id']+'</td>' +
         '<td>' +
         '<div class="list-btn">'+
@@ -40,5 +41,5 @@ function update_table(data){
         '</tr>'
         all_rows += row;
     });
-    $('#Customer_Data tbody').html(all_rows);
+    $('#Customers_Data tbody').html(all_rows);
 }

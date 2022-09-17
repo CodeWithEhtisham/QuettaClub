@@ -107,5 +107,5 @@ index_template = [
     path('index/', index, name='index'),
     path('customers/', customers, name='customers'),
     path('customer_details/', customer_details, name='customer_details'),
-    path('SearchCustomer/', SearchCustomer, name='SearchCustomer'),
+    path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
 ]

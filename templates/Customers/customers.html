@@ -60,6 +60,11 @@
                         <div>View Sales</div>
                     </a>
                 </li>
+                <li class="">
+                    <a href="{% url 'Sales:reports' %}">
+                        <div>Reports</div>
+                    </a>
+                </li>
             </ul>
         </div>
 
@@ -111,6 +116,7 @@
                             <input type="text" class="form-control" name="customer_id" placeholder="customer id">
                             <!-- {{form.customer_id}} -->
                         </div>
+                        
                     </div>
 
                     <hr>
@@ -162,9 +168,9 @@
                     <table class="table" id="Customers_Data">
                         <thead class="table-header">
                             <tr>
-                                <th>S No.</th>
-                                <th>Name</th>
                                 <th>Rank</th>
+                                <th>Name</th>
+                                <th>Address</th>
                                 <th>ID</th>
                                 <th>Actions</th>
                             </tr>
@@ -172,16 +178,13 @@
                         <tbody>
                             {% for customer in customers %}
                             <tr>
-                                <td>{{ customer.id|default:"1" }}</td>
-                                <td>{{ customer.customer_name|default_if_none:"--" }}</td>
                                 <td>{{ customer.customer_rank|default_if_none:"--" }}</td>
+                                <td>{{ customer.customer_name|default_if_none:"--" }}</td>
+                                <td>{{ customer.id|default:"1" }}</td>
                                 <td>{{ customer.customer_id|default_if_none:"--" }}</td>
                                 <td>
                                     <div class="list-btn">
                                         <a href="{% url 'Customers:customer_details' %}" class="">All Bills</a>
-                                        <a href="" class="">Paid Bill</a>
-                                        <a href="" class="">Printer</a>
-                                        <a href="" class="">Export</a>
                                     </div>
                                 </td>
                             </tr>

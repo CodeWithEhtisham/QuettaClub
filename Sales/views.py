@@ -100,7 +100,11 @@ def sales(request):
 
 def view_sales(request):
     return render(request, "Sales/view_sales.html",
-                  {'sales_data': Sales.objects.select_related('customer_id').order_by("-bill_no")})
+                {'sales_data': Sales.objects.select_related('customer_id').order_by("-bill_no")})
+
+def reports(request):
+    return render(request, "Sales/reports.html",
+                {'sales_data': Sales.objects.select_related('customer_id').order_by("-bill_no")})
 
 @api_view(['GET'])
 def SearchbyName(request):
@@ -132,4 +136,5 @@ sales_templates = [
     path('sales/', sales, name='sales'),
     path('view_sales/', view_sales, name='view_sales'),
     path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
+    path('reports/', reports, name='reports'),
 ]

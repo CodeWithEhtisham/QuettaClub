@@ -215,7 +215,7 @@ td a {
   margin-bottom: 0.5rem;
   font-size: large;
   font-weight: 500;
-  color: #566a7f;
+  color: #000000;
 }
 
 .form-control {
@@ -224,7 +224,7 @@ td a {
   font-size: 0.9375rem;
   font-weight: 400;
   line-height: 1.53;
-  color: #697a8d;
+  color: #000000;
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #d9dee3;
@@ -236,7 +236,7 @@ td a {
 }
 
 .form-control:focus {
-  color: #697a8d;
+  /* color: #000000; */
   background-color: #fff;
   border-color: #1e659c;
   outline: 0;
@@ -338,7 +338,7 @@ td a {
 .modal-title {
     font-size: 20px;
     font-weight: 500;
-    color: #566a7f;
+    color: #000000;
 }
 
 .close-btn {
