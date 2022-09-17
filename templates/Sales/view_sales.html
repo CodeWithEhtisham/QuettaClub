@@ -119,6 +119,7 @@
                         <tbody>
                             {% for sale in sales_data %}
                             
+                            {% if sale.amount > 0 %}
                             <tr>
                                 <!-- <td>{{sale.id}}</td> -->
                                 <td>{{ sale.bill_no|default:"00" }}</td>
@@ -142,6 +143,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -156,8 +158,22 @@
                 <h1 class="modal-title">I am the Header</h1>
             </div>
             <div class="modal-content">
-                <p>this is the text inside the modal</p>
+                <label class="form-label">RV No</label>
+                <input class="form-control" type="text" name="rv_no">
+
+                <label class="form-label">Date</label>
+                <input class="form-control" type="date" name="paid_date">
+
+                <label class="form-label">Amount</label>
+                <input class="form-control" type="text" name="paid_amount">
+
+                <label class="form-label">Balance</label>
+                <input class="form-control" type="text" name="paid_balance">
+
+                <label class="form-label">Remaining</label>
+                <input class="form-control" type="text" name="remaining_balance">
             </div>
+            
             <div class="modal-footer">
                 <h2>I am the Footer</h2>
             </div>

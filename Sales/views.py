@@ -48,6 +48,7 @@ def sales(request):
         try:
             if request.POST.get('Save'):
                 # print(request.POST.get('customer_name'))
+                
                 customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),customer_rank=request.POST.get('customer_rank')).first()
                 # print(customer)
                 Sales(bill_no=request.POST.get('bill_no'),
@@ -69,7 +70,7 @@ def sales(request):
                 # print("customer_file_submit")
                 csv= request.FILES['sale_file']
                 if not csv.name.split('.')[1] in ['csv', 'xlsx', 'xls']:
-                    messages.error(request, 'This is not a correct formate file')
+                    messages.error(request, 'This is not a correct format file')
                 else:
                     myfile = request.FILES["sale_file"]        
                     fs = FileSystemStorage()
