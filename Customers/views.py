@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.urls import path, reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+
+from Sales.models import Sales
 # from .forms import CustomersForm
 from .models import Customers
 import pandas as pd
@@ -106,7 +108,8 @@ def customer_update(request):
         
 
 def customer_details(request):
-    return render(request, "Customers/customer_details.html", {'customers': Customers.objects.filter(id=request.GET.get("id")).order_by("-id")})
+    print( Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id"))
+    return render(request, "Customers/customer_details.html", {'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")})
 
 
 @api_view(['GET'])
