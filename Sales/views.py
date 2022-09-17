@@ -10,6 +10,7 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import SalesSerializer
+from django.db.models import Sum
 
 def long_process(df):
     try:
@@ -100,11 +101,55 @@ def sales(request):
         return render(request, "Sales/sales.html", {'customers': Customers.objects.all(),'sales': Sales.objects.all()})
 
 def view_sales(request):
+    if request.method == "POST":
+        try:
+            if request.POST.get("cancel"):
+                return HttpResponseRedirect(reverse('Sales:view_sales'))
+        except Exception as e:
+            pass
     return render(request, "Sales/view_sales.html",
-                {'sales_data': Sales.objects.select_related('customer_id').order_by("-bill_no")})
+                {'sales_data': Sales.objects.all().select_related('customer_id').order_by("-bill_no"),
+                'total_bills': Sales.objects.select_related('bill_no').count(),
+                'total_amount': Sales.objects.aggregate(Sum('amount'))['amount__sum'],
+                'total_discount': Sales.objects.aggregate(Sum('discount'))['discount__sum'],
+                'total_net_amount': Sales.objects.aggregate(Sum('net_amount'))['net_amount__sum'],
+                # 'total_paid': Sales.objects.aggregate(Sum('paid')['paid__sum']),
+                # 'total_paid_bills': Sales.objects.aggregate(Sum('paid_bill'),
+                # 'total_cancelled_bills': Sales.objects.aggregate(Sum('cancelled_bill'),
+                # 'total_complement_bills': Sales.objects.aggregate(Sum('complement_bill')
+                })
+
+def update_sales(request):
+    if request.method == "POST":
+        try:
+            if request.POST.get('update_bill'):
+                Sales.objects.filter(id=request.POST.get('edit_id')).update(
+                    bill_no=request.POST.get('bill_no'),
+                    PoS_no=request.POST.get('PoS_no'),
+                    month=request.POST.get('month'),
+                    date=request.POST.get('date'),
+                    address=request.POST.get('address'),
+                    account_of=request.POST.get('account_of'),
+                    amount=request.POST.get('amount'),
+                    discount=request.POST.get('discount'),
+                    net_amount=request.POST.get('net_amount'),
+                    remarks=request.POST.get('remarks'))
+                
+                return HttpResponseRedirect(reverse("Sales:view_sales"))
+        except Exception as e:
+            messages.error(request, f'Sales Update Failed {e}')
+            return HttpResponseRedirect(reverse("Sales:view_sales"))
+
+    else:
+        print(request.GET.get('edit_id'))
+        print(Sales.objects.filter(id=request.GET.get('edit_id')).select_related('customer_id').first())
+        return render(request, "Sales/update_sales.html", 
+            {'sales_data': Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first()})
+
 
 def reports(request):
-    return render(request, "Sales/reports.html",
+    
+        return render(request, "Sales/reports.html",
                 {'sales_data': Sales.objects.select_related('customer_id').order_by("-bill_no")})
 
 @api_view(['GET'])
@@ -138,4 +183,5 @@ sales_templates = [
     path('view_sales/', view_sales, name='view_sales'),
     path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
     path('reports/', reports, name='reports'),
+    path('update_sales/', update_sales, name='update_sales'),
 ]

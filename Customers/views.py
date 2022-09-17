@@ -102,7 +102,7 @@ def customer_update(request):
             return HttpResponseRedirect(reverse('Customers:customers'))
     else:
         return render(request, "Customers/customer_update.html", 
-        {'customer_data': Customers.objects.filter(id=request.GET.get("id")).first()})
+            {'customer_data': Customers.objects.filter(id=request.GET.get("id")).first()})
         
 
 def customer_details(request):

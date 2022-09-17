@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -70,7 +71,8 @@
                                 <option value="name">Name</option>
                                 <option value="address">Address</option>
                             </select>
-                            <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"  class="form-control ml-5 search" placeholder="search ....">
+                            <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"
+                                class="form-control ml-5 search" placeholder="search ....">
                             <!-- <script>
                                 $(function () {
                                     var availableTags = [
@@ -97,8 +99,7 @@
                     </div>
                     <table class="table" id="Sales_data">
                         <thead class="table-header">
-                            <tr>&nbsp;
-                            </tr>
+                            
                             <tr>
                                 <!-- <th>Ser No</th> -->
                                 <th>Bill No</th>
@@ -116,9 +117,10 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             {% for sale in sales_data %}
-                            
+
                             {% if sale.amount > 0 %}
                             <tr>
                                 <!-- <td>{{sale.id}}</td> -->
@@ -130,13 +132,13 @@
                                 <td>{{ sale.address|default_if_none:"--" }}</td>
                                 <td>{{ sale.account_of|default_if_none:"--" }}</td>
                                 <td>{{ sale.date|default_if_none:"--" }}</td>
-                                <td>{{ sale.amount|default_if_none:"00" }}</td>
-                                <td>{{ sale.discount|default_if_none:"00" }}</td>
-                                <td>{{ sale.net_amount|default_if_none:"00" }}</td>
+                                <td>{{ sale.amount|intcomma|default_if_none:"00" }}</td>
+                                <td>{{ sale.discount|intcomma|default_if_none:"00" }}</td>
+                                <td>{{ sale.net_amount|intcomma|default_if_none:"00" }}</td>
                                 <td>{{ sale.remarks|default_if_none:" " }}</td>
                                 <td>
                                     <div class="list">
-                                        <a href="" class="">Edit</a>
+                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
                                         <button id="paid_modal" class="modal">Paid</button>
                                         <a href="" class="">Complemantery</a>
                                         <a href="" class="">Cancelled</a>
@@ -145,7 +147,19 @@
                             </tr>
                             {% endif %}
                             {% endfor %}
+                            <tr>
+                                <td><b>Total Bills: {{total_bills|intcomma}}</b></td>
+                                <td><b>Total Paid Bills: </b></td>
+                                <td><b>Total Cancelled Bills: </b></td>
+                                <td><b>Total Complemantery Bills: </b></td>
+                                <td><b>Total Amount: {{total_amount|intcomma}}</b></td>
+                                <td><b>Total Paid: </b></td>
+                                <td><b>Total Discounts: {{total_discount|intcomma}}</b></td>
+                                <td><b>Total Net Amount: {{total_net_amount|intcomma}}</b></td>
+                            </tr>
                         </tbody>
+
+
                     </table>
                 </div>
             </div>
@@ -153,27 +167,40 @@
 
         <!-- modal -->
         <div class="modal-open">
+
             <div class="modal-header">
                 <span class="close-btn">&times;</span>
                 <h1 class="modal-title">I am the Header</h1>
             </div>
-            <div class="modal-content">
-                <label class="form-label">RV No</label>
-                <input class="form-control" type="text" name="rv_no">
+            <form action="{% url 'Sales:view_sales' %}" method="post">
+                {% csrf_token %}
 
-                <label class="form-label">Date</label>
-                <input class="form-control" type="date" name="paid_date">
+                <div class="modal-content">
+                    <label class="form-label">RV No</label>
+                    <input class="form-control" type="text" name="rv_no">
 
-                <label class="form-label">Amount</label>
-                <input class="form-control" type="text" name="paid_amount">
+                    <label class="form-label">Date</label>
+                    <input class="form-control" type="date" name="paid_date">
 
-                <label class="form-label">Balance</label>
-                <input class="form-control" type="text" name="paid_balance">
+                    <label class="form-label">Amount</label>
+                    <input class="form-control" type="text" name="paid_amount">
 
-                <label class="form-label">Remaining</label>
-                <input class="form-control" type="text" name="remaining_balance">
-            </div>
-            
+                    <label class="form-label">Balance</label>
+                    <input class="form-control" type="text" name="paid_balance">
+
+                    <label class="form-label">Remaining</label>
+                    <input class="form-control" type="text" name="remaining_balance">
+
+                    <div class="flex">
+                        <button class="btn" name="bill_paid" value="bill_paid">
+                            Save
+                        </button>
+                        <button class="btn cancel" name="cancel" value="cancel">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
             <div class="modal-footer">
                 <h2>I am the Footer</h2>
             </div>
