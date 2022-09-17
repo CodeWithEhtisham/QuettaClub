@@ -28,14 +28,11 @@ function update_table(data){
         row = '<tr>' +
         '<td>'+elem['customer_rank']+'</td>' +
         '<td>'+elem['customer_name']+'</td>' +
-        '<td>'+elem['id']+'</td>' +
+        '<td>'+elem['customer_address']+'</td>' +
         '<td>'+elem['customer_id']+'</td>' +
         '<td>' +
         '<div class="list-btn">'+
-        '<a href='+"{% url 'Customers:customer_details' %}"+' class="">All Bills</a>'+
-        '<a href="" class="">Paid Bill</a>'+
-        '<a href="" class="">Printer</a>'+
-        '<a href="" class="">Export</a>'+
+        '<a href='+"{% url 'Customers:customer_details' %}?id={{customer.id}}"+' class="">All Bills</a>'+
         '</div>'+
         '</td>' +
         '</tr>'

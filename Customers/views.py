@@ -44,7 +44,9 @@ def customers(request):
                 Customers(customer_name=request.POST.get('customer_name'),
                           customer_rank=request.POST.get('customer_rank'),
                           customer_id=request.POST.get('customer_id'),
+                            customer_address=request.POST.get('customer_address'),
                           customer_file=request.FILES.get('customer_file')).save()
+                return HttpResponseRedirect(reverse('Customers:customers'))
             elif request.POST.get('customer_file_submit'):
                 # print("customer_file_submit")
                 csv= request.FILES['customer_file']
@@ -81,7 +83,7 @@ def customers(request):
         
 
 def customer_details(request):
-    return render(request, "Customers/customer_details.html", {'customers': Customers.objects.all().order_by("-id")})
+    return render(request, "Customers/customer_details.html", {'customers': Customers.objects.filter(id=request.GET.get("id")).order_by("-id")})
 
 
 @api_view(['GET'])

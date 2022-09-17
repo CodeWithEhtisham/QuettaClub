@@ -6,6 +6,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <title>Quetta Club</title>
 
     <!-- CSS -->
@@ -72,7 +76,7 @@
                             <input class="btn ml-5" type="submit" id="sale_file_submit" name="sale_file_submit">
                         </div>
                     </div>
-                    
+
                 </form>
                 <form action="{% url 'Sales:sales' %}" method="post">
                     {% csrf_token %}
@@ -95,7 +99,7 @@
                         </div>
                         <div class="">
                             <label class="form-label">Rank</label>
-                            <select name="customer_rank" id="" class="form-control">
+                            <select name="customer_rank" id="rank" class="form-control">
                                 <option value="">Select Rank</option>
                                 <option value="Army">Army</option>
                                 <option value="Civilian">Civilian</option>
@@ -105,8 +109,35 @@
                         </div>
                         <div class="">
                             <label class="form-label">Name</label>
-                            <input class="form-control" type="text" value="" name="customer_name">
+                            <input class="form-control" type="text" value="" name="customer_name" id="name" onkeydown="getCustomerName();">
                         </div>
+
+                        <script>
+                            function getCustomerName() {
+                                let rank = $('#rank').find(":selected").text();
+                                let names = [];
+                                let ranks = [];
+                                {% for customer in customers %}
+                                names.push('{{ customer.customer_name }}');
+                                ranks.push('{{ customer.customer_rank }}');
+                                {% endfor %}
+                                console.log(names);
+                                console.log(ranks);
+                                var availableTags = [];
+                                for (let i = 0; i < names.length; i++) {
+                                        console.log(availableTags);
+                                        if (rank == ranks[i]) {
+                                            availableTags.push(names[i]);
+                                        }
+                                    }
+                                        
+                                          
+                            $("#name").autocomplete({
+                                source: availableTags
+                            });
+                      } ;
+                        </script>
+
                         <div class="">
                             <label class="form-label">Address</label>
                             <input class="form-control" type="text" name="address">

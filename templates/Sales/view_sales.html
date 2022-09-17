@@ -10,9 +10,9 @@
     <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
-    <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script> -->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
@@ -78,7 +78,7 @@
                                     "{{data.customer_id.customer_name}}",
                                     {% endfor %}
                                     ];
-                                $("#tags").autocomplete({
+                                $("#search_value").autocomplete({
                                     source: availableTags
                                 });
                           } );

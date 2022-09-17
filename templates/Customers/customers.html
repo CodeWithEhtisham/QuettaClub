@@ -98,8 +98,13 @@
                         <div class="form-group">
 
                             <label for="" class="form-label">Customer Rank</label>
-                            <input type="text" class="form-control" name="customer_rank" placeholder="customer rank">
-                            <!-- {{ form.customer_name }} -->
+                            <select name="customer_rank" id="rank" class="form-control">
+                                <option value="">Select Rank</option>
+                                <option value="Army">Army</option>
+                                <option value="Civilian">Civilian</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">Customer Name</label>
@@ -171,7 +176,7 @@
                                 <th>Rank</th>
                                 <th>Name</th>
                                 <th>Address</th>
-                                <th>ID</th>
+                                <th>Customer ID</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -180,11 +185,11 @@
                             <tr>
                                 <td>{{ customer.customer_rank|default_if_none:"--" }}</td>
                                 <td>{{ customer.customer_name|default_if_none:"--" }}</td>
-                                <td>{{ customer.id|default:"1" }}</td>
+                                <td>{{ customer.customer_address|default:"--" }}</td>
                                 <td>{{ customer.customer_id|default_if_none:"--" }}</td>
                                 <td>
                                     <div class="list-btn">
-                                        <a href="{% url 'Customers:customer_details' %}" class="">All Bills</a>
+                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}" class="">All Bills</a>
                                     </div>
                                 </td>
                             </tr>
