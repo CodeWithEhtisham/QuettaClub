@@ -8,7 +8,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quetta Club</title>
-    <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@linways/table-to-excel@1.0.4/dist/tableToExcel.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script> -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -139,7 +140,7 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                        <button id="paid_modal" class="modal">
+                                        <button id="paid_modal" class="modal" value="{{sale.id}}">
                                             <a href="">Paid</a>
                                         </button>
                                         <button id="comp_modal" class="modal">Complemantery</button>
@@ -285,32 +286,7 @@
     </div>
 
     <script>
-        let paidModalBtn = document.getElementById("paid_modal")
-        let compModalBtn = document.getElementById("comp_modal")
-        let canModalBtn = document.getElementById("cancel_modal")
         
-        let modal1 = document.querySelector(".paidModal-open")
-        let modal2 = document.querySelector(".compModal-open")
-        let modal3 = document.querySelector(".cancelModal-open")
-        let closeBtn = document.querySelector(".close-btn")
-
-        paidModalBtn.onclick = function () {
-            modal1.style.display = "block"
-        }
-        compModalBtn.onclick = function () {
-            modal2.style.display = "block"
-        }
-        canModalBtn.onclick = function () {
-            modal3.style.display = "block"
-        }
-        closeBtn.onclick = function () {
-            modal1.style.display = "none"
-        }
-        window.onclick = function (e) {
-            if (e.target == modal) {
-                modal1.style.display = "block"
-            }
-        }
     </script>
     <!-- <script>
         function download_to_excel() {
