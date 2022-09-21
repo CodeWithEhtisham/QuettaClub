@@ -205,6 +205,78 @@
                 <h2>I am the Footer</h2>
             </div>
         </div>
+
+        <!-- complemantery modal -->
+        <div class="compModal-open">
+
+            <div class="modal-header">
+                <span class="close-btn">&times;</span>
+                <h1 class="modal-title">Complemantery Bill Modal</h1>
+            </div>
+            <form action="{% url 'Sales:view_sales' %}" method="post">
+                {% csrf_token %}
+
+                <div class="modal-content">
+                    <label class="form-label">Date</label>
+                    <input class="form-control" type="date" name="comp_date">
+
+                    <label class="form-label">Remarks</label>
+                    <input class="form-control" type="text" name="comp_remarks">
+
+                    <label class="form-label">Amount</label>
+                    <input class="form-control" type="text" name="comp_amount">
+
+                    <label class="form-label">Balance</label>
+                    <input class="form-control" type="text" name="comp_balance">
+
+
+                    <div class="flex">
+                        <button class="btn" name="bill_paid" value="bill_paid">
+                            Save
+                        </button>
+                        <button class="btn cancel" name="cancel" value="cancel">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <h2>I am the Footer</h2>
+            </div>
+        </div>
+
+        <!-- cancelled modal  -->
+        <div class="cancelModal-open">
+
+            <div class="modal-header">
+                <span class="close-btn">&times;</span>
+                <h1 class="modal-title">Cancel Bill Modal</h1>
+            </div>
+            <form action="{% url 'Sales:view_sales' %}" method="post">
+                {% csrf_token %}
+
+                <div class="modal-content">
+
+                    <label class="form-label">Date</label>
+                    <input class="form-control" type="date" name="cancel_date">
+
+                    <label class="form-label">Reason</label>
+                    <input class="form-control" type="text" name="reason">
+
+                    <div class="flex">
+                        <button class="btn" name="bill_paid" value="bill_paid">
+                            Save
+                        </button>
+                        <button class="btn cancel" name="cancel" value="cancel">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <h2>I am the Footer</h2>
+            </div>
+        </div>
     </div>
 
     <script>
