@@ -59,3 +59,33 @@ function update_table(data){
     $('#Sales_data tbody').html(all_rows);
         
 }
+
+
+        let paidModal = document.getElementById("paid_modal")
+        let compModalBtn = document.getElementById("comp_modal")
+        let canModalBtn = document.getElementById("cancel_modal")
+        
+        let modal1 = document.querySelector(".paidModal-open")
+        let modal2 = document.querySelector(".compModal-open")
+        let modal3 = document.querySelector(".cancelModal-open")
+        let closeBtn = document.querySelector(".close-btn")
+
+        paidModal.onclick = function () {
+            modal1.style.display = "block"
+            // ajax call
+            console.log("paid modal clicked",paidModal.value)
+        }
+        compModalBtn.onclick = function () {
+            modal2.style.display = "block"
+        }
+        canModalBtn.onclick = function () {
+            modal3.style.display = "block"
+        }
+        closeBtn.onclick = function () {
+            modal1.style.display = "none"
+        }
+        // window.onclick = function (e) {
+        //     if (e.target == modal) {
+        //         modal1.style.display = "block"
+        //     }
+        // }

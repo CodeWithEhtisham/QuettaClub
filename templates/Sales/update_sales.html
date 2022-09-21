@@ -59,7 +59,7 @@
                 
                 <form action="{% url 'Sales:update_sales' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="text" value="{{sales_data.id}}" name='edit_id'>
+                    <input type="text" hidden value="{{sales_data.id}}" name='edit_id'>
                     <div class="grid col-100">
                         <div class="grid-item">
                             <label class="form-label">Bill No</label>
