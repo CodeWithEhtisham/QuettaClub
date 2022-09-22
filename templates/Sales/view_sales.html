@@ -140,7 +140,7 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                        <button id="paid_modal" class="modal" value="{{sale.id}}">
+                                        <button class="modal" onclick="payBill('{{sale.id}}')">
                                             <a href="">Paid</a>
                                         </button>
                                         <button id="comp_modal" class="modal">Complemantery</button>
@@ -177,9 +177,9 @@
                 <span class="close-btn">&times;</span>
                 <h1 class="modal-title"><b>Paid Bill Modal</b></h1>
             </div>
-            <form action="{% url 'Sales:view_sales'%}" method="post">
+            <form id="updateSale" method="">
                 {% csrf_token %}
-                <input type="text" value="{{sales_data.id}}" name='edit_id'>
+                <input class="form-control" id="form-id" type="hidden" name="formId"/>
 
                 <div class="modal-content">
                     <label class="form-label">RV No</label>
@@ -192,7 +192,7 @@
                     <input class="form-control" type="text" name="paid_amount">
 
                     <label class="form-label">Balance</label>
-                    <input class="form-control" type="text" name="paid_balance">
+                    <input class="form-control" type="text" id="pay_bill_modal_balance" name="paid_balance">
 
                     <label class="form-label">Remaining</label>
                     <input class="form-control" type="text" name="remaining_balance">

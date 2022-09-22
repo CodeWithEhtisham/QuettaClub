@@ -60,7 +60,7 @@ function update_table(data){
         
 }
 
-
+        // let saleId = document.getElementById("paid_modal_id").value
         let paidModal = document.getElementById("paid_modal")
         let compModalBtn = document.getElementById("comp_modal")
         let canModalBtn = document.getElementById("cancel_modal")
@@ -69,12 +69,22 @@ function update_table(data){
         let modal2 = document.querySelector(".compModal-open")
         let modal3 = document.querySelector(".cancelModal-open")
         let closeBtn = document.querySelector(".close-btn")
+        let cancelBtn = document.querySelector(".cancel")
 
-        paidModal.onclick = function () {
-            modal1.style.display = "block"
-            // ajax call
-            console.log("paid modal clicked",paidModal.value)
+        window.payBill = function (id) {
+            modal1.style.display = "block";
+            $.ajax({
+                method: "GET",
+                url: "/api/get_sale_net_amount/",
+                data: { "id": id },
+                success: function (data) {
+                    // console.log(data);
+                    document.getElementById("pay_bill_modal_balance").value = data.net_amount;
+                    // update_table(data)
+                }
+            });
         }
+
         compModalBtn.onclick = function () {
             modal2.style.display = "block"
         }
@@ -82,6 +92,9 @@ function update_table(data){
             modal3.style.display = "block"
         }
         closeBtn.onclick = function () {
+            modal1.style.display = "none"
+        }
+        cancelBtn.onclick = function () {
             modal1.style.display = "none"
         }
         // window.onclick = function (e) {

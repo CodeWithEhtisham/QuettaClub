@@ -102,8 +102,7 @@ def sales(request):
 def view_sales(request):
     if request.method == "POST":
         try:
-            if request.POST.get("cancel"):
-                return HttpResponseRedirect(reverse('Sales:view_sales'))
+            pass
         except Exception as e:
             pass
     return render(request, "Sales/view_sales.html",
@@ -176,6 +175,11 @@ def SearchbyName(request):
     except Exception as e:
         return Response({"message": "No data found {}".format(e)})
 
+@api_view(['GET'])
+def get_sale_net_amount(request):
+    id = request.GET.get('id')
+    net_amount = Sales.objects.filter(id=id).first().net_amount
+    return Response({"net_amount": net_amount})
 
 sales_templates = [
     path('sales/', sales, name='sales'),
@@ -183,4 +187,5 @@ sales_templates = [
     path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
     path('reports/', reports, name='reports'),
     path('update_sales/', update_sales, name='update_sales'),
+    path('api/get_sale_net_amount/', get_sale_net_amount, name='get_sale_net_amount'),
 ]
