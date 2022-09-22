@@ -75,7 +75,7 @@ function update_table(data){
             modal1.style.display = "block";
             $.ajax({
                 method: "GET",
-                url: "/api/get_sale_net_amount/",
+                url: "/api/pay_bill/",
                 data: { "id": id },
                 success: function (data) {
                     // console.log(data);
@@ -83,6 +83,32 @@ function update_table(data){
                     // update_table(data)
                 }
             });
+
+            $(document).ready(function () {
+                $("form#pay_bill").submit(function (event) {
+                  let formData = {
+                    
+                    rv_no: $("#rv_no").val(),
+                    paid_date: $("#paid_date").val(),
+                    amount: $("#paid_amount").val(),
+                    // balance: $("#pay_bill_modal_balance").val(),
+                    remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+                  };
+                  console.log(formData);
+              
+                  $.ajax({
+                    type: "POST",
+                    url: "/api/pay_bill/",
+                    data: formData,
+                    dataType: "json",
+                    encode: true,
+                  }).done(function (data) {
+                    console.log(data);
+                  });
+              
+                  event.preventDefault();
+                });
+              });
         }
 
         compModalBtn.onclick = function () {

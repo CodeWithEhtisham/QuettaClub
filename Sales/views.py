@@ -2,7 +2,7 @@ from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
 from django.contrib import messages
-from .models import Sales
+from .models import Sales, Bill
 from Customers.models import Customers
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
@@ -175,11 +175,28 @@ def SearchbyName(request):
     except Exception as e:
         return Response({"message": "No data found {}".format(e)})
 
-@api_view(['GET'])
-def get_sale_net_amount(request):
-    id = request.GET.get('id')
-    net_amount = Sales.objects.filter(id=id).first().net_amount
-    return Response({"net_amount": net_amount})
+@api_view(['GET', 'POST'])
+def pay_bill(request):
+    if request.method == "GET":
+        id = request.GET.get('id')
+        print('Get id ',id)
+        net_amount = Sales.objects.filter(id=id).first().net_amount
+        return Response({"net_amount": net_amount})
+    elif request.method == "POST":
+        # id = request.POST.get('id')
+        # print("idd ",id)
+        rv_no = request.POST.get('rv_no')
+        paid_date = request.POST.get('paid_date')
+        amount = request.POST.get('amount')
+        # balance = request.GET.get('balance')
+    
+        remaining_amount = request.POST.get('remaining_amount')
+        print("remaining amount ", remaining_amount)
+        bill_data = Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount, sale_id=Sales.objects.filter(id=request.POST.get('id')).first())
+        print(bill_data)
+        # Sales.objects.filter(id=id).update(net_amount=remaining_amount)
+        # print("sale net amount ", Sales.objects.filter(id=id).first())
+        return Response({"message": "Bill Paid Successfully"})
 
 sales_templates = [
     path('sales/', sales, name='sales'),
@@ -187,5 +204,5 @@ sales_templates = [
     path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
     path('reports/', reports, name='reports'),
     path('update_sales/', update_sales, name='update_sales'),
-    path('api/get_sale_net_amount/', get_sale_net_amount, name='get_sale_net_amount'),
+    path('api/pay_bill/', pay_bill, name='pay_bill'),
 ]

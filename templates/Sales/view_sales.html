@@ -17,6 +17,13 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <script>
+        window.state = {
+            'token': '{{ csrf_token }}',
+            'view_sale_form_url': "{% url 'Sales:view_sales' %}"
+        };
+    </script>
 </head>
 
 <body>
@@ -177,28 +184,28 @@
                 <span class="close-btn">&times;</span>
                 <h1 class="modal-title"><b>Paid Bill Modal</b></h1>
             </div>
-            <form id="updateSale" method="">
+            <form id="pay_bill" method="">
                 {% csrf_token %}
                 <input class="form-control" id="form-id" type="hidden" name="formId"/>
 
                 <div class="modal-content">
                     <label class="form-label">RV No</label>
-                    <input class="form-control" type="text" name="rv_no">
+                    <input class="form-control" type="text" name="rv_no" id="rv_no">
 
                     <label class="form-label">Date</label>
-                    <input class="form-control" type="date" name="paid_date">
+                    <input class="form-control" type="date" name="paid_date" id="paid_date">
 
                     <label class="form-label">Amount</label>
-                    <input class="form-control" type="text" name="paid_amount">
+                    <input class="form-control" type="text" name="paid_amount" id="paid_amount">
 
                     <label class="form-label">Balance</label>
                     <input class="form-control" type="text" id="pay_bill_modal_balance" name="paid_balance">
 
                     <label class="form-label">Remaining</label>
-                    <input class="form-control" type="text" name="remaining_balance">
+                    <input class="form-control" type="text" name="remaining_balance" id="remaing_amount">
 
                     <div class="flex">
-                        <button class="btn" name="bill_paid" value="bill_paid">
+                        <button class="btn" type="submit" name="bill_paid" value="bill_paid" >
                             Save
                         </button>
                         <button class="btn cancel" name="cancel" value="cancel">
@@ -346,7 +353,7 @@
             document.body.removeChild(link);
         }
     </script>
-    <script src="{% static 'js/sales.js' %}"></script>
+    <script src="{% static 'js/sale.js' %}"></script>
 </body>
 
 </html>
