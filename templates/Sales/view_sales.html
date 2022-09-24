@@ -230,7 +230,7 @@
 
                 <div class="modal-content">
                     <label class="form-label">Date</label>
-                    <input class="form-control" id="today-date" type="date" name="">
+                    <input class="form-control" id="today-date" type="date" name="comp_date">
 
                     <label class="form-label">Remarks</label>
                     <input class="form-control" id="comp_remarks" type="text" name="comp_remarks">
@@ -246,7 +246,7 @@
                         <button class="btn" name="comp_bill" type="submit" id="comp_bill">
                             Save
                         </button>
-                        <button class="btn cancel" name="cancel" value="cancel" onclick="reset()">
+                        <button class="btn cancel" name="cancel" value="cancel">
                             Cancel
                         </button>
                     </div>
@@ -351,7 +351,13 @@
             link.click();
             document.body.removeChild(link);
         }
+
+        var today = new Date();
+        document.getElementById("today-date").value = 
+                    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+                    '-' + ('0' + today.getDate()).slice(-2);
     </script>
+    
     <script src="{% static 'js/sale.js' %}"></script>
 </body>
 
