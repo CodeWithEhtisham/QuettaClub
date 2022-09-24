@@ -89,7 +89,7 @@ function update_table(data){
                   let formData = {
                     
                     rv_no: $("#rv_no").val(),
-                    paid_date: $("#paid_date").val(),
+                    paid_date: $("#today-date").val(),
                     amount: $("#paid_amount").val(),
                     // balance: $("#pay_bill_modal_balance").val(),
                     remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
@@ -111,20 +111,123 @@ function update_table(data){
               });
         }
 
-        compModalBtn.onclick = function () {
-            modal2.style.display = "block"
+        // complementary modal window
+        window.compBill = function (id) {
+            modal2.style.display = "block";
+            $.ajax({
+                method: "GET",
+                url: "/api/comp_bill/",
+                data: { "id": id },
+                success: function (data) {
+                    // console.log(data);
+                    document.getElementById("comp_bill_modal_balance").value = data.net_amount;
+                    // update_table(data)
+                }
+            });
+
+            $(document).ready(function () {
+                $("form#comp_bill").submit(function (event) {
+                  let formData = {
+                    
+                    comp_date: $("#today-date").val(),
+                    comp_remarks: $("#comp_remarks").val(),
+                    amount: $("#comp_amount").val(),
+                    balance: $("#comp_bill_modal_balance").val(),
+                    // remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+                  };
+                  console.log(formData);
+              
+                  $.ajax({
+                    type: "POST",
+                    url: "/api/comp_bill/",
+                    data: formData,
+                    dataType: "json",
+                    encode: true,
+                  }).done(function (data) {
+                    console.log(data);
+                  });
+              
+                  event.preventDefault();
+                });
+              });
         }
-        canModalBtn.onclick = function () {
-            modal3.style.display = "block"
+
+        // cancel modal window
+        window.cancelBill = function (id) {
+            modal3.style.display = "block";
+            $.ajax({
+                method: "GET",
+                url: "/api/cancel_bill/",
+                data: { "id": id },
+                success: function (data) {
+                    // console.log(data);
+                    document.getElementById("cancel_bill_modal_balance").value = data.net_amount;
+                    // update_table(data)
+                }
+            });
+
+            $(document).ready(function () {
+                $("form#cancel_bill").submit(function (event) {
+                  let formData = {
+                    
+                    comp_date: $("#today-date").val(),
+                    comp_remarks: $("#comp_remarks").val(),
+                    amount: $("#comp_amount").val(),
+                    balance: $("#comp_bill_modal_balance").val(),
+                    // remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+                  };
+                  console.log(formData);
+              
+                  $.ajax({
+                    type: "POST",
+                    url: "/api/cancel_bill/",
+                    data: formData,
+                    dataType: "json",
+                    encode: true,
+                  }).done(function (data) {
+                    console.log(data);
+                  });
+              
+                  event.preventDefault();
+                });
+              });
         }
+
+        // compModalBtn.onclick = function () {
+        //     modal2.style.display = "block"
+        // }
+        // canModalBtn.onclick = function () {
+        //     modal3.style.display = "block"
+        // }
+        
         closeBtn.onclick = function () {
-            modal1.style.display = "none"
+            if (modal1.style.display = "block") {
+                modal1.style.display = "none"
+            } else if (modal2.style.display = "block") {
+                modal2.style.display = "none"}
+            else if (modal3.style.display = "block") {
+                modal3.style.display = "none"
         }
+    }
         cancelBtn.onclick = function () {
-            modal1.style.display = "none"
+            if (modal1.style.display = "block") {
+                modal1.style.display = "none"
+            } else if (modal2.style.display = "block") {
+                modal2.style.display = "none"}
+            else if (modal3.style.display = "block") {
+                modal3.style.display = "none"
         }
+    }
+        
+        function reset(){  
+            document.getElementById("comp_bill").reset();  
+          } 
         // window.onclick = function (e) {
         //     if (e.target == modal) {
         //         modal1.style.display = "block"
         //     }
         // }
+        var today = new Date();
+        document.getElementById("today-date").value = 
+                    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+                    '-' + ('0' + today.getDate()).slice(-2);

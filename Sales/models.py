@@ -16,11 +16,11 @@ class Sales(models.Model):
 
 
 class Bill(models.Model):
-    rv_no = models.CharField(max_length=50, null=False, blank=False)
-    date = models.DateField(null=False, blank=False)
+    rv_no = models.CharField(max_length=50)
+    date = models.DateField()
     amount = models.PositiveIntegerField()
     bill_remarks = models.CharField(max_length=50, null=True, blank=True)
     reason = models.CharField(max_length=50, null=True, blank=True)
-    sale_id = models.ForeignKey(Sales, on_delete=models.CASCADE, null=True, blank=True)
+    sale_id = models.ForeignKey(Sales, on_delete=models.CASCADE)
 
 

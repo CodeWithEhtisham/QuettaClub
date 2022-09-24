@@ -98,7 +98,7 @@
                         <div class="form-group">
 
                             <label for="" class="form-label">Customer Rank</label>
-                            <select name="customer_rank" id="rank" class="form-control">
+                            <select name="customer_rank" id="rank" class="form-control" required>
                                 <option value="">Select Rank</option>
                                 <option value="Army">Army</option>
                                 <option value="Civilian">Civilian</option>
@@ -108,17 +108,18 @@
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">Customer Name</label>
-                            <input type="text" class="form-control" name="customer_name" placeholder="customer name">
+                            <input type="text" class="form-control" name="customer_name" id="customer_name" required 
+                            placeholder="customer name" onchange="customerCheck(this)">
                             <!-- {{form.customer_rank}} -->
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">Address</label>
-                            <input type="text" class="form-control" name="customer_address" placeholder="customer address">
+                            <input type="text" class="form-control" required name="customer_address" placeholder="customer address">
                             <!-- {{form.customer_rank}} -->
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">Customer ID</label>
-                            <input type="text" class="form-control" name="customer_id" placeholder="customer id">
+                            <input type="text" class="form-control" required name="customer_id" placeholder="customer id">
                             <!-- {{form.customer_id}} -->
                         </div>
                         
@@ -232,7 +233,9 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
+        };
+
+        
     </script>
     <script src="{% static 'js/customer.js' %}"></script>
 </body>

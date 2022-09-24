@@ -39,4 +39,16 @@ function update_table(data){
         all_rows += row;
     });
     $('#Customers_Data tbody').html(all_rows);
+};
+
+function customerCheck(data) {
+    if (customer_name.includes(data.value)) {
+        console.log("Customer Name No Already Exist");
+        document.getElementById("customer_name").style.border = "1px solid red";
+    }
+    else {
+        console.log("customer name No Not Exist");
+        document.getElementById("customer_name").style.border = "1px solid green";
+    }
+
 }

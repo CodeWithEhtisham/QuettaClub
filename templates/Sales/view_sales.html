@@ -147,12 +147,11 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                        <button class="modal" onclick="payBill('{{sale.id}}')">
+                                        <button class="modal" id="paid_modal" onclick="payBill('{{sale.id}}')">
                                             <a href="">Paid</a>
                                         </button>
-                                        <button id="comp_modal" class="modal">Complemantery</button>
-                                        <button id="cancel_modal" class="modal">Cancelled</button>
-                                        <!-- <a href="" class="">Complemantery</a> -->
+                                        <button id="comp_modal" class="modal" onclick="compBill('{{sale.id}}')">Complemantery</button>
+                                        <button id="cancel_modal" class="modal" onclick="cancelBill('{{sale.id}}')">Cancelled</button>
                                     </div>
                                 </td>
                             </tr>
@@ -190,10 +189,10 @@
 
                 <div class="modal-content">
                     <label class="form-label">RV No</label>
-                    <input class="form-control" type="text" name="rv_no" id="rv_no">
+                    <input class="form-control" type="text" name="rv_no" id="rv_no" required>
 
                     <label class="form-label">Date</label>
-                    <input class="form-control" type="date" name="paid_date" id="paid_date">
+                    <input class="form-control" type="date" name="paid_date" id="today-date">
 
                     <label class="form-label">Amount</label>
                     <input class="form-control" type="text" name="paid_amount" id="paid_amount">
@@ -226,28 +225,28 @@
                 <span class="close-btn">&times;</span>
                 <h1 class="modal-title">Complemantery Bill Modal</h1>
             </div>
-            <form action="{% url 'Sales:view_sales' %}" method="post">
+            <form id="comp_bill" method="">
                 {% csrf_token %}
 
                 <div class="modal-content">
                     <label class="form-label">Date</label>
-                    <input class="form-control" type="date" name="comp_date">
+                    <input class="form-control" id="today-date" type="date" name="">
 
                     <label class="form-label">Remarks</label>
-                    <input class="form-control" type="text" name="comp_remarks">
+                    <input class="form-control" id="comp_remarks" type="text" name="comp_remarks">
 
                     <label class="form-label">Amount</label>
-                    <input class="form-control" type="text" name="comp_amount">
+                    <input class="form-control" id="comp_amount" type="text" name="comp_amount">
 
                     <label class="form-label">Balance</label>
-                    <input class="form-control" type="text" name="comp_balance">
+                    <input class="form-control" id="comp_bill_modal_balance" type="text" name="comp_balance">
 
 
                     <div class="flex">
-                        <button class="btn" name="bill_paid" value="bill_paid">
+                        <button class="btn" name="comp_bill" type="submit" id="comp_bill">
                             Save
                         </button>
-                        <button class="btn cancel" name="cancel" value="cancel">
+                        <button class="btn cancel" name="cancel" value="cancel" onclick="reset()">
                             Cancel
                         </button>
                     </div>
@@ -265,19 +264,19 @@
                 <span class="close-btn">&times;</span>
                 <h1 class="modal-title">Cancel Bill Modal</h1>
             </div>
-            <form action="{% url 'Sales:view_sales' %}" method="post">
+            <form id="cancel_bill" method="">
                 {% csrf_token %}
 
                 <div class="modal-content">
 
                     <label class="form-label">Date</label>
-                    <input class="form-control" type="date" name="cancel_date">
+                    <input class="form-control" id="today-date" type="date" name="cancel_date" required>
 
                     <label class="form-label">Reason</label>
-                    <input class="form-control" type="text" name="reason">
+                    <input class="form-control" type="text" name="reason" id="reason" required>
 
                     <div class="flex">
-                        <button class="btn" name="bill_paid" value="bill_paid">
+                        <button class="btn" name="bill_paid" value="bill_paid" type="submit">
                             Save
                         </button>
                         <button class="btn cancel" name="cancel" value="cancel">

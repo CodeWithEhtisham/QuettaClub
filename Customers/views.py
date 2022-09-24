@@ -4,8 +4,8 @@ from django.urls import path, reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 
-from Sales.models import Sales
-# from .forms import CustomersForm
+from Sales.models import Sales, Bill
+from Sales.serializer import SalesSerializer
 from .models import Customers
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
@@ -123,10 +123,36 @@ def SearchCustomer(request):
             return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
         elif field == 'ID':
             return Response(CustomersSerializer(Customers.objects.filter(customer_id__icontains=value).order_by('-id'), many=True).data)
-        # else:
-        #     customers = Customers.objects.all()
+        
     except Exception as e:
         return Response({"message": "No data found {}".format(e)})
+
+@api_view(['GET', 'POST'])
+def pay_bill(request):
+    if request.method == "GET":
+        id = request.GET.get('id')
+        serializer = SalesSerializer(Sales.objects.filter(id=id).first())
+        print('Get id ',id)
+        print('Get serializer ',serializer['id'])
+        net_amount = Sales.objects.filter(id=id).first().net_amount
+        return Response({"net_amount": net_amount})
+        
+    elif request.method == "POST":
+        # id = request.POST.get('id')
+        # print("idd ",id)
+        rv_no = request.POST.get('rv_no')
+        paid_date = request.POST.get('paid_date')
+        amount = request.POST.get('amount')
+        # balance = request.GET.get('balance')
+    
+        remaining_amount = request.POST.get('remaining_amount')
+        print("remaining amount ", remaining_amount)
+        bill_data = Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
+            sale_id=Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first())
+        print(bill_data)
+        # Sales.objects.filter(id=id).update(net_amount=remaining_amount)
+        # print("sale net amount ", Sales.objects.filter(id=id).first())
+        return Response({"message": "Bill Paid Successfully"})
 
 
 index_template = [
@@ -136,4 +162,5 @@ index_template = [
     path('customer_details/', customer_details, name='customer_details'),
     path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('customer_update/', customer_update, name='customer_update'),
+    path('api/pay_bill/', pay_bill, name='pay_bill'),
 ]

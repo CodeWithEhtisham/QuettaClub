@@ -180,6 +180,8 @@ def pay_bill(request):
     if request.method == "GET":
         id = request.GET.get('id')
         print('Get id ',id)
+        # get_id = id
+        # print(get_id)
         net_amount = Sales.objects.filter(id=id).first().net_amount
         return Response({"net_amount": net_amount})
     elif request.method == "POST":
@@ -192,11 +194,35 @@ def pay_bill(request):
     
         remaining_amount = request.POST.get('remaining_amount')
         print("remaining amount ", remaining_amount)
-        bill_data = Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount, sale_id=Sales.objects.filter(id=request.POST.get('id')).first())
+        bill_data = Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
+            sale_id=Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first())
         print(bill_data)
         # Sales.objects.filter(id=id).update(net_amount=remaining_amount)
         # print("sale net amount ", Sales.objects.filter(id=id).first())
         return Response({"message": "Bill Paid Successfully"})
+
+@api_view(['GET', 'POST'])
+def comp_bill(request):
+    if request.method == "GET":
+        sale_id = request.GET.get('id')
+        print('sale id ', sale_id)
+        net_amount = Sales.objects.filter(id=sale_id).first().net_amount
+        print('net amount ', net_amount)
+        return Response({"net amount": net_amount})
+
+    if request.method == "POST":
+        id = request.GET.get('id')
+        print('sale id ', id)
+        amount = request.POST.get('comp_amount')
+        print('comp amount ', comp_amount)
+        date = request.POST.get('comp_date')
+        print('comp date ', comp_date)
+        reason = request.POST.get('comp_reason')
+        print('comp reason ', comp_reason)
+        comp_bill_data = Bill.objects.create(amount=comp_amount, date=comp_date, reason=comp_reason,
+            sale_id=Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first())
+        print(comp_bill_data)
+        return Response({"message": "Complement Bill Added Successfully"})
 
 sales_templates = [
     path('sales/', sales, name='sales'),
@@ -205,4 +231,5 @@ sales_templates = [
     path('reports/', reports, name='reports'),
     path('update_sales/', update_sales, name='update_sales'),
     path('api/pay_bill/', pay_bill, name='pay_bill'),
+    path('api/comp_bill/', comp_bill, name='comp_bill'),
 ]
