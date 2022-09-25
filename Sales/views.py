@@ -220,7 +220,7 @@ def comp_bill(request):
         reason = request.POST.get('comp_reason')
         print('comp reason ', comp_reason)
         comp_bill_data = Bill.objects.create(amount=comp_amount, date=comp_date, reason=comp_reason,
-            sale_id=Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first())
+            sale_id=id)
         print(comp_bill_data)
         return Response({"message": "Complement Bill Added Successfully"})
 
