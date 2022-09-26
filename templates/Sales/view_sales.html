@@ -147,8 +147,7 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                        <button class="modal" id="paid_modal" onclick="payBill('{{sale.id}}')">
-                                            <a href="">Paid</a>
+                                        <button class="modal" id="paid_modal" onclick="payBill('{{sale.id}}')">Paid
                                         </button>
                                         <button id="comp_modal" class="modal" onclick="compBill('{{sale.id}}')">Complemantery</button>
                                         <button id="cancel_modal" class="modal" onclick="cancelBill('{{sale.id}}')">Cancelled</button>
