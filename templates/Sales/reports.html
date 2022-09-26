@@ -55,10 +55,10 @@
 
         <div class="row">
             <div class="card">
-                <div>
+                <div class="">
                     <div class="row">
                         <h2>Customers</h2>
-                        <div class="form-group ml-5 w-50">
+                        <div class="form-group ml-5">
                             <select name="search_field" id="search_field" class="form-control">
                                 <option value="">Search By</option>
                                 <option value="bill_no">Bill No.</option>
@@ -123,12 +123,13 @@
                                 <td>{{ sale.net_amount|default_if_none:"00" }}</td>
                                 <td>{{ sale.remarks|default_if_none:" " }}</td>
                                 <td>
-                                    <div class="list">
+                                    complemantery
+                                    <!-- <div class="list">
                                         <a href="" class="">Edit</a>
                                         <button id="paid_modal" class="modal">Paid</button>
                                         <a href="" class="">Complemantery</a>
                                         <a href="" class="">Cancelled</a>
-                                    </div>
+                                    </div> -->
                                 </td>
                             </tr>
                             {% endfor %}
@@ -139,7 +140,7 @@
         </div>
 
         <!-- modal -->
-        <div class="modal-open">
+        <!-- <div class="modal-open">
             <div class="modal-header">
                 <span class="close-btn">&times;</span>
                 <h1 class="modal-title">I am the Header</h1>
@@ -150,9 +151,9 @@
             <div class="modal-footer">
                 <h2>I am the Footer</h2>
             </div>
-        </div>
+        </div> -->
     </div>
-
+<!-- 
     <script>
         let modalBtn = document.getElementById("paid_modal")
         let modal = document.querySelector(".modal-open")
@@ -168,7 +169,7 @@
                 modal.style.display = "block"
             }
         }
-    </script>
+    </script> -->
     <!-- <script>
         function download_to_excel() {
 
