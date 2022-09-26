@@ -212,7 +212,9 @@ cancelBtn.onclick = function () {
   }
 }
 
-
+function cancelModel(model){
+  model.style.display = "none"
+}
 // window.onclick = function (e) {
 //     if (e.target == modal) {
 //         modal1.style.display = "block"

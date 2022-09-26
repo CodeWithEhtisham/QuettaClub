@@ -183,8 +183,8 @@
                 <span class="close-btn">&times;</span>
                 <h1 class="modal-title"><b>Paid Bill Modal</b></h1>
             </div>
-            <form id="pay_bill" method="">
-                {% csrf_token %}
+            <!-- <form id="pay_bill" method="">
+                {% csrf_token %} -->
                 <input class="form-control" id="form-id" type="hidden" name="formId"/>
 
                 <div class="modal-content">
@@ -207,12 +207,12 @@
                         <button class="btn" type="submit" name="bill_paid" value="bill_paid" >
                             Save
                         </button>
-                        <button class="btn cancel" name="cancel" value="cancel">
+                        <button class="btn cancel" onclick="cancelModel(document.getElementById('paid_modal'))">
                             Cancel
                         </button>
                     </div>
                 </div>
-            </form>
+            <!-- </form> -->
             <div class="modal-footer">
                 <h2>I am the Footer</h2>
             </div>
