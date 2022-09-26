@@ -41,7 +41,6 @@ def long_process(df):
     except Exception as e:
         print(e)
         return False
-        
 
 def sales(request):
     if request.method == 'POST':

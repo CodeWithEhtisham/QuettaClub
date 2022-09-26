@@ -147,10 +147,10 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                        <button class="modal" id="paid_modal" onclick="payBill('{{sale.id}}')">Paid
+                                        <button class="modal" id="paid_modal" onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')">Paid
                                         </button>
-                                        <button id="comp_modal" class="modal" onclick="compBill('{{sale.id}}')">Complemantery</button>
-                                        <button id="cancel_modal" class="modal" onclick="cancelBill('{{sale.id}}')">Cancelled</button>
+                                        <button id="comp_modal" class="modal" onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
+                                        <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}')">Cancelled</button>
                                     </div>
                                 </td>
                             </tr>
@@ -179,12 +179,12 @@
 
             <div class="modal-header">
                 
-                <span class="close-btn">&times;</span>
+                <span class="close-btn" onclick="closeModal('.paidModal-open')">&times;</span>
                 <h1 class="modal-title"><b>Paid Bill Modal</b></h1>
             </div>
             <!-- <form id="pay_bill" method="">
                 {% csrf_token %} -->
-                <input class="form-control" id="form-id" type="hidden" name="formId"/>
+                <input class="form-control" id="paid-form-id" type="hidden" name="formId"/>
 
                 <div class="modal-content">
                     <label class="form-label">RV No</label>
@@ -203,10 +203,10 @@
                     <input class="form-control" type="text" name="remaining_balance" id="remaing_amount">
 
                     <div class="flex">
-                        <button class="btn" type="submit" name="bill_paid" value="bill_paid" >
+                        <button class="btn" type="submit" name="bill_paid" value="bill_paid" onclick="paidModalSubmit()" >
                             Save
                         </button>
-                        <button class="btn cancel" onclick="cancelModel(document.getElementById('paid_modal'))">
+                        <button class="btn cancel" onclick="closeModal('.paidModal-open')">
                             Cancel
                         </button>
                     </div>
@@ -218,16 +218,17 @@
         </div>
 
         <!-- complemantery modal -->
-        <div class="compModal-open">
+        <div class="compModal-open" >
 
             <div class="modal-header">
-                <span class="close-btn">&times;</span>
+                <span class="close-btn" onclick="closeModal('.compModal-open')">&times;</span>
                 <h1 class="modal-title">Complemantery Bill Modal</h1>
             </div>
-            <form id="comp_bill" method="">
-                {% csrf_token %}
+            <!-- <form id="comp_bill" method="">
+                {% csrf_token %} -->
 
                 <div class="modal-content">
+                    <input type="hidden" id="comp-form-id">
                     <label class="form-label">Date</label>
                     <input class="form-control" id="today-date" type="date" name="comp_date">
 
@@ -242,32 +243,32 @@
 
 
                     <div class="flex">
-                        <button class="btn" name="comp_bill" type="submit" id="comp_bill">
+                        <button class="btn" name="comp_bill" type="submit" id="comp_bill" onclick="compModalSubmit()">
                             Save
                         </button>
-                        <button class="btn cancel" name="cancel" value="cancel">
+                        <button class="btn cancel" onclick="closeModal('.compModal-open')">
                             Cancel
                         </button>
                     </div>
                 </div>
-            </form>
+            <!-- </form> -->
             <div class="modal-footer">
                 <h2>I am the Footer</h2>
             </div>
         </div>
 
         <!-- cancelled modal  -->
-        <div class="cancelModal-open">
+        <div class="cancelModal-open" >
 
             <div class="modal-header">
-                <span class="close-btn">&times;</span>
+                <span class="close-btn" onclick="closeModal('.cancelModal-open')">&times;</span>
                 <h1 class="modal-title">Cancel Bill Modal</h1>
             </div>
-            <form id="cancel_bill" method="">
-                {% csrf_token %}
+            <!-- <form id="cancel_bill" method="">
+                {% csrf_token %} -->
 
                 <div class="modal-content">
-
+                    <input type="hidden" id="cancel-form-id">
                     <label class="form-label">Date</label>
                     <input class="form-control" id="today-date" type="date" name="cancel_date" required>
 
@@ -275,15 +276,15 @@
                     <input class="form-control" type="text" name="reason" id="reason" required>
 
                     <div class="flex">
-                        <button class="btn" name="bill_paid" value="bill_paid" type="submit">
+                        <button class="btn" name="bill_paid" value="bill_paid" type="submit" onclick="cancelModalSubmit()">
                             Save
                         </button>
-                        <button class="btn cancel" name="cancel" value="cancel">
+                        <button class="btn cancel" onclick="closeModal('.cancelModal-open')">
                             Cancel
                         </button>
                     </div>
                 </div>
-            </form>
+            <!-- </form> -->
             <div class="modal-footer">
                 <h2>I am the Footer</h2>
             </div>
