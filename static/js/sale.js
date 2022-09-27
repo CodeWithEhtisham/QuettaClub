@@ -39,8 +39,8 @@ function update_table(data) {
         // '<td>'+elem['customer_id']+'</td>' +
         '<td>' + elem['address'] + '</td>' +
         '<td>' + elem['account_of'] + '</td>' +
-        '<td>' + elem['date'] + '</td>';
-      '<td>' + elem['amount'] + '</td>' +
+        '<td>' + elem['date'] + '</td>'+
+      '<td>' + elem['amount'] + '</td>'+
         '<td>' + elem['discount'] + '</td>' +
         '<td>' + elem['net_amount'] + '</td>' +
         '<td>' + elem['remarks'] + '</td>' +
@@ -105,10 +105,11 @@ function compModalSubmit() {
     url: "/api/sales/comp_bill/",
     data: {
       "id": $("#comp-form-id").val(),
-      'comp_date': $("#today-date").val(),
+      'comp_date': $("#comp-today-date").val(),
       'comp_remarks': $("#comp_remarks").val(),
-      'amount': $("#comp_amount").val(),
-      'balance': $("#comp_bill_modal_balance").val(),
+      'comp_amount': $("#comp_amount").val(),
+      // 'balance': $("#comp_bill_modal_balance").val(),
+      "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
     },
     dataType: "json",
   })
@@ -130,11 +131,13 @@ function cancelModalSubmit() {
     url: "/api/sales/cancel_bill/",
     data: {
       'id': $("#cancel-form-id").val(),
-      'cancel_date': $("#today-date").val(),
+      'cancel_date': $("#cancel-today-date").val(),
       'reason': $("#reason").val()
     },
     dataType: "json",
   })
+  cancelModal.style.display = "none";
+  window.location.reload();
 }
 
 
@@ -143,8 +146,17 @@ function closeModal(model){
   document.querySelector(model).style.display = "none";
 }
 
-
-var today = new Date();
+let today = new Date();
 document.getElementById("today-date").value =
   today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
   '-' + ('0' + today.getDate()).slice(-2);
+
+let compToday = new Date();
+document.getElementById("comp-today-date").value =
+compToday.getFullYear() + '-' + ('0' + (compToday.getMonth() + 1)).slice(-2) +
+    '-' + ('0' + compToday.getDate()).slice(-2);
+
+let cancelToday = new Date();
+document.getElementById("cancel-today-date").value =
+cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
+        '-' + ('0' + cancelToday.getDate()).slice(-2);

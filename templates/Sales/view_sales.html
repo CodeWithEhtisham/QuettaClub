@@ -147,8 +147,7 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                        <button class="modal" id="paid_modal" onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')">Paid
-                                        </button>
+                                        <button class="modal" id="paid_modal" onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')">Paid</button>
                                         <button id="comp_modal" class="modal" onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
                                         <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}')">Cancelled</button>
                                     </div>
@@ -230,7 +229,7 @@
                 <div class="modal-content">
                     <input type="hidden" id="comp-form-id">
                     <label class="form-label">Date</label>
-                    <input class="form-control" id="today-date" type="date" name="comp_date">
+                    <input class="form-control" type="date" name="comp_date" id="comp-today-date">
 
                     <label class="form-label">Remarks</label>
                     <input class="form-control" id="comp_remarks" type="text" name="comp_remarks">
@@ -270,7 +269,7 @@
                 <div class="modal-content">
                     <input type="hidden" id="cancel-form-id">
                     <label class="form-label">Date</label>
-                    <input class="form-control" id="today-date" type="date" name="cancel_date" required>
+                    <input class="form-control" id="cancel-today-date" type="date" name="cancel_date" required>
 
                     <label class="form-label">Reason</label>
                     <input class="form-control" type="text" name="reason" id="reason" required>
@@ -352,10 +351,10 @@
             document.body.removeChild(link);
         }
 
-        var today = new Date();
-        document.getElementById("today-date").value = 
-                    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
-                    '-' + ('0' + today.getDate()).slice(-2);
+        // let today = new Date();
+        // document.getElementById("today-date").value = 
+        //             today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+        //             '-' + ('0' + today.getDate()).slice(-2);
     </script>
     
     <script src="{% static 'js/sale.js' %}"></script>
