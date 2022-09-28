@@ -176,16 +176,15 @@ def SearchbyName(request):
         return Response({"message": "No data found {}".format(e)})
 
 @api_view(['GET', 'POST'])
-def pay_bill(request):
+def sales_pay_bill(request):
     if request.method == "GET":
         id = request.GET.get('id')
-        print('Get id ',id)
-        # get_id = id
-        # print(get_id)
         net_amount = Sales.objects.filter(id=id).first().net_amount
         return Response({"net_amount": net_amount})
+
     elif request.method == "POST":
-        # id = request.POST.get('id')
+        # print("post id ",request.POST.get('id'))
+        id = request.POST.get('id')
         # print("idd ",id)
         rv_no = request.POST.get('rv_no')
         paid_date = request.POST.get('paid_date')
@@ -195,34 +194,53 @@ def pay_bill(request):
         remaining_amount = request.POST.get('remaining_amount')
         print("remaining amount ", remaining_amount)
         bill_data = Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
-            sale_id=Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first())
+            sale_id=Sales.objects.get(id=id))
         print(bill_data)
-        # Sales.objects.filter(id=id).update(net_amount=remaining_amount)
-        # print("sale net amount ", Sales.objects.filter(id=id).first())
+        Sales.objects.filter(id=id).update(net_amount=remaining_amount)
+        print("sale net amount ", Sales.objects.filter(id=id).first())
         return Response({"message": "Bill Paid Successfully"})
 
 @api_view(['GET', 'POST'])
-def comp_bill(request):
+def sales_comp_bill(request):
     if request.method == "GET":
-        sale_id = request.GET.get('id')
-        print('sale id ', sale_id)
-        net_amount = Sales.objects.filter(id=sale_id).first().net_amount
+        id = request.GET.get('id')
+        print('sale id ', id)
+        net_amount = Sales.objects.filter(id=id).first().net_amount
         print('net amount ', net_amount)
         return Response({"net amount": net_amount})
 
-    if request.method == "POST":
-        id = request.GET.get('id')
+    elif request.method == "POST":
+        id = request.POST.get('id')
         print('sale id ', id)
-        amount = request.POST.get('comp_amount')
-        print('comp amount ', comp_amount)
         date = request.POST.get('comp_date')
-        print('comp date ', comp_date)
-        reason = request.POST.get('comp_reason')
-        print('comp reason ', comp_reason)
-        comp_bill_data = Bill.objects.create(amount=comp_amount, date=comp_date, reason=comp_reason,
-            sale_id=id)
+        print('comp date ', date)
+        amount = request.POST.get('comp_amount')
+        print('comp amount ', amount)
+        remarks = request.POST.get('comp_remarks')
+        print('comp reason ', remarks)
+        comp_bill_data = Bill.objects.create(amount=amount, date=date, bill_remarks=remarks,
+            sale_id=Sales.objects.get(id=id))
         print(comp_bill_data)
         return Response({"message": "Complement Bill Added Successfully"})
+
+@api_view(['GET', 'POST'])
+def sales_cancel_bill(request):
+    if request.method == "GET":
+        id = request.GET.get('id')
+        print('sale id ', id)
+        return HttpResponse({"id ": id})
+
+    elif request.method == "POST":
+        id = request.POST.get('id')
+        print('sale id ', id)
+        date = request.POST.get('cancel_date')
+        print('cancel date ', date)
+        reason = request.POST.get('reason')
+        print('cancel reason ', reason)
+        cancel_bill_data = Bill.objects.create(date=date, reason=reason,
+            sale_id=Sales.objects.get(id=id))
+        print(cancel_bill_data)
+        return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
 sales_templates = [
     path('sales/', sales, name='sales'),
@@ -230,6 +248,7 @@ sales_templates = [
     path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
     path('reports/', reports, name='reports'),
     path('update_sales/', update_sales, name='update_sales'),
-    path('api/pay_bill/', pay_bill, name='pay_bill'),
-    path('api/comp_bill/', comp_bill, name='comp_bill'),
+    path('api/sales/pay_bill/', sales_pay_bill, name='sales_pay_bill'),
+    path('api/sales/comp_bill/', sales_comp_bill, name='sales_comp_bill'),
+    path('api/sales/cancel_bill/', sales_cancel_bill, name='sales_cancel_bill'),
 ]
