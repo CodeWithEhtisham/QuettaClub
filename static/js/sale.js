@@ -39,8 +39,8 @@ function update_table(data) {
         // '<td>'+elem['customer_id']+'</td>' +
         '<td>' + elem['address'] + '</td>' +
         '<td>' + elem['account_of'] + '</td>' +
-        '<td>' + elem['date'] + '</td>';
-      '<td>' + elem['amount'] + '</td>' +
+        '<td>' + elem['date'] + '</td>'+
+      '<td>' + elem['amount'] + '</td>'+
         '<td>' + elem['discount'] + '</td>' +
         '<td>' + elem['net_amount'] + '</td>' +
         '<td>' + elem['remarks'] + '</td>' +
@@ -60,165 +60,103 @@ function update_table(data) {
 
 }
 
-// let saleId = document.getElementById("paid_modal_id").value
-let paidModal = document.getElementById("paid_modal")
-let compModalBtn = document.getElementById("comp_modal")
-let canModalBtn = document.getElementById("cancel_modal")
 
-let modal1 = document.querySelector(".paidModal-open")
-let modal2 = document.querySelector(".compModal-open")
-let modal3 = document.querySelector(".cancelModal-open")
-let closeBtn = document.querySelector(".close-btn")
-let cancelBtn = document.querySelector(".cancel")
+let paidModal = document.querySelector(".paidModal-open")
+let compModal = document.querySelector(".compModal-open")
+let cancelModal = document.querySelector(".cancelModal-open")
 
-window.payBill = function (id) {
-  modal1.style.display = "block";
+// paid model load on click
+function paidMOdalOpen(id,value){
+  paidModal.style.display = "block";
+  document.getElementById("paid-form-id").value = id;
+  document.getElementById("pay_bill_modal_balance").value = value;
+}
+
+// paid Modal submit
+function paidModalSubmit() {
   $.ajax({
-    method: "GET",
+    method: 'POST',
     url: "/api/sales/pay_bill/",
-    data: { "id": id },
-    success: function (data) {
-      // console.log(data);
-      document.getElementById("pay_bill_modal_balance").value = data.net_amount;
-      // update_table(data)
-    }
-  });
-
-  $(document).ready(function () {
-    $("form#pay_bill").submit(function (event) {
-      let formData = {
-        "id": id,
-        "rv_no": $("#rv_no").val(),
-        "paid_date": $("#today-date").val(),
-        "amount": $("#paid_amount").val(),
-        // balance: $("#pay_bill_modal_balance").val(),
-        "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
-      };
-      console.log(JSON.stringify(formData));
-
-      $.ajax({
-        method: 'POST',
-        url: "/api/sales/pay_bill/",
-        dataType: "json",
-        data: formData,
-      }).done(function (data) {
-        console.log(data);
-      });
-
-      // event.preventDefault();
-    });
-  });
+    data: {
+      "id": $("#paid-form-id").val(),
+      "rv_no": $("#rv_no").val(),
+      "paid_date": $("#today-date").val(),
+      "amount": $("#paid_amount").val(),
+      "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+    },
+    dataType: "json",
+  })
+  paidModal.style.display = "none";
+  window.location.reload();
 }
 
-// complementary modal window
-window.compBill = function (id) {
-  modal2.style.display = "block";
+
+// open complementory modal window
+function compModalOpen(id, value) {
+  compModal.style.display = "block";
+  document.getElementById("comp-form-id").value = id;
+  document.getElementById("comp_bill_modal_balance").value = value;
+}
+
+// complementory modal submit button
+function compModalSubmit() {
   $.ajax({
-    method: "GET",
+    method: "POST",
     url: "/api/sales/comp_bill/",
-    data: { "id": id },
-    success: function (data) {
-      // console.log(data);
-      document.getElementById("comp_bill_modal_balance").value = data.net_amount;
-      // update_table(data)
-    }
-  });
-
-  $(document).ready(function () {
-    $("form#comp_bill").submit(function (event) {
-      let formData = {
-
-        'comp_date': $("#today-date").val(),
-        'comp_remarks': $("#comp_remarks").val(),
-        'amount': $("#comp_amount").val(),
-        'balance': $("#comp_bill_modal_balance").val(),
-        // remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
-      };
-      console.log(formData);
-
-      $.ajax({
-        method: "POST",
-        url: "/api/sales/comp_bill/",
-        data: formData,
-        dataType: "json",
-      }).done(function (data) {
-        console.log(data);
-      });
-
-      event.preventDefault();
-    });
-  });
+    data: {
+      "id": $("#comp-form-id").val(),
+      'comp_date': $("#comp-today-date").val(),
+      'comp_remarks': $("#comp_remarks").val(),
+      'comp_amount': $("#comp_amount").val(),
+      // 'balance': $("#comp_bill_modal_balance").val(),
+      "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
+    },
+    dataType: "json",
+  })
+  compModal.style.display = "none";
+  window.location.reload();
 }
 
-// cancel modal window
-window.cancelBill = function (id) {
-  modal3.style.display = "block";
+
+// open cancel modal window
+function cancelModalOpen(id) {
+  cancelModal.style.display = "block";
+  document.getElementById("cancel-form-id").value = id;
+}
+
+// cancel modal submit button
+function cancelModalSubmit() {
   $.ajax({
-    method: "GET",
+    method: "POST",
     url: "/api/sales/cancel_bill/",
-    data: { "id": id },
-    success: function (data) {
-      console.log(data);
-      // document.getElementById("cancel_bill_modal_balance").value = data.net_amount;
-      // update_table(data)
-    }
-  });
-
-  $(document).ready(function () {
-    $("form#cancel_bill").submit(function (event) {
-      let formData = {
-
-        'cancel_date': $("#today-date").val(),
-        'reason': $("#reason").val()
-      };
-      console.log(formData);
-
-      $.ajax({
-        method: "POST",
-        url: "/api/sales/cancel_bill/",
-        data: formData,
-        dataType: "json",
-      }).done(function (data) {
-        console.log(data);
-      });
-
-      event.preventDefault();
-    });
-  });
-}
-
-closeBtn.onclick = function () {
-  if (modal1.style.display = "block") {
-    modal1.style.display = "none"
-  }
-  if (modal2.style.display = "block") {
-    modal2.style.display = "none"
-  }
-  if (modal3.style.display = "block") {
-    modal3.style.display = "none"
-  }
-}
-cancelBtn.onclick = function () {
-  if (modal1.style.display = "block") {
-    console.log("modal1")
-    modal1.style.display = "none"
-  } if (modal2.style.display = "block") {
-    console.log("modal2")
-    modal2.style.display = "none"
-  }
-  if (modal3.style.display = "block") {
-    console.log("modal3")
-    modal3.style.display = "none"
-  }
+    data: {
+      'id': $("#cancel-form-id").val(),
+      'cancel_date': $("#cancel-today-date").val(),
+      'reason': $("#reason").val()
+    },
+    dataType: "json",
+  })
+  cancelModal.style.display = "none";
+  window.location.reload();
 }
 
 
-// window.onclick = function (e) {
-//     if (e.target == modal) {
-//         modal1.style.display = "block"
-//     }
-// }
-var today = new Date();
+function closeModal(model){
+  console.log(model)
+  document.querySelector(model).style.display = "none";
+}
+
+let today = new Date();
 document.getElementById("today-date").value =
   today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
   '-' + ('0' + today.getDate()).slice(-2);
+
+let compToday = new Date();
+document.getElementById("comp-today-date").value =
+compToday.getFullYear() + '-' + ('0' + (compToday.getMonth() + 1)).slice(-2) +
+    '-' + ('0' + compToday.getDate()).slice(-2);
+
+let cancelToday = new Date();
+document.getElementById("cancel-today-date").value =
+cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
+        '-' + ('0' + cancelToday.getDate()).slice(-2);

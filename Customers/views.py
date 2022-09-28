@@ -1,7 +1,7 @@
 from multiprocessing.sharedctypes import Value
 from django.shortcuts import render, redirect
 from django.urls import path, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 
 from Sales.models import Sales, Bill
@@ -129,31 +129,51 @@ def SearchCustomer(request):
 
 @api_view(['GET', 'POST'])
 def pay_bill(request):
-    if request.method == "GET":
-        id = request.GET.get('id')
-        serializer = SalesSerializer(Sales.objects.filter(id=id).first())
-        print('Get id ',id)
-        print('Get serializer ',serializer['id'])
-        net_amount = Sales.objects.filter(id=id).first().net_amount
-        return Response({"net_amount": net_amount})
         
-    elif request.method == "POST":
-        # id = request.POST.get('id')
-        # print("idd ",id)
+    if request.method == "POST":
+        id = request.POST.get('id')
+        print(id)
         rv_no = request.POST.get('rv_no')
         paid_date = request.POST.get('paid_date')
         amount = request.POST.get('amount')
-        # balance = request.GET.get('balance')
-    
         remaining_amount = request.POST.get('remaining_amount')
         print("remaining amount ", remaining_amount)
-        bill_data = Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
-            sale_id=Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first())
-        print(bill_data)
-        # Sales.objects.filter(id=id).update(net_amount=remaining_amount)
-        # print("sale net amount ", Sales.objects.filter(id=id).first())
+
+        Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount, 
+            status = "Paid", sale_id=Sales.objects.get(id=id))
+
+        Sales.objects.filter(id=id).update(net_amount=remaining_amount)
+
+        print("sale net amount ", Sales.objects.filter(id=id).first())
         return Response({"message": "Bill Paid Successfully"})
 
+@api_view(['GET', 'POST'])
+def comp_bill(request):
+    if request.method == "POST":
+        id = request.POST.get('id')
+        date = request.POST.get('comp_date')
+        amount = request.POST.get('comp_amount')
+        remarks = request.POST.get('comp_remarks')
+        remaining_amount = request.POST.get('remaining_amount')
+
+        Bill.objects.create(amount=amount, date=date, bill_remarks=remarks, 
+            status="Complementery", sale_id=Sales.objects.get(id=id))
+
+        Sales.objects.filter(id=id).update(net_amount=remaining_amount)
+        return Response({"message": "Complement Bill Added Successfully"})
+
+
+@api_view(['GET', 'POST'])
+def cancel_bill(request):
+
+    if request.method == "POST":
+        id = request.POST.get('id')
+        date = request.POST.get('cancel_date')
+        reason = request.POST.get('reason')
+
+        Bill.objects.create(date=date, reason=reason,
+           status='Cancel', sale_id=Sales.objects.get(id=id))
+        return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
 index_template = [
     path('', index, name='index'),
@@ -162,5 +182,7 @@ index_template = [
     path('customer_details/', customer_details, name='customer_details'),
     path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('customer_update/', customer_update, name='customer_update'),
-    path('api/pay_bill/', pay_bill, name='pay_bill'),
+    path('api/customer/pay_bill/', pay_bill, name='pay_bill'),
+    path('api/customer/comp_bill/', comp_bill, name='comp_bill'),
+    path('api/customer/cancel_bill/', cancel_bill, name='cancel_bill'),
 ]

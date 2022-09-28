@@ -1,11 +1,13 @@
+from enum import auto
 from django.db import models
 from Customers.models import Customers
 
 class Sales(models.Model):
-    bill_no = models.CharField(max_length=50, null=False, blank=False)
+
+    bill_no = models.CharField(max_length=50)
     PoS_no = models.CharField(max_length=50, null=False, blank=False)
     month = models.CharField(max_length=50, null=False, blank=False)
-    date = models.CharField(max_length=255,null=False, blank=False)
+    created_date = models.DateField(auto_now=True)
     address = models.CharField(max_length=50, null=False, blank=False)
     account_of = models.CharField(max_length=50, null=False, blank=False)
     amount = models.PositiveIntegerField()
@@ -22,9 +24,9 @@ class Bill(models.Model):
         ('cancel', 'Cancel')
     )
     status = models.CharField(max_length=50, choices=STATUS, null=True, blank=True)
-    rv_no = models.CharField(max_length=50) # only paid modal will have this field
+    rv_no = models.CharField(max_length=50, null=True) # only paid modal will have this field
     date = models.DateField() # all modal will have this field
-    amount = models.PositiveIntegerField() # paid and complete modal will have this field
+    amount = models.PositiveIntegerField(default=0) # paid and complete modal will have this field
     bill_remarks = models.CharField(max_length=50, null=True, blank=True) # only complete modal will have this field
     reason = models.CharField(max_length=50, null=True, blank=True) # only cancel modal will have this field
     sale_id = models.ForeignKey(Sales, on_delete=models.CASCADE)

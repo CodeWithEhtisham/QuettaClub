@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -164,7 +165,72 @@
                     </div>
                 </form>
             </div>
+
+            <!--  -->
+            <div class="card">
+                <div>
+                        <h2>Final Sale</h2>
+                    <table class="table" id="Sales_data">
+                        <thead class="table-header">
+                            
+                            <tr>
+                                <th>Bill No</th>
+                                <th>Month</th>
+                                <th>Rank</th>
+                                <th>POS NO</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>On Account Of</th>
+                                <th>Dated</th>
+                                <th>Amount</th>
+                                <th>Discount</th>
+                                <th>Net Amount</th>
+                                <th>Remarks</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for sale in sales %}
+                            <tr>
+                                <td>{{ sale.bill_no|default:"00" }}</td>
+                                <td>{{ sale.month|default_if_none:"--" }}</td>
+                                <td>{{sale.customer_id.customer_rank}}</td>
+                                <td>{{ sale.PoS_no|default:"00" }}</td>
+                                <td>{{sale.customer_id.customer_name}}</td>
+                                <td>{{ sale.address|default_if_none:"--" }}</td>
+                                <td>{{ sale.account_of|default_if_none:"--" }}</td>
+                                <td>{{ sale.date|default_if_none:"--" }}</td>
+                                <td>{{ sale.amount|intcomma|default_if_none:"00" }}</td>
+                                <td>{{ sale.discount|intcomma|default_if_none:"00" }}</td>
+                                <td>{{ sale.net_amount|intcomma|default_if_none:"00" }}</td>
+                                <td>{{ sale.remarks|default_if_none:" " }}</td>
+                                <td>
+                                    <div class="list">
+                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
+                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+
+                    </table>
+                </div>
+
+                <hr>
+                    <div class="flex">
+                        <button class="btn" name="Save" value="Save">
+                            Upload
+                        </button>
+                        <button class="btn cancel">
+                            Delete
+                        </button>
+                    </div>
+            </div>
         </div>
+
 
     </div>
     <script>

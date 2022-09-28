@@ -10,6 +10,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import SalesSerializer
 from django.db.models import Sum
+from django.utils import timezone
+from datetime import timedelta
+from django.db import models
 
 def long_process(df):
     try:
@@ -41,7 +44,6 @@ def long_process(df):
     except Exception as e:
         print(e)
         return False
-        
 
 def sales(request):
     if request.method == 'POST':
@@ -51,21 +53,25 @@ def sales(request):
                 
                 customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),customer_rank=request.POST.get('customer_rank')).first()
                 # print(customer)
-                Sales(bill_no=request.POST.get('bill_no'),
-                      PoS_no=request.POST.get('PoS_no'),
-                      month=request.POST.get('month'),
-                      date=request.POST.get('date'),
-                      address=request.POST.get('address'),
-                      account_of=request.POST.get('account_of'),
-                      amount=request.POST.get('amount'),
-                      discount=request.POST.get('discount'),
-                      net_amount=request.POST.get('net_amount'),
-                      remarks=request.POST.get('remarks'),
-                      customer_id=customer
-                      ).save()
+                sale_data = Sales(bill_no=request.POST.get('bill_no'),
+                                PoS_no=request.POST.get('PoS_no'),
+                                month=request.POST.get('month'),
+                                created_date=request.POST.get('date'),
+                                address=request.POST.get('address'),
+                                account_of=request.POST.get('account_of'),
+                                amount=request.POST.get('amount'),
+                                discount=request.POST.get('discount'),
+                                net_amount=request.POST.get('net_amount'),
+                                remarks=request.POST.get('remarks'),
+                                customer_id=customer
+                                ).save(commit=False)
 
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
+            
+            if request.POST.get('Update'):
+                sale_data.save()
+
             elif request.POST.get('sale_file_submit'):
                 # print("customer_file_submit")
                 csv= request.FILES['sale_file']
@@ -96,8 +102,14 @@ def sales(request):
                 messages.error(request, 'Sales Added Failed',e)
                 return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)
 
-    else:            
-        return render(request, "Sales/sales.html", {'customers': Customers.objects.all(),'sales': Sales.objects.all()})
+    else:
+        now = timezone.now()
+        # today_sale = Sales.objects.aggregate(today=models.Count('id', filter=models.Q(created_date__date=now.date())))            
+        return render(request, "Sales/sales.html", {
+            'customers': Customers.objects.all(),
+            'sales': Sales.objects.all(),
+            # 'today_sale': today_sale,
+            })
 
 def view_sales(request):
     if request.method == "POST":
@@ -133,6 +145,8 @@ def update_sales(request):
                     net_amount=request.POST.get('net_amount'),
                     remarks=request.POST.get('remarks'))
                 
+                return HttpResponseRedirect(reverse("Sales:view_sales"))
+            if request.POST.get('cancel'):
                 return HttpResponseRedirect(reverse("Sales:view_sales"))
         except Exception as e:
             messages.error(request, f'Sales Update Failed {e}')
@@ -175,53 +189,51 @@ def SearchbyName(request):
     except Exception as e:
         return Response({"message": "No data found {}".format(e)})
 
+
 @api_view(['GET', 'POST'])
 def sales_pay_bill(request):
-    if request.method == "GET":
-        id = request.GET.get('id')
-        net_amount = Sales.objects.filter(id=id).first().net_amount
-        return Response({"net_amount": net_amount})
-
-    elif request.method == "POST":
-        # print("post id ",request.POST.get('id'))
+    if request.method == "POST":
         id = request.POST.get('id')
-        # print("idd ",id)
         rv_no = request.POST.get('rv_no')
         paid_date = request.POST.get('paid_date')
         amount = request.POST.get('amount')
-        # balance = request.GET.get('balance')
-    
         remaining_amount = request.POST.get('remaining_amount')
         print("remaining amount ", remaining_amount)
-        bill_data = Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
-            sale_id=Sales.objects.get(id=id))
-        print(bill_data)
+
+        Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount, 
+            status = "Paid", sale_id=Sales.objects.get(id=id))
+
         Sales.objects.filter(id=id).update(net_amount=remaining_amount)
+
         print("sale net amount ", Sales.objects.filter(id=id).first())
         return Response({"message": "Bill Paid Successfully"})
 
 @api_view(['GET', 'POST'])
 def sales_comp_bill(request):
-    if request.method == "GET":
-        id = request.GET.get('id')
-        print('sale id ', id)
-        net_amount = Sales.objects.filter(id=id).first().net_amount
-        print('net amount ', net_amount)
-        return Response({"net amount": net_amount})
-
-    elif request.method == "POST":
+    if request.method == "POST":
         id = request.POST.get('id')
-        print('sale id ', id)
         date = request.POST.get('comp_date')
-        print('comp date ', date)
         amount = request.POST.get('comp_amount')
-        print('comp amount ', amount)
         remarks = request.POST.get('comp_remarks')
-        print('comp reason ', remarks)
-        comp_bill_data = Bill.objects.create(amount=amount, date=date, bill_remarks=remarks,
-            sale_id=Sales.objects.get(id=id))
-        print(comp_bill_data)
+        remaining_amount = request.POST.get('remaining_amount')
+
+        Bill.objects.create(amount=amount, date=date, bill_remarks=remarks, 
+            status="Complementery", sale_id=Sales.objects.get(id=id))
+
+        Sales.objects.filter(id=id).update(net_amount=remaining_amount)
         return Response({"message": "Complement Bill Added Successfully"})
+
+@api_view(['GET', 'POST'])
+def sales_cancel_bill(request):
+
+    if request.method == "POST":
+        id = request.POST.get('id')
+        date = request.POST.get('cancel_date')
+        reason = request.POST.get('reason')
+
+        Bill.objects.create(date=date, reason=reason,
+           status='Cancel', sale_id=Sales.objects.get(id=id))
+        return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
 @api_view(['GET', 'POST'])
 def sales_cancel_bill(request):
