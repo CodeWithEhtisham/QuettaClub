@@ -12,6 +12,7 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import CustomersSerializer
+from django.utils import timezone
 
 
 def long_process(df):
@@ -42,12 +43,18 @@ def customers(request):
     if request.method == 'POST':
         try:
             if request.POST.get('Save'):
-                Customers(customer_name=request.POST.get('customer_name'),
+                for address in Customers.objects.all():
+                    if address.customer_address == request.POST.get('customer_address') and address.customer_rank == request.POST.get('customer_rank'):
+                        messages.error(request, 'Customer is Already Exists')
+                        return redirect('Customers:customers')
+                else:
+                    Customers(customer_name=request.POST.get('customer_name'),
                           customer_rank=request.POST.get('customer_rank'),
                           customer_id=request.POST.get('customer_id'),
                             customer_address=request.POST.get('customer_address'),
                           customer_file=request.FILES.get('customer_file')).save()
-                return HttpResponseRedirect(reverse('Customers:customers'))
+                    messages.success(request, 'Customer Added Successfully')
+                    return HttpResponseRedirect(reverse('Customers:customers'))
             elif request.POST.get('customer_file_submit'):
                 # print("customer_file_submit")
                 csv= request.FILES['customer_file']
@@ -110,6 +117,33 @@ def customer_details(request):
     print( Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id"))
     return render(request, "Customers/customer_details.html", {'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")})
 
+
+def customer_bill(request):
+    if request.method == 'POST':
+        if request.POST.get('save_bill'):
+            customer=Customers.objects.filter(
+                customer_name=request.POST.get('customer_name'),
+                customer_rank=request.POST.get('customer_rank')).first()
+
+            sale_data = Sales(bill_no=request.POST.get('bill_no'),
+                                PoS_no=request.POST.get('PoS_no'),
+                                month=request.POST.get('month'),
+                                created_date=request.POST.get('date'),
+                                address=request.POST.get('address'),
+                                account_of=request.POST.get('account_of'),
+                                amount=request.POST.get('amount'),
+                                discount=request.POST.get('discount'),
+                                net_amount=request.POST.get('net_amount'),
+                                remarks=request.POST.get('remarks'),
+                                customer_id=customer
+                                ).save(commit=False)
+            messages.success(request, 'Sales Added Successful')
+            return redirect('Customers/customers.html')
+    else:
+        return render(request, 'Customers/customer_bill.html', {
+            'customer_data': Customers.objects.filter(id=request.GET.get("id")).first(),
+            'today_sale': Sales.objects.filter(created_date__date=timezone.now())
+        })
 
 @api_view(['GET'])
 def SearchCustomer(request):
@@ -180,8 +214,10 @@ index_template = [
     path('index/', index, name='index'),
     path('customers/', customers, name='customers'),
     path('customer_details/', customer_details, name='customer_details'),
-    path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('customer_update/', customer_update, name='customer_update'),
+    path('customer_bill/', customer_bill, name='customer_bill'),
+    # api url paths
+    path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('api/customer/pay_bill/', pay_bill, name='pay_bill'),
     path('api/customer/comp_bill/', comp_bill, name='comp_bill'),
     path('api/customer/cancel_bill/', cancel_bill, name='cancel_bill'),

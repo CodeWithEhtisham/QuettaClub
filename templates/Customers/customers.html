@@ -1,4 +1,5 @@
 {% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,20 +21,6 @@
 </head>
 
 <body>
-    {% for message in messages %}
-    {% if message.tags == "success" %}
-    <div class="message bg-green-500 m-3 rounded-lg p-1">
-        {{ message }}
-        <a href="#" class="del-msg">&times;</a>
-    </div>
-    {% elif message.tags == "error" %}
-    <div class="message bg-red-500 m-3 rounded-lg p-1">
-        {{ message }}
-        <a href="#" class="del-msg">&times;</a>
-    </div>
-    {% endif %}
-    {% endfor %}
-
     <div class="container">
         <div class="row">
             <div>
@@ -73,7 +60,17 @@
             <div class="card col-40">
                 <form action="{% url 'Customers:customers' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    
+                    {% for message in messages %}
+                        {% if message.tags == "error" %}
+                        <div class="error">
+                            {{message}}
+                        </div>
+                        {% else %}
+                        <div class="success">
+                            {{message}}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
                     <div class="row">
                         <h3 class="title">
                             Add Customers
@@ -113,13 +110,16 @@
                             <!-- {{form.customer_rank}} -->
                         </div>
                         <div class="form-group">
+                            
+                        
                             <label for="" class="form-label">Address</label>
                             <input type="text" class="form-control" required name="customer_address" placeholder="customer address">
-                            <!-- {{form.customer_rank}} -->
+                            
                         </div>
+                        
                         <div class="form-group">
                             <label for="" class="form-label">Customer ID</label>
-                            <input type="text" class="form-control" required name="customer_id" placeholder="customer id">
+                            <input type="text" class="form-control" name="customer_id" placeholder="customer id">
                             <!-- {{form.customer_id}} -->
                         </div>
                         
@@ -186,12 +186,13 @@
                             {% for customer in customers %}
                             <tr>
                                 <td>{{ customer.id}}</td>
-                                <td>{{ customer.customer_rank|default_if_none:"--" }}</td>
-                                <td>{{ customer.customer_name|default_if_none:"--" }}</td>
+                                <td>{{ customer.customer_rank|default:"--" }}</td>
+                                <td>{{ customer.customer_name|default:"--" }}</td>
                                 <td>{{ customer.customer_address|default:"--" }}</td>
-                                <td>{{ customer.customer_id|default_if_none:"--" }}</td>
+                                <td>{{ customer.customer_id|default:"Nil" }}</td>
                                 <td>
                                     <div class="list-btn">
+                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}" class="">Add a Bill</a>
                                         <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}" class="">All Bills</a>
                                         <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}" class="">Edit</a>
                                     </div>

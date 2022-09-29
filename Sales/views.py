@@ -108,7 +108,7 @@ def sales(request):
         return render(request, "Sales/sales.html", {
             'customers': Customers.objects.all(),
             'sales': Sales.objects.all(),
-            # 'today_sale': today_sale,
+            'today_sale': Sales.objects.filter(created_date__date=timezone.now()),
             })
 
 def view_sales(request):

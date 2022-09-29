@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -80,6 +81,7 @@
                 </form>
                 <form action="{% url 'Sales:sales' %}" method="post">
                     {% csrf_token %}
+
                     <div class="grid col-100">
                         <div class="grid-item">
                             <label class="form-label">Bill No</label>
@@ -91,35 +93,37 @@
                         </div>
                         <div class="grid-item">
                             <label class="form-label">Date</label>
-                            <input class="form-control" id="today-date" type="date" name="date">
+                            <input class="form-control" id="sale-today-date" type="date" name="date">
                         </div>
                         <div class="">
                             <label class="form-label">Month</label>
                             <input class="form-control" required type="text" name="month">
                         </div>
-                        <div class="grid-item">
+                        <div class="">
                             <label class="form-label">Rank</label>
-                            <select name="customer_rank" required id="rank" class="form-control">
-                                <option value="">Select Rank</option>
+                            <input class="form-control" readonly type="text" name="customer_rank" 
+                                value="{{customer_data.customer_rank}}" >
+                            <!-- <select name="customer_rank" aria-readonly="true" id="rank" class="form-control">
+                                <option value="{{customer_data.customer_rank}}">{{customer_data.customer_rank}}</option>
                                 <option value="Army">Army</option>
                                 <option value="Civilian">Civilian</option>
                                 <option value="Staff">Staff</option>
                                 <option value="Other">Other</option>
-                            </select>
+                            </select> -->
                         </div>
                         <div class="">
                             <label class="form-label">Name</label>
-                            <input class="form-control" type="text" name="customer_name" id="name"
-                                onkeydown="getCustomerName();">
+                            <input class="form-control" readonly type="text" name="customer_name" id="name"
+                                value="{{customer_data.customer_name}}">
                         </div>
 
 
-                        <div class="grid-item">
+                        <div class="">
                             <label class="form-label">Address</label>
-                            <input class="form-control" type="text" name="address" id="address" required
-                            onkeydown="getCustomerName();">
+                            <input class="form-control" readonly type="text" name="address" id="address" 
+                            value="{{customer_data.customer_address}}">
                         </div>
-                        <div class="grid-item">
+                        <div class="">
                             <label class="form-label">On Account of</label>
                             <select name="account_of" required id="account_of" class="form-control">
                                 <option value="">Select one</option>
@@ -156,7 +160,7 @@
                     </div>
                     <hr>
                     <div class="flex">
-                        <button class="btn" name="Save" value="Save">
+                        <button class="btn" name="save_bill" value="save_bill">
                             Save
                         </button>
                         <button class="btn cancel">
@@ -165,81 +169,75 @@
                     </div>
                 </form>
             </div>
+
+            <!--  -->
+            <div class="card">
+                <div>
+                        <h2>Final Sale</h2>
+                    <table class="table" id="Sales_data">
+                        <thead class="table-header">
+                            
+                            <tr>
+                                <th>Bill No</th>
+                                <th>Month</th>
+                                <th>Rank</th>
+                                <th>POS NO</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>On Account Of</th>
+                                <th>Dated</th>
+                                <th>Amount</th>
+                                <th>Discount</th>
+                                <th>Net Amount</th>
+                                <th>Remarks</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for sale in today_sale %}
+                            <tr>
+                                <td>{{ sale.bill_no|default:"00" }}</td>
+                                <td>{{ sale.month|default:"--" }}</td>
+                                <td>{{sale.customer_id.customer_rank}}</td>
+                                <td>{{ sale.PoS_no|default:"00" }}</td>
+                                <td>{{sale.customer_id.customer_name}}</td>
+                                <td>{{ sale.address|default:"--" }}</td>
+                                <td>{{ sale.account_of|default:"--" }}</td>
+                                <td>{{ sale.date|default:"--" }}</td>
+                                <td>{{ sale.amount|intcomma|default:"00" }}</td>
+                                <td>{{ sale.discount|intcomma|default:"00" }}</td>
+                                <td>{{ sale.net_amount|intcomma|default:"00" }}</td>
+                                <td>{{ sale.remarks|default:" " }}</td>
+                                <td>
+                                    <div class="list">
+                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
+                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+
+                    </table>
+                </div>
+
+                <hr>
+                    <div class="flex">
+                        <button class="btn" name="Save" value="Save">
+                            Upload
+                        </button>
+                        <button class="btn cancel">
+                            Delete
+                        </button>
+                    </div>
+            </div>
         </div>
 
+
     </div>
-    <script>
-        var bill_nos = [];
-        {% for sale in sales %}
-        bill_nos.push('{{ sale.bill_no }}');
-        {% endfor %}
-
-        let today = new Date();
-        document.getElementById("today-date").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
-        
-        let names = [];
-        let ranks = [];
-        let pos = [];
-        let addresses = [];
-        {% for customer in customers %}
-        names.push('{{ customer.customer_name }}');
-        ranks.push('{{ customer.customer_rank }}');
-        pos.push('{{ customer.PoS_no }}');
-        addresses.push('{{ customer.customer_address }}');
-        {% endfor %}
-
-        // funciton for get customer name
-        function getCustomerName() {
-            let rank = $('#rank').find(":selected").text();
-            var availableTags = [];
-            var availabeaddress = [];
-            for (let i = 0; i < names.length; i++) {
-                console.log(availableTags);
-                if (rank == ranks[i]) {
-                    availableTags.push(names[i]);
-                }
-            };
-            for (let i = 0; i < names.length; i++) {
-                if (rank == ranks[i]) {
-                    availabeaddress.push(addresses[i]);
-                }
-            };
-            $("#name").autocomplete({
-                source: availableTags
-            });
-            $("#address").autocomplete({
-                source: availabeaddress
-            });
-        };
-
-        // function for check duplicate bills
-        function billCheck(data) {
-            if (bill_nos.includes(data.value)) {
-                console.log("Bill No Already Exist");
-                document.getElementById("bill_no").style.border = "1px solid red";
-            }
-            else {
-                console.log("Bill No Not Exist");
-                document.getElementById("bill_no").style.border = "1px solid green";
-            }
-
-        }
-
-        // function for check duplicate pos
-        function posCheck(data) {
-            if (pos.includes(data.value)) {
-                console.log("PoS No Already Exist");
-                document.getElementById("PoS_no").style.border = "1px solid red";
-            }
-            else {
-                console.log("PoS No Not Exist");
-                document.getElementById("PoS_no").style.border = "1px solid green";
-            }
-
-        }
-        
-
-    </script>
+    <script src="{% static 'js/customer.js' %}"></script>
 
 </body>
 
