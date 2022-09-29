@@ -2,6 +2,7 @@ from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
 from django.contrib import messages
+from grpc import Status
 from .models import Sales, Bill
 from Customers.models import Customers
 import pandas as pd
@@ -51,12 +52,15 @@ def sales(request):
             if request.POST.get('Save'):
                 # print(request.POST.get('customer_name'))
                 
-                customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),customer_rank=request.POST.get('customer_rank')).first()
+                customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                    customer_rank=request.POST.get('customer_rank')).first()
                 # print(customer)
-                sale_data = Sales(bill_no=request.POST.get('bill_no'),
+                Sales.objects.filter(created_on__date=timezone.now()).create(
+                                bill_no=request.POST.get('bill_no'),
                                 PoS_no=request.POST.get('PoS_no'),
                                 month=request.POST.get('month'),
                                 created_date=request.POST.get('date'),
+                                created_on=request.POST.get('created_on'),
                                 address=request.POST.get('address'),
                                 account_of=request.POST.get('account_of'),
                                 amount=request.POST.get('amount'),
@@ -64,13 +68,20 @@ def sales(request):
                                 net_amount=request.POST.get('net_amount'),
                                 remarks=request.POST.get('remarks'),
                                 customer_id=customer
-                                ).save(commit=False)
+                                )
 
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
             
-            if request.POST.get('Update'):
-                sale_data.save()
+            if request.POST.get('upload_bills'):
+                Sales.objects.filter(created_on__date=timezone.now()).save()
+                messages.success(request, 'Sales Added Successful')
+                return HttpResponseRedirect(reverse("Sales:sales"))
+
+            # if request.POST.get('delete_bills'):
+            #     Sales.objects.filter(created_date__date=timezone.now()).delete()
+            #     messages.success(request, 'Sales Deleted Successful')
+            #     return HttpResponseRedirect(reverse("Sales:sales"))
 
             elif request.POST.get('sale_file_submit'):
                 # print("customer_file_submit")
@@ -102,13 +113,11 @@ def sales(request):
                 messages.error(request, 'Sales Added Failed',e)
                 return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)
 
-    else:
-        now = timezone.now()
-        # today_sale = Sales.objects.aggregate(today=models.Count('id', filter=models.Q(created_date__date=now.date())))            
+    else:          
         return render(request, "Sales/sales.html", {
             'customers': Customers.objects.all(),
             'sales': Sales.objects.all(),
-            'today_sale': Sales.objects.filter(created_date__date=timezone.now()),
+            'today_sale': Sales.objects.filter(created_on__date=timezone.now()),
             })
 
 def view_sales(request):
@@ -117,8 +126,9 @@ def view_sales(request):
             pass
         except Exception as e:
             pass
-    return render(request, "Sales/view_sales.html",
-                {'sales_data': Sales.objects.all().select_related('customer_id').order_by("-bill_no"),
+    else:
+        return render(request, "Sales/view_sales.html",
+                {'sales_data': Sales.objects.all().exclude(created_on__date=timezone.now()).select_related('customer_id').order_by("-bill_no"),
                 'total_bills': Sales.objects.select_related('bill_no').count(),
                 'total_amount': Sales.objects.aggregate(Sum('amount'))['amount__sum'],
                 'total_discount': Sales.objects.aggregate(Sum('discount'))['discount__sum'],
@@ -133,17 +143,21 @@ def update_sales(request):
     if request.method == "POST":
         try:
             if request.POST.get('update_bill'):
+                customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                    customer_rank=request.POST.get('customer_rank')).first()
+
                 Sales.objects.filter(id=request.POST.get('edit_id')).update(
                     bill_no=request.POST.get('bill_no'),
                     PoS_no=request.POST.get('PoS_no'),
                     month=request.POST.get('month'),
-                    date=request.POST.get('date'),
+                    created_date=request.POST.get('date'),
                     address=request.POST.get('address'),
                     account_of=request.POST.get('account_of'),
                     amount=request.POST.get('amount'),
                     discount=request.POST.get('discount'),
                     net_amount=request.POST.get('net_amount'),
-                    remarks=request.POST.get('remarks'))
+                    remarks=request.POST.get('remarks'),
+                    customer_id=customer)
                 
                 return HttpResponseRedirect(reverse("Sales:view_sales"))
             if request.POST.get('cancel'):
@@ -153,10 +167,12 @@ def update_sales(request):
             return HttpResponseRedirect(reverse("Sales:view_sales"))
 
     else:
-        print(request.GET.get('edit_id'))
+        print("edit id ",request.POST.get('edit_id'))
         print(Sales.objects.filter(id=request.GET.get('edit_id')).select_related('customer_id').first())
-        return render(request, "Sales/update_sales.html", 
-            {'sales_data': Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first()})
+        return render(request, "Sales/update_sales.html", {
+                'sales_data': Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first(),
+                'customers': Customers.objects.all(),
+            })
 
 
 def reports(request):

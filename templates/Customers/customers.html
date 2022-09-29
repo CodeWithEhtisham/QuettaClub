@@ -1,5 +1,4 @@
 {% load static %}
-{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -60,13 +59,14 @@
             <div class="card col-40">
                 <form action="{% url 'Customers:customers' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
+
                     {% for message in messages %}
                         {% if message.tags == "error" %}
-                        <div class="error">
+                        <div class="error" id="message">
                             {{message}}
                         </div>
                         {% else %}
-                        <div class="success">
+                        <div class="success" id="message">
                             {{message}}
                         </div>
                         {% endif %}
@@ -96,10 +96,10 @@
 
                             <label for="" class="form-label">Customer Rank</label>
                             <select name="customer_rank" id="rank" class="form-control" required>
-                                <option value="">Select Rank</option>
+                                <!-- <option value="">Select Rank</option> -->
+                                <option value="Staff" selected>Staff</option>
                                 <option value="Army">Army</option>
-                                <option value="Civilian">Civilian</option>
-                                <option value="Staff">Staff</option>
+                                <option value="Civilian">Members</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
@@ -238,7 +238,11 @@
             document.body.removeChild(link);
         };
 
-        
+        $(document).ready(function() {
+    // messages timeout for 10 sec 
+    setTimeout(function() {
+        $('.success').fadeOut('slow');
+    }, 4000); // <-- time in milliseconds, 1000 =  1 sec
     </script>
     <script src="{% static 'js/customer.js' %}"></script>
 </body>

@@ -20,20 +20,18 @@
 </head>
 
 <body>
+    
     {% for message in messages %}
-    {% if message.tags == "success" %}
-    <div class="message bg-green-500 m-3 rounded-lg p-1">
-        {{ message }}
-        <a href="#" class="del-msg">&times;</a>
+    {% if message.tags == "error" %}
+    <div class="error">
+        {{message}}
     </div>
-    {% elif message.tags == "error" %}
-    <div class="message bg-red-500 m-3 rounded-lg p-1">
-        {{ message }}
-        <a href="#" class="del-msg">&times;</a>
+    {% else %}
+    <div class="success">
+        {{message}}
     </div>
     {% endif %}
     {% endfor %}
-
     <div class="container">
         <div class="row">
             <div>
@@ -75,6 +73,8 @@
                 <!-- <h2> Customer</h2> -->
                 <form action="{% url 'Customers:customer_update' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+
+                    
                     <input type="text" hidden value="{{customer_data.id}}" name='cid'>
                     <div>
                         <div class="form-group">

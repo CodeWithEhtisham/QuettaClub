@@ -1,13 +1,16 @@
+from email.policy import default
 from enum import auto
 from django.db import models
 from Customers.models import Customers
+from django.utils import timezone
 
 class Sales(models.Model):
 
     bill_no = models.CharField(max_length=50)
     PoS_no = models.CharField(max_length=50, null=False, blank=False)
     month = models.CharField(max_length=50, null=False, blank=False)
-    created_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField()
+    created_on  = models.DateTimeField(default=timezone.now)
     address = models.CharField(max_length=50, null=False, blank=False)
     account_of = models.CharField(max_length=50, null=False, blank=False)
     amount = models.PositiveIntegerField()
@@ -15,6 +18,10 @@ class Sales(models.Model):
     net_amount = models.PositiveIntegerField()
     remarks = models.CharField(max_length=50, null=True, blank=True)    
     customer_id = models.ForeignKey(Customers, on_delete=models.CASCADE, null=True, blank=True)
+
+    def datepublished(self):
+        return self.created_date.strftime('%B %d %Y')
+
 
 
 class Bill(models.Model):

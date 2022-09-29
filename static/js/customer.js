@@ -103,39 +103,6 @@ function update_customer_table(data) {
 
 }
 
-var bill_nos = [];
-{% for sale in sales %}
-bill_nos.push('{{ sale.bill_no }}');
-{% endfor %}
-
-let sale_today = new Date();
-document.getElementById("sale-today-date").value = sale_today.getFullYear() + '-' + ('0' + (sale_today.getMonth() + 1)).slice(-2) + '-' + ('0' + sale_today.getDate()).slice(-2);
-
-// function for check duplicate bills
-function billCheck(data) {
-  if (bill_nos.includes(data.value)) {
-    console.log("Bill No Already Exist");
-    document.getElementById("bill_no").style.border = "1px solid red";
-  }
-  else {
-    console.log("Bill No Not Exist");
-    document.getElementById("bill_no").style.border = "1px solid green";
-  }
-
-}
-
-// function for check duplicate pos
-function posCheck(data) {
-  if (pos.includes(data.value)) {
-    console.log("PoS No Already Exist");
-    document.getElementById("PoS_no").style.border = "1px solid red";
-  }
-  else {
-    console.log("PoS No Not Exist");
-    document.getElementById("PoS_no").style.border = "1px solid green";
-  }
-
-}
 
 
 let paidModal = document.querySelector(".paidModal-open")
@@ -235,3 +202,42 @@ let cancelToday = new Date();
 document.getElementById("cancel-today-date").value =
   cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
   '-' + ('0' + cancelToday.getDate()).slice(-2);
+
+// function for export to excel or csv file 
+function download_table_as_csv(Sales_data, separator = ',') {
+  // Select rows from table_id
+  var rows = document.querySelectorAll('table#' + Sales_data + ' tr');
+  // Construct csv
+  var csv = [];
+  for (var i = 0; i < rows.length; i++) {
+    var row = [], cols = rows[i].querySelectorAll('td, th');
+    for (var j = 0; j < cols.length; j++) {
+      // Clean innertext to remove multiple spaces and jumpline (break csv)
+      var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+      // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+      data = data.replace(/"/g, '""');
+      // Push escaped string
+      row.push('"' + data + '"');
+    }
+    csv.push(row.join(separator));
+  }
+  var csv_string = csv.join('\n');
+  // Download it
+  var filename = Sales_data + '_' + new Date().toLocaleDateString() + '.csv';
+  var link = document.createElement('a');
+  link.style.display = 'none';
+  link.setAttribute('target', '_blank');
+  link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+// auto fill the paid remaining amount on paid modal
+document.getElementById("paid_amount").onchange = function () {
+  var balance = document.getElementById('pay_bill_modal_balance').value;
+  var amount = document.getElementById('paid_amount').value;
+  var total = balance - amount;
+  document.getElementById('remaing_amount').value = total;
+};
+

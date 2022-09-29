@@ -160,3 +160,19 @@ let cancelToday = new Date();
 document.getElementById("cancel-today-date").value =
 cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
         '-' + ('0' + cancelToday.getDate()).slice(-2);
+
+let createdDate = new Date();
+document.getElementById("created-date").value = createdDate.getFullYear() + '-' + ('0' + (createdDate.getMonth() + 1)).slice(-2) + '-' + ('0' + createdDate.getDate()).slice(-2);
+
+
+document.getElementById("discount").onchange = function () {
+    var amount = document.getElementById('amount').value;
+    var discount = document.getElementById('discount').value;
+    var total = amount - discount;
+    document.getElementById('net-amount').value = total;
+};
+function reloadPage() {
+    window.location.reload();
+};
+
+

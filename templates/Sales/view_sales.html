@@ -111,13 +111,13 @@
                             <tr>
                                 <!-- <th>Ser No</th> -->
                                 <th>Bill No</th>
-                                <th>Month</th>
                                 <th>Rank</th>
                                 <th>POS NO</th>
                                 <th>Name</th>
                                 <th>Address</th>
                                 <th>On Account Of</th>
                                 <th>Dated</th>
+                                <th>Month</th>
                                 <th>Amount</th>
                                 <th>Discount</th>
                                 <th>Net Amount</th>
@@ -133,13 +133,13 @@
                             <tr>
                                 <!-- <td>{{sale.id}}</td> -->
                                 <td>{{ sale.bill_no|default:"00" }}</td>
-                                <td>{{ sale.month|default_if_none:"--" }}</td>
                                 <td>{{sale.customer_id.customer_rank}}</td>
                                 <td>{{ sale.PoS_no|default:"00" }}</td>
                                 <td>{{sale.customer_id.customer_name}}</td>
                                 <td>{{ sale.address|default_if_none:"--" }}</td>
                                 <td>{{ sale.account_of|default_if_none:"--" }}</td>
-                                <td>{{ sale.date|default_if_none:"--" }}</td>
+                                <td>{{ sale.datepublished }}</td>
+                                <td>{{ sale.month|default_if_none:"--" }}</td>
                                 <td>{{ sale.amount|intcomma|default_if_none:"00" }}</td>
                                 <td>{{ sale.discount|intcomma|default_if_none:"00" }}</td>
                                 <td>{{ sale.net_amount|intcomma|default_if_none:"00" }}</td>
@@ -192,11 +192,12 @@
                     <label class="form-label">Date</label>
                     <input class="form-control" type="date" name="paid_date" id="today-date">
 
+                    <label class="form-label">Total Bill</label>
+                    <input class="form-control" type="text" id="pay_bill_modal_balance" name="paid_balance">
+
                     <label class="form-label">Amount</label>
                     <input class="form-control" type="text" name="paid_amount" id="paid_amount">
 
-                    <label class="form-label">Balance</label>
-                    <input class="form-control" type="text" id="pay_bill_modal_balance" name="paid_balance">
 
                     <label class="form-label">Remaining</label>
                     <input class="form-control" type="text" name="remaining_balance" id="remaing_amount">
@@ -237,7 +238,7 @@
                     <label class="form-label">Amount</label>
                     <input class="form-control" id="comp_amount" type="text" name="comp_amount">
 
-                    <label class="form-label">Balance</label>
+                    <label class="form-label">Total Bill</label>
                     <input class="form-control" id="comp_bill_modal_balance" type="text" name="comp_balance">
 
 
@@ -350,6 +351,13 @@
             link.click();
             document.body.removeChild(link);
         }
+
+        document.getElementById("paid_amount").onchange = function () {
+            var balance = document.getElementById('pay_bill_modal_balance').value;
+            var amount = document.getElementById('paid_amount').value;
+            var total = balance - amount;
+            document.getElementById('remaing_amount').value = total;
+        };
 
     </script>
     
