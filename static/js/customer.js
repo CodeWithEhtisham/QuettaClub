@@ -25,6 +25,7 @@ function update_table(data) {
   Object.keys(data).forEach(key => {
     console.log(data[key]);
     elem = data[key];
+    console.log(elem['id'])
     row = '<tr>' +
       '<td>' + elem['customer_rank'] + '</td>' +
       '<td>' + elem['customer_name'] + '</td>' +
@@ -32,9 +33,9 @@ function update_table(data) {
       '<td>' + elem['customer_id'] + '</td>' +
       '<td>' +
       '<div class="list-btn">' +
-      '<a href="{% url "Customers:customer_bill" %}?id={{customer.id}}" style="background-color:green ;">Add a Bill</a>' +
-      '<a href="{% url "Customers:customer_details" %}?id={{customer.id}}">All Bills</a>' +
-      '<a href="{% url "Customers:customer_update" %}?id={{customer.id}}" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
+      '<a href="/customer_bill/?id='+elem['id']+'" style="background-color:green ;">Add a Bill</a>' +
+      '<a href="/customer_details/?id='+elem['id']+'">All Bills</a>' +
+      '<a href="/customer_update/?id='+elem['id']+'" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
       '</div>' +
       '</td>' +
       '</tr>'
@@ -54,7 +55,7 @@ function SearchbyName() {
       data: { "field": field, "value": value },
       success: function (data) {
         // console.log("success on search" + data);
-        update_customer_table(data)
+        update_bill_table(data)
       },
       error: function () {
         console.log('error');
@@ -64,7 +65,7 @@ function SearchbyName() {
   }
 };
 
-function update_customer_table(data) {
+function update_bill_table(data) {
   console.log(data);
   let row;
   let all_rows = '';
@@ -91,10 +92,10 @@ function update_customer_table(data) {
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href={% url "Sales:update_sales" %}?id=' +elem['sale.id'] +' style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
-        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen("{{sale.id}}","{{sale.net_amount}}")" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
-        '<button id="comp_modal" class="modal" onclick="compModalOpen("{{sale.id}}","{{sale.net_amount}}")">Complemantery</button>' +
-        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen("{{sale.id}}")" style="background-color: #dc3545;">Cancelled</button>' +
+        '<a href="/Sales/update_sales/?id=' +elem['id']+'" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
+        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
+        '<button id="comp_modal" class="modal" onclick="compModalOpen('+elem['id']+','+elem['net_amount']+')">Complemantery</button>' +
+        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: #dc3545;">Cancelled</button>' +
         '</div>' +
         '</td>' +
         '</tr>'
@@ -169,10 +170,11 @@ function compModalSubmit() {
 }
 
 // open cancel modal window
-function cancelModalOpen(id) {
+function cancelModalOpen(id, value, amount) {
   cancelModal.style.display = "block";
   document.getElementById("cancel-form-id").value = id;
   document.getElementById("cancel_bill_modal_balance").value = value;
+  document.getElementById("bill_amount").value = amount;
 }
 
 // cancel modal submit button
@@ -184,7 +186,7 @@ function cancelModalSubmit() {
       'id': $("#cancel-form-id").val(),
       'cancel_date': $("#cancel-today-date").val(),
       'reason': $("#reason").val(),
-      "remaining_amount": $("#cancel_bill_modal_balance").val() * 0,
+      "remaining_amount": $("#cancel_bill_modal_balance").val() * 0 ,
       'amount': $("#bill_amount").val() * 0,
     },
     dataType: "json",

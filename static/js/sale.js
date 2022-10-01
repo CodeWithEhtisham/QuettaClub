@@ -46,10 +46,10 @@ function update_table(data) {
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href={% url "Sales:update_sales" %}?id=' +elem['sale.id'] +' style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
-        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen("{{sale.id}}","{{sale.net_amount}}")" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
-        '<button id="comp_modal" class="modal" onclick="compModalOpen("{{sale.id}}","{{sale.net_amount}}")">Complemantery</button>' +
-        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen("{{sale.id}}")" style="background-color: #dc3545;">Cancelled</button>' +
+        '<a href="/Sales/update_sales/?id=' +elem['id'] +'" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
+        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
+        '<button id="comp_modal" class="modal" onclick="compModalOpen('+elem['id']+','+elem['net_amount']+')">Complemantery</button>' +
+        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: #dc3545;">Cancelled</button>' +
         
         '</div>' +
         '</td>' +
@@ -120,11 +120,11 @@ function compModalSubmit() {
 
 
 // open cancel modal window
-function cancelModalOpen(id) {
+function cancelModalOpen(id, value, amount) {
   cancelModal.style.display = "block";
   document.getElementById("cancel-form-id").value = id;
   document.getElementById("cancel_bill_modal_balance").value = value;
-  // document.getElementById("bill_amount").value = value;
+  document.getElementById("bill_amount").value = amount;
 }
 
 // cancel modal submit button
@@ -136,8 +136,8 @@ function cancelModalSubmit() {
       'id': $("#cancel-form-id").val(),
       'cancel_date': $("#cancel-today-date").val(),
       'reason': $("#reason").val(),
-      "remaining_amount": $("#cancel_bill_modal_balance").val() * 0 ,
-      'amount': $("#bill_amount").val() * 0,
+      "remaining_amount": $("#cancel_bill_modal_balance").val() ,
+      'amount': $("#bill_amount").val(),
     },
     dataType: "json",
   })
@@ -171,10 +171,6 @@ function reloadPage() {
     window.location.reload();
 };
 
-setTimeout(fade_out, 4000);
-        function fade_out() {
-            $(".messages").fadeOut().empty();
-        }
-        $(".post-form")[0].reset();
+
 
 

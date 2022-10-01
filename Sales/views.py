@@ -55,6 +55,7 @@ def sales(request):
                 
                 customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),
                     customer_rank=request.POST.get('customer_rank')).first()
+                print(customer.customer_name)
                 # print(customer)
                 Sales.objects.filter(created_on__date=timezone.now()).create(
                                 bill_no=request.POST.get('bill_no'),
@@ -74,7 +75,7 @@ def sales(request):
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
             
-            if request.POST.get('upload_bills'):
+            if request.POST.get('upload_all'):
                 Sales.objects.filter(created_on__date=timezone.now()).save()
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
@@ -293,30 +294,14 @@ def sales_cancel_bill(request):
         reason = request.POST.get('reason')
         remaining_amount = request.POST.get('remaining_amount')
         amount = request.POST.get('amount')
-        Bill.objects.create(date=date, reason=reason,
+        Bill.objects.create(date=date, reason=reason, amount=amount,
            status='Cancel', sale_id=Sales.objects.get(id=id))
-
+        remaining_amount = 0
+        amount = 0
         Sales.objects.filter(id=id).update(amount=amount ,net_amount=remaining_amount)
-        return HttpResponse({"message": "Cancel Bill Added Successfully"})
+        messages.success(request, "Bill Cancelled Successfully")
+        return redirect('sales:view_sales')
 
-@api_view(['GET', 'POST'])
-def sales_cancel_bill(request):
-    if request.method == "GET":
-        id = request.GET.get('id')
-        print('sale id ', id)
-        return HttpResponse({"id ": id})
-
-    elif request.method == "POST":
-        id = request.POST.get('id')
-        print('sale id ', id)
-        date = request.POST.get('cancel_date')
-        print('cancel date ', date)
-        reason = request.POST.get('reason')
-        print('cancel reason ', reason)
-        cancel_bill_data = Bill.objects.create(date=date, reason=reason,
-            sale_id=Sales.objects.get(id=id))
-        print(cancel_bill_data)
-        return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
 sales_templates = [
     path('sales/', sales, name='sales'),

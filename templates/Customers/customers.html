@@ -74,7 +74,7 @@
                 <form action="{% url 'Customers:customers' %}" method="POST" class="post-form"
                     enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="row">
+                    <!-- <div class="row">
                         <h3 class="title">
                             Add Customers
                         </h3>
@@ -90,7 +90,7 @@
                             <input name="customer_file" type="file" accept=".xlsx, .xls, .csv" />
                         </div>
                     </div>
-                    <input class="btn" type="submit" id="customer_file_submit" name="customer_file_submit">
+                    <input class="btn" type="submit" id="customer_file_submit" name="customer_file_submit"> -->
                 </form>
                 <form action="{% url 'Customers:customers' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -246,17 +246,18 @@
             link.click();
             document.body.removeChild(link);
         }
-        
-    </script>
-    <script>
-        $(document).ready(function () {
-            // messages timeout for 4 sec 
-            setTimeout(fade_out, 4000);
+        setTimeout(fade_out, 4000);
             function fade_out() {
                 $(".messages").fadeOut().empty();
             }
             $(".post-form")[0].reset();
     </script>
+    <!-- <script>
+        $(document).ready(function () {
+            // messages timeout for 4 sec 
+            
+        }
+    </script> -->
     <script src="{% static 'js/customer.js' %}"></script>
 </body>
 

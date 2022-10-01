@@ -76,7 +76,7 @@
                             <div></div>
 
                             <!--  -->
-                            <div class="form-data ml-5">
+                            <!-- <div class="form-data ml-5">
                                 <label for="" class="form-label">All</label>
                                 <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
                                     value="all_check" onclick="onlyOne(this)">
@@ -95,7 +95,7 @@
                                 <label for="" class="form-label">Cancelled</label>
                                 <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
                                     value="cancel_check" onclick="onlyOne(this)">
-                            </div>
+                            </div> -->
                             <div class="form-data ml-5">
                                 <button type="button" class="icon" id="print_bills">Print</button>
                             </div>
@@ -135,7 +135,7 @@
                     </thead>
                     <tbody>
                         {% for sale in Sales_data %}
-                        {{ sales_data }}
+                        {% if sale.amount > 0 or sale.net_amount > 0 %}
                         <tr>
                             <!-- <td>{{sale.id}}</td> -->
                             <td>{{ sale.bill_no|default:"00" }}</td>
@@ -166,9 +166,11 @@
             </div>
             </td>
             </tr>
+            {% endif %}
             {% endfor %}
             </tbody>
             </table>
+            
         </div>
     </div>
     <!-- paid modal -->

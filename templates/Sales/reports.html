@@ -54,7 +54,7 @@
         </div>
 
         <div class="row">
-            <div class="card">
+            <div class="card w-100">
                 <div class="">
                     <div class="row">
                         <h2>Customers</h2>
@@ -75,7 +75,7 @@
 
                         </div>
                         <!--  -->
-                        <form action="{% url 'Sales:reports' %}" method="post">
+                        <form class="row" action="{% url 'Sales:reports' %}" method="post">
                             {% csrf_token %}
                             <div class="form-data ml-5">
                                 <label for="" class="form-label">All</label>
@@ -102,42 +102,42 @@
                                     <label for="" class="m-1">From</label>
                                     <input type="date" id="from-date" name="from-date" required
                                         value="{{from_date|date:'Y-m-d'}}"
-                                        class="rounded-md p-2 outline-none border-none shadow-inner bg-gray-200">
+                                        class="form-control">
                                 </div>
 
                                 <div class="form-data ml-5">
                                     <label for="" class="m-1">To</label>
                                     <input type="date" id="to-date" name="to-date" required
                                         value='{{to_date|date:"Y-m-d"}}'
-                                        class="rounded-md p-2 outline-none border-none shadow-inner bg-gray-200">
+                                        class="form-control">
                                 </div>
                             </div>
                             <div class="form-data ml-5">
-                                <button name="report_generate" value="report_generate">Generate</button>
+                                <button class="icon" name="report_generate" value="report_generate"><strong>Generate</strong></button>
                             </div>
                             <div class="form-data ml-5">
                                 <button type="button" class="icon" id="print_bills">Print</button>
                             </div>
 
                             <div class="choose_file ml-5">
-                                <!-- <button type="button" class="icon" onclick="download_table_as_csv('Sales_data');">
+                                <button type="button" class="icon" onclick="download_table_as_csv('report');">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" height="26px">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
                                 </svg>
-                            </button> -->
-                                <a class="p-1 cursor-pointer rounded-md border  border-orange-700 m-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 text-orange-700 w-6" fill="none"
-                                        onclick="generate()" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </button>
+                                <!-- <a class="form-data ml-5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" height="26px">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
                                     </svg>
-                                </a>
+                                </a> -->
                             </div>
                     </div>
                     {% if record %}
-                    <table class="table" id="myTable">
+                    <table class="table" id="report">
                         <thead class="table-header">
                             <tr>&nbsp;
                             </tr>
@@ -174,14 +174,14 @@
                                 
                                 <td>
                                     {% if paid.status == "Paid" %}
-                                    <button class="modal" style="background-color: green; color: rgb(246, 244, 244);">
-                                        {{paid.status}}</button> 
+                                    <p class="modal" style="background-color: green; color: rgb(246, 244, 244);">
+                                        {{paid.status}}</p> 
                                     {% elif paid.status == "Complementery" %}
-                                    <button class="modal" style="background-color: blue; color: rgb(246, 244, 244);">
-                                        {{paid.status}}</button> 
+                                    <p class="modal" style="background-color: blue; color: rgb(246, 244, 244);">
+                                        {{paid.status}}</p> 
                                     {% elif paid.status == "Cancel" %}
-                                    <button class="modal" style="background-color: red; color: rgb(246, 244, 244);">
-                                        {{paid.status}}</button> 
+                                    <p class="modal" style="background-color: red; color: rgb(246, 244, 244);">
+                                        {{paid.status}}</p> 
                                     {% endif %}
 
                                 </td>
@@ -255,9 +255,9 @@
     </script> -->
 
     <script>
-        function download_table_as_csv(Sales_data, separator = ',') {
+        function download_table_as_csv(report, separator = ',') {
             // Select rows from table_id
-            var rows = document.querySelectorAll('table#' + Sales_data + ' tr');
+            var rows = document.querySelectorAll('table#' + report + ' tr');
             // Construct csv
             var csv = [];
             for (var i = 0; i < rows.length; i++) {
@@ -274,7 +274,7 @@
             }
             var csv_string = csv.join('\n');
             // Download it
-            var filename = Sales_data + '_' + new Date().toLocaleDateString() + '.csv';
+            var filename = report + '_' + new Date().toLocaleDateString() + '.csv';
             var link = document.createElement('a');
             link.style.display = 'none';
             link.setAttribute('target', '_blank');

@@ -256,13 +256,12 @@ def cancel_bill(request):
         date = request.POST.get('cancel_date')
         reason = request.POST.get('reason')
         remaining_amount = request.POST.get('remaining_amount')
-        remaining_amount = 0
         amount = request.POST.get('amount')
-        amount = 0
-
         Bill.objects.create(date=date, reason=reason,
-                            status='Cancel', sale_id=Sales.objects.get(id=id))
+           status='Cancel', sale_id=Sales.objects.get(id=id))
+
         Sales.objects.filter(id=id).update(amount=amount ,net_amount=remaining_amount)
+        messages.success(request, "Bill Cancelled Successfully")
         return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
 

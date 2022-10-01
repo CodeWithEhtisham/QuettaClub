@@ -129,7 +129,7 @@
                         <tbody>
                             {% for sale in sales_data %}
 
-                            {% if sale.amount > 0 %}
+                            {% if sale.amount > 0 or sale.net_amount > 0 %}
                             <tr>
                                 <!-- <td>{{sale.id}}</td> -->
                                 <td>{{ sale.bill_no|default:"00" }}</td>
@@ -153,7 +153,7 @@
                                             style="background-color: green; color: rgb(246, 244, 244);">Paid</button>
                                         <button id="comp_modal" class="modal"
                                             onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
-                                        <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}','{{sale.net_amount}}')"
+                                        <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}','{{sale.net_amount}}', '{{sale.amount}}')"
                                             style="background-color: #fd7e14;">Cancelled</button>
                                     </div>
                                 </td>
@@ -280,11 +280,11 @@
                 <label class="form-label">Reason</label>
                 <input class="form-control" type="text" name="reason" id="reason" required>
 
-                <label class="form-label">Total Bill</label>
-                <input class="form-control" type="text" id="cancel_bill_modal_balance" name="cancel_balance">
+                <label hidden class="">Total Bill</label>
+                <input hidden class="" type="text" id="cancel_bill_modal_balance" name="cancel_balance">
 
-                <label class="form-label">Amount</label>
-                <input class="form-control" type="text" id="bill_amount" name="bill_amount">
+                <label hidden class="">Amount</label>
+                <input hidden class="" type="text" id="bill_amount" name="bill_amount">
 
                 <div class="flex">
                     <button class="btn" name="bill_paid" value="bill_paid" type="submit" onclick="cancelModalSubmit()">
