@@ -73,10 +73,11 @@ def long_process(df):
         return False
 
 def sales(request):
+    print("###############################################",request.method)
     if request.method == 'POST':
         try:
             if request.POST.get('Save'):
-                # print(request.POST.get('customer_name'))
+                print(request.POST.get('customer_name'))
                 
                 customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),customer_rank=request.POST.get('customer_rank'))
                 print(customer)

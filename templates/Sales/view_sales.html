@@ -136,7 +136,7 @@
                                 <td>{{sale.customer_id.customer_rank}}</td>
                                 <td>{{ sale.PoS_no|default:"00" }}</td>
                                 <td>{{sale.customer_id.customer_name}}</td>
-                                <td>{{ sale.address|default_if_none:"--" }}</td>
+                                <td>{{ sale.customer_id.customer_address|default_if_none:"--" }}</td>
                                 <td>{{ sale.account_of|default_if_none:"--" }}</td>
                                 <td>{{ sale.datepublished }}</td>
                                 <td>{{ sale.month|default_if_none:"--" }}</td>
