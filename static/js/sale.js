@@ -70,6 +70,7 @@ function paidMOdalOpen(id,value){
   paidModal.style.display = "block";
   document.getElementById("paid-form-id").value = id;
   document.getElementById("pay_bill_modal_balance").value = value;
+  todays('today-date');
 }
 
 // paid Modal submit
@@ -96,6 +97,7 @@ function compModalOpen(id, value) {
   compModal.style.display = "block";
   document.getElementById("comp-form-id").value = id;
   document.getElementById("comp_bill_modal_balance").value = value;
+  todays('comp-today-date');
 }
 
 // complementory modal submit button
@@ -122,6 +124,7 @@ function compModalSubmit() {
 function cancelModalOpen(id) {
   cancelModal.style.display = "block";
   document.getElementById("cancel-form-id").value = id;
+  todays('cancel-today-date');
 }
 
 // cancel modal submit button
@@ -142,28 +145,34 @@ function cancelModalSubmit() {
 
 
 function closeModal(model){
-  console.log(model)
   document.querySelector(model).style.display = "none";
 }
 
-let today = new Date();
-document.getElementById("today-date").value =
-  today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
-  '-' + ('0' + today.getDate()).slice(-2);
+// let today = new Date();
+// document.getElementById("today-date").value =
+//   today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+//   '-' + ('0' + today.getDate()).slice(-2);
 
-let compToday = new Date();
-document.getElementById("comp-today-date").value =
-compToday.getFullYear() + '-' + ('0' + (compToday.getMonth() + 1)).slice(-2) +
-    '-' + ('0' + compToday.getDate()).slice(-2);
+// let compToday = new Date();
+// document.getElementById("comp-today-date").value =
+// compToday.getFullYear() + '-' + ('0' + (compToday.getMonth() + 1)).slice(-2) +
+//     '-' + ('0' + compToday.getDate()).slice(-2);
 
-let cancelToday = new Date();
-document.getElementById("cancel-today-date").value =
-cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
-        '-' + ('0' + cancelToday.getDate()).slice(-2);
+// let cancelToday = new Date();
+// document.getElementById("cancel-today-date").value =
+// cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
+//         '-' + ('0' + cancelToday.getDate()).slice(-2);
 
 let createdDate = new Date();
 document.getElementById("created-date").value = createdDate.getFullYear() + '-' + ('0' + (createdDate.getMonth() + 1)).slice(-2) + '-' + ('0' + createdDate.getDate()).slice(-2);
 
+function todays(element_id){
+  let today = new Date();
+document.getElementById(element_id).value =
+  today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+  '-' + ('0' + today.getDate()).slice(-2);
+
+}
 
 document.getElementById("discount").onchange = function () {
     var amount = document.getElementById('amount').value;
