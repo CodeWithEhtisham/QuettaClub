@@ -169,70 +169,68 @@
                 </form>
             </div>
 
-            <!--  -->
-            <!-- <div class="card">
-                <div>
-                    <h2>Final Sale</h2>
-                    <table class="table" id="Sales_data">
-                        <thead class="table-header">
+            <div>
+                <h2>Final Sale</h2>
+                <table class="table" id="Sales_data">
+                    <thead class="table-header">
 
-                            <tr>
-                                <th>Bill No</th>
-                                <th>Month</th>
-                                <th>Rank</th>
-                                <th>POS NO</th>
-                                <th>Name</th>
-                                <th>Address</th>
-                                <th>On Account Of</th>
-                                <th>Dated</th>
-                                <th>Amount</th>
-                                <th>Discount</th>
-                                <th>Net Amount</th>
-                                <th>Remarks</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
+                        <tr>
+                            <th>Bill No</th>
+                            <th>Month</th>
+                            <th>Rank</th>
+                            <th>POS NO</th>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>On Account Of</th>
+                            <th>Dated</th>
+                            <th>Amount</th>
+                            <th>Discount</th>
+                            <th>Net Amount</th>
+                            <th>Remarks</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
-                        <tbody>
-                            {% for sale in today_sale %}
-                            <tr>
-                                <td>{{ sale.bill_no|default:"00" }}</td>
-                                <td>{{ sale.month|default:"--" }}</td>
-                                <td>{{sale.customer_id.customer_rank}}</td>
-                                <td>{{ sale.PoS_no|default:"00" }}</td>
-                                <td>{{sale.customer_id.customer_name}}</td>
-                                <td>{{ sale.address|default:"--" }}</td>
-                                <td>{{ sale.account_of|default:"--" }}</td>
-                                <td>{{ sale.date|default:"--" }}</td>
-                                <td>{{ sale.amount|intcomma|default:"00" }}</td>
-                                <td>{{ sale.discount|intcomma|default:"00" }}</td>
-                                <td>{{ sale.net_amount|intcomma|default:"00" }}</td>
-                                <td>{{ sale.remarks|default:" " }}</td>
-                                <td>
-                                    <div class="list">
-                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Delete</a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+                    <tbody>
+                        {% for sale in today_sale %}
+                        <tr>
+                            <td>{{ sale.bill_no|default:"00" }}</td>
+                            <td>{{ sale.month|default:"--" }}</td>
+                            <td>{{sale.customer_id.customer_rank}}</td>
+                            <td>{{ sale.PoS_no|default:"00" }}</td>
+                            <td>{{sale.customer_id.customer_name}}</td>
+                            <td>{{ sale.address|default:"--" }}</td>
+                            <td>{{ sale.account_of|default:"--" }}</td>
+                            <td>{{ sale.date|default:"--" }}</td>
+                            <td>{{ sale.amount|intcomma|default:"00" }}</td>
+                            <td>{{ sale.discount|intcomma|default:"00" }}</td>
+                            <td>{{ sale.net_amount|intcomma|default:"00" }}</td>
+                            <td>{{ sale.remarks|default:" " }}</td>
+                            <td>
+                                <div class="list">
+                                    <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
+                                    <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
 
 
-                    </table>
-                </div>
+                </table>
+            </div>
 
-                <hr>
-                <div class="flex">
-                    <button class="btn" name="Save" value="Save">
-                        Upload
-                    </button>
-                    <button class="btn cancel">
-                        Delete
-                    </button>
-                </div>
-            </div> -->
-        </div>
+            <hr>
+            <div class="flex">
+                <button class="btn" name="Save" value="Save">
+                    Upload
+                </button>
+                <button class="btn cancel">
+                    Delete
+                </button>
+            </div>
+        </div> -->
+    </div>
 
 
     </div>
@@ -284,8 +282,7 @@
         let sale_today = new Date();
         document.getElementById("sale-today-date").value =
             sale_today.getFullYear() + '-' + ('0' + (sale_today.getMonth() + 1)).slice(-2) + '-' + ('0' + sale_today.getDate()).slice(-2);
-    </script>
-    <script>
+
         setTimeout(fade_out, 4000);
         function fade_out() {
             $(".messages").fadeOut().empty();

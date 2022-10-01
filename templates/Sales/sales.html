@@ -272,7 +272,7 @@
                         </table>
                         <hr>
                         <div class="flex">
-                            <a class="btn" style="background-color: #481ef0; color: black;" onclick="sendTable()" >
+                            <a class="btn" style="background-color: #481ef0; color: black;" onclick="sendTable()">
                                 Upload All
                             </a>
                             <button class="btn" style="background-color: #f44336; color: black;" name="delete_all"
@@ -285,17 +285,6 @@
                 </div>
 
                 <hr>
-                <!-- <form action="{% url 'Sales:sales' %}" method="post">
-                    {% csrf_token %}
-                    <div class="flex">
-                        <button class="btn" name="upload_bills" value="upload_bills">
-                            Upload
-                        </button>
-                        <button class="btn cancel" name="delete_all" value="delete_all">
-                            Delete All
-                        </button>
-                    </div>
-                </form> -->
             </div>
 
 
@@ -377,6 +366,11 @@
             var total = amount - discount;
             document.getElementById('net-amount').value = total;
         };
+        let today = new Date();
+        document.getElementById("today-date").value =
+            today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+            '-' + ('0' + today.getDate()).slice(-2);
+
         setTimeout(fade_out, 3000);
         function fade_out() {
             $(".messages").fadeOut().empty();
