@@ -76,15 +76,25 @@
                             <div></div>
 
                             <!--  -->
-
                             <div class="form-data ml-5">
-                                <button type="button" class="icon" id="complement_bills">Paid Bills</button>
+                                <label for="" class="form-label">All</label>
+                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
+                                    value="all_check" onclick="onlyOne(this)">
                             </div>
                             <div class="form-data ml-5">
-                                <button type="button" class="icon" id="complement_bills">Complemantery Bills</button>
+                                <label for="" class="form-label">Paid</label>
+                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
+                                    value="paid_check" onclick="onlyOne(this)">
                             </div>
                             <div class="form-data ml-5">
-                                <button type="button" class="icon" id="cancel_bills">Cancelled Bills</button>
+                                <label for="" class="form-label">Complementary</label>
+                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
+                                    value="comp_check" onclick="onlyOne(this)">
+                            </div>
+                            <div class="form-data ml-5">
+                                <label for="" class="form-label">Cancelled</label>
+                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
+                                    value="cancel_check" onclick="onlyOne(this)">
                             </div>
                             <div class="form-data ml-5">
                                 <button type="button" class="icon" id="print_bills">Print</button>
@@ -142,136 +152,148 @@
                             <td>{{ sale.remarks|default_if_none:" " }}</td>
                             <td>
                                 <div class="list">
-                                    <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                    <button class="modal" id="paid_modal" onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')">Paid</button>
-                                    <button id="comp_modal" class="modal" onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
-                                    <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}')">Cancelled</button>
-                                    </div>
+
+                                    <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
+                                        style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                    <button class="modal" id="paid_modal"
+                                        onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')"
+                                        style="background-color: green; color: rgb(246, 244, 244);">Paid</button>
+                                    <button id="comp_modal" class="modal"
+                                        onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
+                                    <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}')"
+                                        style="background-color: #fd7e14;">Cancelled</button>
                                 </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
+            </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+            </table>
         </div>
-        <!-- paid modal -->
-        <div class="paidModal-open">
+    </div>
+    <!-- paid modal -->
+    <div class="paidModal-open">
 
-            <div class="modal-header">
-                
-                <span class="close-btn" onclick="closeModal('.paidModal-open')">&times;</span>
-                <h1 class="modal-title"><b>Paid Bill Modal</b></h1>
-            </div>
-            <!-- <form id="pay_bill" method="">
+        <div class="modal-header">
+
+            <span class="close-btn" onclick="closeModal('.paidModal-open')">&times;</span>
+            <h1 class="modal-title"><b>Paid Bill Modal</b></h1>
+        </div>
+        <!-- <form id="pay_bill" method="">
                 {% csrf_token %} -->
-                <input class="form-control" id="paid-form-id" type="hidden" name="formId"/>
+        <input class="form-control" id="paid-form-id" type="hidden" name="formId" />
 
-                <div class="modal-content">
-                    <label class="form-label">RV No</label>
-                    <input class="form-control" type="text" name="rv_no" id="rv_no" required>
+        <div class="modal-content">
+            <label class="form-label">RV No</label>
+            <input class="form-control" type="text" name="rv_no" id="rv_no" required>
 
-                    <label class="form-label">Date</label>
-                    <input class="form-control" type="date" name="paid_date" id="today-date">
+            <label class="form-label">Date</label>
+            <input class="form-control" type="date" name="paid_date" id="today-date">
 
-                    <label class="form-label">Total Bill</label>
-                    <input class="form-control" type="text" id="pay_bill_modal_balance" name="paid_balance">
+            <label class="form-label">Total Bill</label>
+            <input class="form-control" type="text" id="pay_bill_modal_balance" name="paid_balance">
 
-                    <label class="form-label">Amount</label>
-                    <input class="form-control" type="text" name="paid_amount" id="paid_amount">
+            <label class="form-label">Amount</label>
+            <input class="form-control" type="text" name="paid_amount" id="paid_amount">
 
 
-                    <label class="form-label">Remaining</label>
-                    <input class="form-control" type="text" name="remaining_balance" id="remaing_amount">
+            <label class="form-label">Remaining</label>
+            <input class="form-control" type="text" name="remaining_balance" id="remaing_amount">
 
-                    <div class="flex">
-                        <button class="btn" type="submit" name="bill_paid" value="bill_paid" onclick="paidModalSubmit()" >
-                            Save
-                        </button>
-                        <button class="btn cancel" onclick="closeModal('.paidModal-open')">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            <!-- </form> -->
-            <div class="modal-footer">
-                <h2>I am the Footer</h2>
+            <div class="flex">
+                <button class="btn" type="submit" name="bill_paid" value="bill_paid" onclick="paidModalSubmit()">
+                    Save
+                </button>
+                <button class="btn cancel" onclick="closeModal('.paidModal-open')">
+                    Cancel
+                </button>
             </div>
         </div>
-
-        <!-- complemantery modal -->
-        <div class="compModal-open" >
-
-            <div class="modal-header">
-                <span class="close-btn" onclick="closeModal('.compModal-open')">&times;</span>
-                <h1 class="modal-title">Complemantery Bill Modal</h1>
-            </div>
-            <!-- <form id="comp_bill" method="">
-                {% csrf_token %} -->
-
-                <div class="modal-content">
-                    <input type="hidden" id="comp-form-id">
-                    <label class="form-label">Date</label>
-                    <input class="form-control" type="date" name="comp_date" id="comp-today-date">
-
-                    <label class="form-label">Remarks</label>
-                    <input class="form-control" id="comp_remarks" type="text" name="comp_remarks">
-
-                    <label class="form-label">Amount</label>
-                    <input class="form-control" id="comp_amount" type="text" name="comp_amount">
-
-                    <label class="form-label">Total Remaining</label>
-                    <input class="form-control" id="comp_bill_modal_balance" type="text" name="comp_balance">
-
-
-                    <div class="flex">
-                        <button class="btn" name="comp_bill" type="submit" id="comp_bill" onclick="compModalSubmit()">
-                            Save
-                        </button>
-                        <button class="btn cancel" onclick="closeModal('.compModal-open')">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            <!-- </form> -->
-            <div class="modal-footer">
-                <h2>I am the Footer</h2>
-            </div>
+        <!-- </form> -->
+        <div class="modal-footer">
+            <h2>I am the Footer</h2>
         </div>
+    </div>
 
-        <!-- cancelled modal  -->
-        <div class="cancelModal-open" >
+    <!-- complemantery modal -->
+    <div class="compModal-open">
 
-            <div class="modal-header">
-                <span class="close-btn" onclick="closeModal('.cancelModal-open')">&times;</span>
-                <h1 class="modal-title">Cancel Bill Modal</h1>
-            </div>
-            <!-- <form id="cancel_bill" method="">
+        <div class="modal-header">
+            <span class="close-btn" onclick="closeModal('.compModal-open')">&times;</span>
+            <h1 class="modal-title">Complemantery Bill Modal</h1>
+        </div>
+        <!-- <form id="comp_bill" method="">
                 {% csrf_token %} -->
 
-                <div class="modal-content">
-                    <input type="hidden" id="cancel-form-id">
-                    <label class="form-label">Date</label>
-                    <input class="form-control" id="cancel-today-date" type="date" name="cancel_date" required>
+        <div class="modal-content">
+            <input type="hidden" id="comp-form-id">
+            <label class="form-label">Date</label>
+            <input class="form-control" type="date" name="comp_date" id="comp-today-date">
 
-                    <label class="form-label">Reason</label>
-                    <input class="form-control" type="text" name="reason" id="reason" required>
+            <label class="form-label">Remarks</label>
+            <input class="form-control" id="comp_remarks" type="text" name="comp_remarks">
 
-                    <div class="flex">
-                        <button class="btn" name="bill_paid" value="bill_paid" type="submit" onclick="cancelModalSubmit()">
-                            Save
-                        </button>
-                        <button class="btn cancel" onclick="closeModal('.cancelModal-open')">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            <!-- </form> -->
-            <div class="modal-footer">
-                <h2>I am the Footer</h2>
+            <label class="form-label">Amount</label>
+            <input class="form-control" id="comp_amount" type="text" name="comp_amount">
+
+            <label class="form-label">Total Remaining</label>
+            <input class="form-control" id="comp_bill_modal_balance" type="text" name="comp_balance">
+
+
+            <div class="flex">
+                <button class="btn" name="comp_bill" type="submit" id="comp_bill" onclick="compModalSubmit()">
+                    Save
+                </button>
+                <button class="btn cancel" onclick="closeModal('.compModal-open')">
+                    Cancel
+                </button>
             </div>
         </div>
-        <!-- <script>
+        <!-- </form> -->
+        <div class="modal-footer">
+            <h2>I am the Footer</h2>
+        </div>
+    </div>
+
+    <!-- cancelled modal  -->
+    <div class="cancelModal-open">
+
+        <div class="modal-header">
+            <span class="close-btn" onclick="closeModal('.cancelModal-open')">&times;</span>
+            <h1 class="modal-title">Cancel Bill Modal</h1>
+        </div>
+        <!-- <form id="cancel_bill" method="">
+                {% csrf_token %} -->
+
+        <div class="modal-content">
+            <input type="hidden" id="cancel-form-id">
+            <label class="form-label">Date</label>
+            <input class="form-control" id="cancel-today-date" type="date" name="cancel_date" required>
+
+            <label class="form-label">Reason</label>
+            <input class="form-control" type="text" name="reason" id="reason" required>
+
+            <label class="form-label">Total Bill</label>
+            <input class="form-control" type="text" id="cancel_bill_modal_balance" name="cancel_balance">
+
+            <label class="form-label">Amount</label>
+            <input class="form-control" type="text" id="bill_amount" name="bill_amount">
+
+            <div class="flex">
+                <button class="btn" name="bill_paid" value="bill_paid" type="submit" onclick="cancelModalSubmit()">
+                    Save
+                </button>
+                <button class="btn cancel" onclick="closeModal('.cancelModal-open')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+        <!-- </form> -->
+        <div class="modal-footer">
+            <h2>I am the Footer</h2>
+        </div>
+    </div>
+    <!-- <script>
             let modalBtn = document.getElementById("paid_modal")
             let modal = document.querySelector(".modal-open")
             let closeBtn = document.querySelector(".close-btn")
@@ -287,7 +309,7 @@
                 }
             }
         </script> -->
-        <!-- <script>
+    <!-- <script>
         function download_to_excel() {
 
             var tab_text = "<table><tr>";
@@ -314,11 +336,18 @@
         }
     </script> -->
 
-        <script>
-            
-        </script>
-        <script src="{% static 'js/customer.js' %}"></script>
-        <!-- <script src="{% static 'js/sale.js' %}"></script> -->
+    <script>
+        function onlyOne(checkbox) {
+            var checkboxes = document.getElementsByName('check')
+            console.log(checkboxes)
+            checkboxes.forEach((item) => {
+                console.log(item)
+                if (item !== checkbox) item.checked = false
+            })
+        }
+    </script>
+    <script src="{% static 'js/customer.js' %}"></script>
+    <!-- <script src="{% static 'js/sale.js' %}"></script> -->
 </body>
 
 </html>
