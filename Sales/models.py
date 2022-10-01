@@ -1,5 +1,6 @@
 from email.policy import default
 from enum import auto
+from unicodedata import name
 from django.db import models
 from Customers.models import Customers
 from django.utils import timezone
@@ -39,3 +40,17 @@ class Bill(models.Model):
     sale_id = models.ForeignKey(Sales, on_delete=models.CASCADE)
 
 
+class dummyTable(models.Model):
+    bill_no = models.CharField(max_length=50, null=True, blank=True)
+    rank= models.CharField(max_length=50, null=True, blank=True)
+    pos_no= models.CharField(max_length=50, null=True, blank=True)
+    cname = models.CharField(max_length=50, null=True, blank=True)
+    address = models.CharField(max_length=50,  null=True, blank=True)
+    account_of = models.CharField(max_length=50, null=True, blank=True)
+    date= models.CharField(max_length=50, null=True, blank=True)
+    month= models.CharField(max_length=50, null=True, blank=True)
+    amount= models.CharField(max_length=50, null=True, blank=True)
+    discount= models.CharField(max_length=50, null=True, blank=True)
+    net_amount= models.CharField(max_length=50, null=True, blank=True)
+    remarks= models.CharField(max_length=50, null=True, blank=True)
+    status= models.CharField(max_length=50, default='exist', null=True, blank=True)

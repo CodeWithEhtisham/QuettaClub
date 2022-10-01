@@ -39,8 +39,8 @@ function update_table(data) {
         // '<td>'+elem['customer_id']+'</td>' +
         '<td>' + elem['address'] + '</td>' +
         '<td>' + elem['account_of'] + '</td>' +
-        '<td>' + elem['date'] + '</td>'+
-      '<td>' + elem['amount'] + '</td>'+
+        '<td>' + elem['date'] + '</td>' +
+        '<td>' + elem['amount'] + '</td>' +
         '<td>' + elem['discount'] + '</td>' +
         '<td>' + elem['net_amount'] + '</td>' +
         '<td>' + elem['remarks'] + '</td>' +
@@ -67,10 +67,11 @@ let compModal = document.querySelector(".compModal-open")
 let cancelModal = document.querySelector(".cancelModal-open")
 
 // paid model load on click
-function paidMOdalOpen(id,value){
+function paidMOdalOpen(id, value) {
   paidModal.style.display = "block";
   document.getElementById("paid-form-id").value = id;
   document.getElementById("pay_bill_modal_balance").value = value;
+  todays('today-date');
 }
 
 // paid Modal submit
@@ -97,6 +98,7 @@ function compModalOpen(id, value) {
   compModal.style.display = "block";
   document.getElementById("comp-form-id").value = id;
   document.getElementById("comp_bill_modal_balance").value = value;
+  todays('comp-today-date');
 }
 
 // complementory modal submit button
@@ -125,6 +127,7 @@ function cancelModalOpen(id, value, amount) {
   document.getElementById("cancel-form-id").value = id;
   document.getElementById("cancel_bill_modal_balance").value = value;
   document.getElementById("bill_amount").value = amount;
+  todays('cancel-today-date');
 }
 
 // cancel modal submit button
@@ -137,7 +140,7 @@ function cancelModalSubmit() {
       'cancel_date': $("#cancel-today-date").val(),
       'reason': $("#reason").val(),
       "remaining_amount": $("#cancel_bill_modal_balance").val() ,
-      'amount': $("#bill_amount").val(),
+      'amount': $("#bill_amount").val()
     },
     dataType: "json",
   })
@@ -146,31 +149,66 @@ function cancelModalSubmit() {
 }
 
 
-function closeModal(model){
-  console.log(model)
+function closeModal(model) {
   document.querySelector(model).style.display = "none";
 }
 
-let today = new Date();
-document.getElementById("today-date").value =
-  today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
-  '-' + ('0' + today.getDate()).slice(-2);
+// let today = new Date();
+// document.getElementById("today-date").value =
+//   today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+//   '-' + ('0' + today.getDate()).slice(-2);
 
-let compToday = new Date();
-document.getElementById("comp-today-date").value = compToday.getFullYear() + '-' + ('0' + (compToday.getMonth() + 1)).slice(-2) + '-' + ('0' + compToday.getDate()).slice(-2);
+// let compToday = new Date();
+// document.getElementById("comp-today-date").value =
+// compToday.getFullYear() + '-' + ('0' + (compToday.getMonth() + 1)).slice(-2) +
+//     '-' + ('0' + compToday.getDate()).slice(-2);
 
-let cancelToday = new Date();
-document.getElementById("cancel-today-date").value = cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) + '-' + ('0' + cancelToday.getDate()).slice(-2);
+// let cancelToday = new Date();
+// document.getElementById("cancel-today-date").value =
+// cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
+//         '-' + ('0' + cancelToday.getDate()).slice(-2);
 
 
+function todays(element_id) {
+  let today = new Date();
+  document.getElementById(element_id).value =
+    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+    '-' + ('0' + today.getDate()).slice(-2);
 
-
-
+}
 
 function reloadPage() {
-    window.location.reload();
+  window.location.reload();
 };
 
 
 
+function sendTable() {
+  var myRows = [];
+  var $headers = $("th");
+  var $rows = $("tbody tr").each(function (index) {
+    $cells = $(this).find("td");
+    myRows[index] = {};
+    $cells.each(function (cellIndex) {
+      myRows[index][$($headers[cellIndex]).html()] = $(this).html();
+    });
+  });
 
+  // Let's put this in the object like you want and convert to JSON (Note: jQuery will also do this for you on the Ajax request)
+  var myObj = {};
+  myObj.myrows = myRows;
+  
+  // Ajax request goes here
+  $.ajax({
+    type: "POST",
+    url: "/api/sales/sales_upload/",
+    data: JSON.stringify(myObj),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (data) {
+      // clear table all data
+      $("#Sales_data tbody").empty();
+    }
+  });
+
+}

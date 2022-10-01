@@ -1,8 +1,9 @@
+
 from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
 from django.contrib import messages
-from .models import Sales, Bill
+from .models import Sales, Bill ,dummyTable
 from Customers.models import Customers
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
@@ -10,37 +11,61 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import SalesSerializer
 from django.db.models import Sum
-from django.utils import timezone
-from datetime import timedelta
-from django.db import models
 import datetime
-
+import os
 
 def long_process(df):
     try:
-        df.rename(columns=df.iloc[0], inplace = True)
-        df.drop(df.index[0], inplace = True)
+        # rename
+        rename={
+            "BILL No":'bill_no',
+            "Rank":'rank',
+            "POS No":'PoS_no',
+            "Name":'cname',
+            "Address":'address',
+            "On Account Of":'account_of',
+            "Dated":'date',
+            "Month":'month',
+            "Amount":'amount',
+            "Discount ":'discount',
+            "Net Amount":'net_amount'
+        }
+        df.rename(columns=rename, inplace=True)
         print(df.columns)
-        # rename the columns
-        df.rename(columns={'Bill No': 'bill_no', 'POS NO': 'PoS_no', 'Month': 'month', 'Dated': 'date', 'Address': 'address', 'On Account Of': 'account_of', 'Amount': 'amount', 'Discount ': 'discount', 'Net Amount': 'net_amount', 'Remarks': 'remarks', 'Name': 'customer_name', 'Rank': 'customer_rank'}, inplace=True)
-        df['month'] = pd.to_datetime(df['month'], format='%d-%m').dt.strftime('%d-%B')
-        df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y').dt.strftime('%d-%m-%Y')
+        for index,row in df.iterrows():
+            print(row['cname'])
+            if Customers.objects.filter(customer_name=row['cname'],
+                customer_rank=row['rank'],customer_address=row['address']).exists():
+                dummyTable.objects.create(
+                    bill_no=row['bill_no'],
+                    rank=row['rank'],
+                    pos_no=row['PoS_no'],
+                    cname=row['cname'],
+                    address=row['address'],
+                    account_of=row['account_of'],
+                    date=row['date'],
+                    month=row['month'],
+                    amount=row['amount'],
+                    discount=row['discount'],
+                    net_amount=row['net_amount'],
+                    status="already exists"
 
-        df=df[['bill_no','PoS_no','month','date','address','account_of','amount','discount','net_amount','remarks','customer_name','customer_rank']]
-        for index, row in df.iterrows():
-            customer=Customers.objects.filter(customer_name=row['customer_name'],customer_rank=row['customer_rank']).first()
-            Sales(bill_no=row['bill_no'],
-                PoS_no=row['PoS_no'],
-                month=row['month'],
-                #   ['“Sept. 30, 2022” value has an invalid date format. It must be in YYYY-MM-DD format.']
-                date=row['date'],
-                address=row['address'],
-                account_of=row['account_of'],
-                amount=row['amount'],
-                discount=row['discount'],
-                net_amount=row['net_amount'],
-                remarks=row['remarks'],
-                customer_id=customer
+                ).save()
+            else:
+                dummyTable.objects.create(
+                    bill_no=row['bill_no'],
+                    rank=row['rank'],
+                    pos_no=row['PoS_no'],
+                    cname=row['cname'],
+                    address=row['address'],
+                    account_of=row['account_of'],
+                    date=row['date'],
+                    month=row['month'],
+                    amount=row['amount'],
+                    discount=row['discount'],
+                    net_amount=row['net_amount'],
+                    status="new"
+
                 ).save()
         return True
     except Exception as e:
@@ -53,40 +78,39 @@ def sales(request):
             if request.POST.get('Save'):
                 # print(request.POST.get('customer_name'))
                 
-                customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),
-                    customer_rank=request.POST.get('customer_rank')).first()
-                print(customer.customer_name)
-                # print(customer)
-                Sales.objects.filter(created_on__date=timezone.now()).create(
+                customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),customer_rank=request.POST.get('customer_rank'))
+                print(customer)
+                dummyTable.objects.create(
                                 bill_no=request.POST.get('bill_no'),
-                                PoS_no=request.POST.get('PoS_no'),
-                                month=request.POST.get('month'),
-                                created_date=request.POST.get('date'),
-                                created_on=request.POST.get('created_on'),
+                                rank=request.POST.get('customer_rank'),
+                                pos_no=request.POST.get('PoS_no'),
+                                cname=request.POST.get('customer_name'),
                                 address=request.POST.get('address'),
                                 account_of=request.POST.get('account_of'),
+                                date=request.POST.get('date'),
+                                month=request.POST.get('month'),
                                 amount=request.POST.get('amount'),
                                 discount=request.POST.get('discount'),
                                 net_amount=request.POST.get('net_amount'),
                                 remarks=request.POST.get('remarks'),
-                                customer_id=customer
-                                )
+                                status="new" if not customer else "already exists"
+                                ).save()
 
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
             
-            if request.POST.get('upload_all'):
-                Sales.objects.filter(created_on__date=timezone.now()).save()
+            elif request.POST.get('upload_bills'):
+                
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
 
-            if request.POST.get('delete_all'):
-                Sales.objects.filter(created_on__date=timezone.now()).delete()
+            elif request.POST.get('delete_all'):
+                dummyTable.objects.all().delete()
                 messages.success(request, "All today's Bills have been deleted successfully")
                 return redirect('Sales:sales')
 
             elif request.POST.get('sale_file_submit'):
-                # print("customer_file_submit")
+                print("customer_file_submit")
                 csv= request.FILES['sale_file']
                 if not csv.name.split('.')[1] in ['csv', 'xlsx', 'xls']:
                     messages.error(request, 'This is not a correct format file')
@@ -101,12 +125,14 @@ def sales(request):
                     if csv.name.split('.')[-1] in ['csv','CSV']:
                         print("csv")
                         df = pd.read_csv("."+excel_file)
+                        os.remove("."+excel_file)
                         if long_process(df):
                             messages.success(request, 'Sales csv Added Successful')
                             return HttpResponseRedirect(reverse("Sales:sales"))
                     elif csv.name.split('.')[-1] in ['xlsx','XLSX','xls','XLS']:
                         print("excel")
                         df = pd.read_excel("."+excel_file)
+                        os.remove("."+excel_file)
                         if long_process(df):
                             messages.success(request, 'Sales excel Added Successful')
                             return HttpResponseRedirect(reverse("Sales:sales"))
@@ -115,15 +141,16 @@ def sales(request):
                 messages.error(request, 'Sales Added Failed',e)
                 return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)
 
-    else:          
+    else:
+        print(dummyTable.objects.all())          
         return render(request, "Sales/sales.html", {
             'customers': Customers.objects.all(),
             'sales': Sales.objects.all(),
-            'today_sale': Sales.objects.filter(created_on__date=timezone.now()),
+            'dummy': dummyTable.objects.all().order_by('-id'),
             })
 
 def delete_items(request, pk):
-	queryset = Sales.objects.get(id=pk)
+	queryset = dummyTable.objects.get(id=pk)
 	if request.method == 'POST':
 		queryset.delete()
 		return redirect('Sales:sales')
@@ -157,34 +184,34 @@ def update_sales(request):
         try:
             if request.POST.get('update_bill'):
                 customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),
-                    customer_rank=request.POST.get('customer_rank')).first()
+                    customer_rank=request.POST.get('customer_rank'))
 
-                Sales.objects.filter(id=request.POST.get('edit_id')).update(
+                dummyTable.objects.filter(id=request.POST.get('edit_id')).update(
                     bill_no=request.POST.get('bill_no'),
-                    PoS_no=request.POST.get('PoS_no'),
+                    pos_no=request.POST.get('PoS_no'),
                     month=request.POST.get('month'),
-                    created_date=request.POST.get('date'),
+                    date=request.POST.get('date'),
                     address=request.POST.get('address'),
                     account_of=request.POST.get('account_of'),
                     amount=request.POST.get('amount'),
                     discount=request.POST.get('discount'),
                     net_amount=request.POST.get('net_amount'),
                     remarks=request.POST.get('remarks'),
-                    customer_id=customer)
+                    status="new" if not customer else "already exists",
+                    cname=request.POST.get('customer_name'),
+                    rank=request.POST.get('customer_rank'),
+                    )
                 
-                return HttpResponseRedirect(reverse("Sales:view_sales"))
+                return HttpResponseRedirect(reverse("Sales:sales"))
             if request.POST.get('cancel'):
-                return HttpResponseRedirect(reverse("Sales:view_sales"))
+                return HttpResponseRedirect(reverse("Sales:sales"))
         except Exception as e:
             messages.error(request, f'Sales Update Failed {e}')
             return HttpResponseRedirect(reverse("Sales:view_sales"))
 
     else:
-        print("edit id ",request.POST.get('edit_id'))
-        print(Sales.objects.filter(id=request.GET.get('edit_id')).select_related('customer_id').first())
         return render(request, "Sales/update_sales.html", {
-                'sales_data': Sales.objects.filter(id=request.GET.get('id')).select_related('customer_id').first(),
-                'customers': Customers.objects.all(),
+                'sales_data': dummyTable.objects.filter(id=request.GET.get('id')).first()
             })
 
 
@@ -303,6 +330,53 @@ def sales_cancel_bill(request):
         return redirect('sales:view_sales')
 
 
+
+@api_view(['POST'])
+def sales_upload(request):
+    if request.method == "POST":
+        jsons = request.data
+        print(jsons['myrows'][0])
+        for obj in jsons['myrows']:
+            if Customers.objects.filter(customer_name=obj['Name'],customer_address=obj['Address']).exists():
+                customer = Customers.objects.get(customer_name=obj['Name'],customer_address=obj['Address'])
+                Sales.objects.create(
+                    bill_no=obj['Bill No'],
+                    PoS_no=obj['POS NO'],
+                    created_date=datetime.datetime.strptime(obj['Dated'], '%d-%m-%Y').strftime('%Y-%m-%d'),
+                    month=obj['Month'],
+                    account_of=obj['On Account Of'],
+                    amount=obj['Amount'],
+                    net_amount=obj['Net Amount'],
+                    discount=obj['Discount'],
+                    customer_id=customer
+                ).save()
+            else:
+                customer=Customers.objects.create(
+                    customer_name=obj['Name'],
+                    customer_address=obj['Address'],
+                    customer_rank=obj['Rank']
+                )
+                customer.save()
+                Sales.objects.create(
+                    bill_no=obj['Bill No'],
+                    PoS_no=obj['POS NO'],
+                    created_date=datetime.datetime.strptime(obj['Dated'], '%d-%m-%Y').strftime('%Y-%m-%d'),
+                    month=obj['Month'],
+                    account_of=obj['On Account Of'],
+                    amount=obj['Amount'],
+                    net_amount=obj['Net Amount'],
+                    discount=obj['Discount'],
+                    customer_id=customer
+                ).save()
+        dummyTable.objects.all().delete()
+        return Response({"message": "Sales Data Uploaded Successfully"})
+    else:
+        return Response({"message": "Sales Data Not Uploaded"})
+            
+
+
+        return Response({"message": "Data Uploaded Successfully"})
+
 sales_templates = [
     path('sales/', sales, name='sales'),
     path('view_sales/', view_sales, name='view_sales'),
@@ -313,4 +387,5 @@ sales_templates = [
     path('api/sales/pay_bill/', sales_pay_bill, name='sales_pay_bill'),
     path('api/sales/comp_bill/', sales_comp_bill, name='sales_comp_bill'),
     path('api/sales/cancel_bill/', sales_cancel_bill, name='sales_cancel_bill'),
+    path('api/sales/sales_upload/', sales_upload, name='sales_upload')
 ]
