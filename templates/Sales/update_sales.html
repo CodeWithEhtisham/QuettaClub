@@ -80,7 +80,7 @@
                         <div class="">
                             <label class="form-label">Rank</label>
                             <select name="customer_rank" id="rank" class="form-control" aria-readonly="true">
-                                <option value="{{sales_data.customer_id.customer_rank}}">{{sales_data.customer_id.customer_rank}}</option>
+                                <option value="{{sales_data.rank}}">{{sales_data.rank}}</option>
                                 <option value="Army">Army</option>
                                 <option value="Civilian">Member</option>
                                 <option value="Staff">Staff</option>
@@ -89,7 +89,7 @@
                         </div>
                         <div class="">
                             <label class="form-label">Name</label>
-                            <input class="form-control" type="text" value="{{sales_data.customer_id.customer_name}}" name="customer_name" id="name" onkeydown="getCustomerName();">
+                            <input class="form-control" type="text" value="{{sales_data.cname}}" name="customer_name" id="name" onkeydown="getCustomerName();">
                         </div>
 
                         <div class="">

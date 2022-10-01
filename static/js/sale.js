@@ -39,18 +39,18 @@ function update_table(data) {
         // '<td>'+elem['customer_id']+'</td>' +
         '<td>' + elem['address'] + '</td>' +
         '<td>' + elem['account_of'] + '</td>' +
-        '<td>' + elem['date'] + '</td>'+
-      '<td>' + elem['amount'] + '</td>'+
+        '<td>' + elem['date'] + '</td>' +
+        '<td>' + elem['amount'] + '</td>' +
         '<td>' + elem['discount'] + '</td>' +
         '<td>' + elem['net_amount'] + '</td>' +
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href={% url "Sales:update_sales" %}?id=' +elem['sale.id'] +' style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
+        '<a href={% url "Sales:update_sales" %}?id=' + elem['sale.id'] + ' style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
         '<button class="modal" id="paid_modal" onclick="paidMOdalOpen("{{sale.id}}","{{sale.net_amount}}")" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
         '<button id="comp_modal" class="modal" onclick="compModalOpen("{{sale.id}}","{{sale.net_amount}}")">Complemantery</button>' +
         '<button id="cancel_modal" class="modal" onclick="cancelModalOpen("{{sale.id}}")" style="background-color: #dc3545;">Cancelled</button>' +
-        
+
         '</div>' +
         '</td>' +
         '</tr>'
@@ -67,7 +67,7 @@ let compModal = document.querySelector(".compModal-open")
 let cancelModal = document.querySelector(".cancelModal-open")
 
 // paid model load on click
-function paidMOdalOpen(id,value){
+function paidMOdalOpen(id, value) {
   paidModal.style.display = "block";
   document.getElementById("paid-form-id").value = id;
   document.getElementById("pay_bill_modal_balance").value = value;
@@ -137,7 +137,7 @@ function cancelModalSubmit() {
       'id': $("#cancel-form-id").val(),
       'cancel_date': $("#cancel-today-date").val(),
       'reason': $("#reason").val(),
-      "remaining_amount": $("#cancel_bill_modal_balance").val() * 0 ,
+      "remaining_amount": $("#cancel_bill_modal_balance").val() * 0,
       'amount': $("#bill_amount").val() * 0,
     },
     dataType: "json",
@@ -147,7 +147,7 @@ function cancelModalSubmit() {
 }
 
 
-function closeModal(model){
+function closeModal(model) {
   document.querySelector(model).style.display = "none";
 }
 
@@ -167,22 +167,51 @@ function closeModal(model){
 //         '-' + ('0' + cancelToday.getDate()).slice(-2);
 
 
-function todays(element_id){
+function todays(element_id) {
   let today = new Date();
-document.getElementById(element_id).value =
-  today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
-  '-' + ('0' + today.getDate()).slice(-2);
+  document.getElementById(element_id).value =
+    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+    '-' + ('0' + today.getDate()).slice(-2);
 
 }
 
 function reloadPage() {
-    window.location.reload();
+  window.location.reload();
 };
 
 setTimeout(fade_out, 4000);
-        function fade_out() {
-            $(".messages").fadeOut().empty();
-        }
-        $(".post-form")[0].reset();
+function fade_out() {
+  $(".messages").fadeOut().empty();
+}
+$(".post-form")[0].reset();
 
 
+function sendTable() {
+  var myRows = [];
+  var $headers = $("th");
+  var $rows = $("tbody tr").each(function (index) {
+    $cells = $(this).find("td");
+    myRows[index] = {};
+    $cells.each(function (cellIndex) {
+      myRows[index][$($headers[cellIndex]).html()] = $(this).html();
+    });
+  });
+
+  // Let's put this in the object like you want and convert to JSON (Note: jQuery will also do this for you on the Ajax request)
+  var myObj = {};
+  myObj.myrows = myRows;
+  
+  // Ajax request goes here
+  $.ajax({
+    type: "POST",
+    url: "/api/sales/sales_upload/",
+    data: JSON.stringify(myObj),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (data) {
+      // clear table all data
+      $("#Sales_data tbody").empty();
+    }
+  });
+
+}

@@ -89,9 +89,9 @@
                             </button>
                             <input name="sale_file" type="file" accept=".xlsx, .xls, .csv" />
 
-                            <input class="btn ml-5" type="submit" id="sale_file_submit" name="sale_file_submit">
                         </div>
                     </div>
+                    <input class="btn ml-5" type="submit" id="sale_file_submit" name="sale_file_submit">
 
                 </form>
                 <form class="post-form" action="{% url 'Sales:sales' %}" method="post">
@@ -217,21 +217,22 @@
                                 </tr>
                             </thead>
 
-                            <tbody>
-                                {% for sale in today_sale %}
-                                <tr>
+                            <tbody id="tbody">
+                                {% for sale in dummy %}
+                                {% if sale.status == "new" %}
+                                <tr style="background-color: #b0fdd3">
                                     <td>{{ sale.bill_no|default:"00" }}</td>
-                                    <td>{{sale.customer_id.customer_rank}}</td>
+                                    <td>{{sale.rank}}</td>
                                     <td>{{ sale.PoS_no|default:"00" }}</td>
-                                    <td>{{sale.customer_id.customer_name}}</td>
+                                    <td>{{sale.cname}}</td>
                                     <td>{{ sale.address|default:"--" }}</td>
                                     <td>{{ sale.account_of|default:"--" }}</td>
-                                    <td>{{ sale.datepublished }}</td>
+                                    <td>{{ sale.date }}</td>
                                     <td>{{ sale.month|default:"--" }}</td>
-                                    <td>{{ sale.amount|intcomma|default:"00" }}</td>
-                                    <td>{{ sale.discount|intcomma|default:"00" }}</td>
-                                    <td>{{ sale.net_amount|intcomma|default:"00" }}</td>
-                                    <td>{{ sale.remarks|default:" " }}</td>
+                                    <td>{{ sale.amount|default:"00" }}</td>
+                                    <td>{{ sale.discount|default:"00" }}</td>
+                                    <td>{{ sale.net_amount|default:"00" }}</td>
+                                    <td>{{ sale.status|default:" " }}</td>
                                     <td>
                                         <div class="list">
                                             <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
@@ -241,11 +242,38 @@
                                         </div>
                                     </td>
                                 </tr>
+                                {% else %}
+                                <tr style="background-color:#f67474">
+                                    <td>{{ sale.bill_no|default:"00" }}</td>
+                                    <td>{{sale.rank}}</td>
+                                    <td>{{ sale.PoS_no|default:"00" }}</td>
+                                    <td>{{sale.cname}}</td>
+                                    <td>{{ sale.address|default:"--" }}</td>
+                                    <td>{{ sale.account_of|default:"--" }}</td>
+                                    <td>{{ sale.date }}</td>
+                                    <td>{{ sale.month|default:"--" }}</td>
+                                    <td>{{ sale.amount|default:"00" }}</td>
+                                    <td>{{ sale.discount|default:"00" }}</td>
+                                    <td>{{ sale.net_amount|default:"00" }}</td>
+                                    <td>{{ sale.status|default:" " }}</td>
+                                    <td>
+                                        <div class="list">
+                                            <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
+                                                style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                            <a href="{% url 'Sales:delete_items' sale.id %}"
+                                                style="background-color: #f44336; color: black;">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>
                         <hr>
                         <div class="flex">
+                            <a class="btn" style="background-color: #481ef0; color: black;" onclick="sendTable()" >
+                                Upload All
+                            </a>
                             <button class="btn" style="background-color: #f44336; color: black;" name="delete_all"
                                 value="delete_all">
                                 Delete All
