@@ -52,22 +52,26 @@
                 </li>
             </ul>
         </div>
-
+        {% for message in messages %}
+        {% if message.tags == "error" %}
+        <div class="messages">
+            <div class="error">
+                {{message}}
+            </div>
+        </div>
+        {% else %}
+        <div class="messages">
+            <div class="success">
+                {{message}}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
         <div class="row">
             <div class="card">
                 <h2 class="title">Bill Sale / Account</h2>
                 <h2>Sale Details</h2>
-                {% for message in messages %}
-                {% if message.tags == "error" %}
-                <div class="error">
-                    {{message}}
-                </div>
-                {% else %}
-                <div class="success">
-                    {{message}}
-                </div>
-                {% endif %}
-                {% endfor %}
+
                 <form action="{% url 'Sales:sales' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row">
@@ -90,12 +94,12 @@
                     </div>
 
                 </form>
-                <form action="{% url 'Sales:sales' %}" method="post">
+                <form class="post-form" action="{% url 'Sales:sales' %}" method="post">
                     {% csrf_token %}
 
 
                     <div class="grid col-100">
-                        <input class="" hidden id="created-date" type="date" name="create_on">
+                        <input id="created-date" type="date" name="create_on" hidden>
                         <div class="grid-item">
                             <label class="form-label">Bill No</label>
                             <input class="form-control" type="text" required name="bill_no" id="bill_no"
@@ -119,7 +123,7 @@
                             <select name="customer_rank" required id="rank" class="form-control">
                                 <option value="">Select Rank</option>
                                 <option value="Army">Army</option>
-                                <option value="Civilian">Civilian</option>
+                                <option value="Civilian">Members</option>
                                 <option value="Staff">Staff</option>
                                 <option value="Other">Other</option>
                             </select>
@@ -190,68 +194,81 @@
             <div class="card">
                 <div>
                     <h2>Final Sale</h2>
-                    <table class="table" id="Sales_data">
-                        <thead class="table-header">
+                    <form method="post" class="post-form"
+                        onsubmit="return confirm('Are you sure, you want to Delete All Today Records...')">
+                        {% csrf_token %}
+                        <table class="table" id="Sales_data">
+                            <thead class="table-header">
 
-                            <tr>
-                                <th>Bill No</th>
-                                <th>Rank</th>
-                                <th>POS NO</th>
-                                <th>Name</th>
-                                <th>Address</th>
-                                <th>On Account Of</th>
-                                <th>Dated</th>
-                                <th>Month</th>
-                                <th>Amount</th>
-                                <th>Discount</th>
-                                <th>Net Amount</th>
-                                <th>Remarks</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
+                                <tr>
+                                    <th>Bill No</th>
+                                    <th>Rank</th>
+                                    <th>POS NO</th>
+                                    <th>Name</th>
+                                    <th>Address</th>
+                                    <th>On Account Of</th>
+                                    <th>Dated</th>
+                                    <th>Month</th>
+                                    <th>Amount</th>
+                                    <th>Discount</th>
+                                    <th>Net Amount</th>
+                                    <th>Remarks</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
 
-                        <tbody>
-                            {% for sale in today_sale %}
-                            <tr>
-                                <td>{{ sale.bill_no|default:"00" }}</td>
-                                <td>{{sale.customer_id.customer_rank}}</td>
-                                <td>{{ sale.PoS_no|default:"00" }}</td>
-                                <td>{{sale.customer_id.customer_name}}</td>
-                                <td>{{ sale.address|default:"--" }}</td>
-                                <td>{{ sale.account_of|default:"--" }}</td>
-                                <td>{{ sale.datepublished }}</td>
-                                <td>{{ sale.month|default:"--" }}</td>
-                                <td>{{ sale.amount|intcomma|default:"00" }}</td>
-                                <td>{{ sale.discount|intcomma|default:"00" }}</td>
-                                <td>{{ sale.net_amount|intcomma|default:"00" }}</td>
-                                <td>{{ sale.remarks|default:" " }}</td>
-                                <td>
-                                    <div class="list">
-                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Edit</a>
-                                        <!-- <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}" class="">Delete</a> -->
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-
-
-                    </table>
+                            <tbody>
+                                {% for sale in today_sale %}
+                                <tr>
+                                    <td>{{ sale.bill_no|default:"00" }}</td>
+                                    <td>{{sale.customer_id.customer_rank}}</td>
+                                    <td>{{ sale.PoS_no|default:"00" }}</td>
+                                    <td>{{sale.customer_id.customer_name}}</td>
+                                    <td>{{ sale.address|default:"--" }}</td>
+                                    <td>{{ sale.account_of|default:"--" }}</td>
+                                    <td>{{ sale.datepublished }}</td>
+                                    <td>{{ sale.month|default:"--" }}</td>
+                                    <td>{{ sale.amount|intcomma|default:"00" }}</td>
+                                    <td>{{ sale.discount|intcomma|default:"00" }}</td>
+                                    <td>{{ sale.net_amount|intcomma|default:"00" }}</td>
+                                    <td>{{ sale.remarks|default:" " }}</td>
+                                    <td>
+                                        <div class="list">
+                                            <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
+                                                style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                            <a href="{% url 'Sales:delete_items' sale.id %}"
+                                                style="background-color: #f44336; color: black;">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <hr>
+                        <div class="flex">
+                            <button class="btn" style="background-color: #f44336; color: black;" name="delete_all"
+                                value="delete_all">
+                                Delete All
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 <hr>
-                <form action="{% url 'Sales:sales' %}" method="post">
+                <!-- <form action="{% url 'Sales:sales' %}" method="post">
                     {% csrf_token %}
                     <div class="flex">
                         <button class="btn" name="upload_bills" value="upload_bills">
                             Upload
                         </button>
-                        <!-- <button class="btn cancel" name="" value="">
-                            Cancel
-                        </button> -->
+                        <button class="btn cancel" name="delete_all" value="delete_all">
+                            Delete All
+                        </button>
                     </div>
-                </form>
+                </form> -->
             </div>
+
+
         </div>
 
     </div>
@@ -290,8 +307,10 @@
         };
 
         let bill_nos = [];
+        let pos = [];
         {% for sale in sales %}
         bill_nos.push('{{ sale.bill_no }}');
+        pos.push('{{ sale.PoS_no }}');
         {% endfor %}
         // function for check duplicate bills
         function billCheck(data) {
@@ -305,11 +324,7 @@
             }
 
         }
-        let pos = [];
-        {% for sale in sales %}
-        pos.push('{{ sale.PoS_no }}');
-        {% endfor %}
-        console.log(pos)
+
         // function for check duplicate pos
         function posCheck(data) {
             if (pos.includes(data.value)) {
@@ -322,6 +337,18 @@
             }
 
         }
+        let createdDate = new Date();
+        document.getElementById("created-date").value =
+            createdDate.getFullYear() + '-' + ('0' + (createdDate.getMonth() + 1)).slice(-2) + '-' + ('0' + createdDate.getDate()).slice(-2);
+
+    </script>
+    <script>
+        document.getElementById("discount").onchange = function () {
+            var amount = document.getElementById('amount').value;
+            var discount = document.getElementById('discount').value;
+            var total = amount - discount;
+            document.getElementById('net-amount').value = total;
+        };
     </script>
 
     <script src="{% static 'js/sale.js' %}"></script>

@@ -46,10 +46,11 @@ function update_table(data) {
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href="" class="">Edit</a>' +
-        '<button id="paid_modal" class="modal">Paid</button>' +
-        '<a href="" class="">Complemantery</a>' +
-        '<a href="" class="">Cancelled</a>' +
+        '<a href={% url "Sales:update_sales" %}?id=' +elem['sale.id'] +' style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
+        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen("{{sale.id}}","{{sale.net_amount}}")" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
+        '<button id="comp_modal" class="modal" onclick="compModalOpen("{{sale.id}}","{{sale.net_amount}}")">Complemantery</button>' +
+        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen("{{sale.id}}")" style="background-color: #dc3545;">Cancelled</button>' +
+        
         '</div>' +
         '</td>' +
         '</tr>'
@@ -135,7 +136,9 @@ function cancelModalSubmit() {
     data: {
       'id': $("#cancel-form-id").val(),
       'cancel_date': $("#cancel-today-date").val(),
-      'reason': $("#reason").val()
+      'reason': $("#reason").val(),
+      "remaining_amount": $("#cancel_bill_modal_balance").val() * 0 ,
+      'amount': $("#bill_amount").val() * 0,
     },
     dataType: "json",
   })
@@ -163,8 +166,6 @@ function closeModal(model){
 // cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
 //         '-' + ('0' + cancelToday.getDate()).slice(-2);
 
-let createdDate = new Date();
-document.getElementById("created-date").value = createdDate.getFullYear() + '-' + ('0' + (createdDate.getMonth() + 1)).slice(-2) + '-' + ('0' + createdDate.getDate()).slice(-2);
 
 function todays(element_id){
   let today = new Date();
@@ -174,14 +175,14 @@ document.getElementById(element_id).value =
 
 }
 
-document.getElementById("discount").onchange = function () {
-    var amount = document.getElementById('amount').value;
-    var discount = document.getElementById('discount').value;
-    var total = amount - discount;
-    document.getElementById('net-amount').value = total;
-};
 function reloadPage() {
     window.location.reload();
 };
+
+setTimeout(fade_out, 4000);
+        function fade_out() {
+            $(".messages").fadeOut().empty();
+        }
+        $(".post-form")[0].reset();
 
 

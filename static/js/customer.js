@@ -32,7 +32,9 @@ function update_table(data) {
       '<td>' + elem['customer_id'] + '</td>' +
       '<td>' +
       '<div class="list-btn">' +
-      '<a href=' + "{% url 'Customers:customer_details' %}?id={{customer.id}}" + ' class="">All Bills</a>' +
+      '<a href="{% url "Customers:customer_bill" %}?id={{customer.id}}" style="background-color:green ;">Add a Bill</a>' +
+      '<a href="{% url "Customers:customer_details" %}?id={{customer.id}}">All Bills</a>' +
+      '<a href="{% url "Customers:customer_update" %}?id={{customer.id}}" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
       '</div>' +
       '</td>' +
       '</tr>'
@@ -89,10 +91,10 @@ function update_customer_table(data) {
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href="" class="">Edit</a>' +
-        '<button id="paid_modal" class="modal">Paid</button>' +
-        '<a href="" class="">Complemantery</a>' +
-        '<a href="" class="">Cancelled</a>' +
+        '<a href={% url "Sales:update_sales" %}?id=' +elem['sale.id'] +' style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
+        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen("{{sale.id}}","{{sale.net_amount}}")" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
+        '<button id="comp_modal" class="modal" onclick="compModalOpen("{{sale.id}}","{{sale.net_amount}}")">Complemantery</button>' +
+        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen("{{sale.id}}")" style="background-color: #dc3545;">Cancelled</button>' +
         '</div>' +
         '</td>' +
         '</tr>'
@@ -170,6 +172,7 @@ function compModalSubmit() {
 function cancelModalOpen(id) {
   cancelModal.style.display = "block";
   document.getElementById("cancel-form-id").value = id;
+  document.getElementById("cancel_bill_modal_balance").value = value;
 }
 
 // cancel modal submit button
@@ -180,28 +183,24 @@ function cancelModalSubmit() {
     data: {
       'id': $("#cancel-form-id").val(),
       'cancel_date': $("#cancel-today-date").val(),
-      'reason': $("#reason").val()
+      'reason': $("#reason").val(),
+      "remaining_amount": $("#cancel_bill_modal_balance").val() * 0,
+      'amount': $("#bill_amount").val() * 0,
     },
     dataType: "json",
   })
   cancelModal.style.display = "none";
   window.location.reload();
-}
+};
 
 let today = new Date();
-document.getElementById("today-date").value =
-  today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
-  '-' + ('0' + today.getDate()).slice(-2);
+document.getElementById("today-date").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
 let compToday = new Date();
-document.getElementById("comp-today-date").value =
-  compToday.getFullYear() + '-' + ('0' + (compToday.getMonth() + 1)).slice(-2) +
-  '-' + ('0' + compToday.getDate()).slice(-2);
+document.getElementById("comp-today-date").value = compToday.getFullYear() + '-' + ('0' + (compToday.getMonth() + 1)).slice(-2) + '-' + ('0' + compToday.getDate()).slice(-2);
 
 let cancelToday = new Date();
-document.getElementById("cancel-today-date").value =
-  cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) +
-  '-' + ('0' + cancelToday.getDate()).slice(-2);
+document.getElementById("cancel-today-date").value = cancelToday.getFullYear() + '-' + ('0' + (cancelToday.getMonth() + 1)).slice(-2) + '-' + ('0' + cancelToday.getDate()).slice(-2);
 
 // function for export to excel or csv file 
 function download_table_as_csv(Sales_data, separator = ',') {

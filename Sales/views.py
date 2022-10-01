@@ -2,7 +2,6 @@ from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
 from django.contrib import messages
-from grpc import Status
 from .models import Sales, Bill
 from Customers.models import Customers
 import pandas as pd
@@ -14,6 +13,8 @@ from django.db.models import Sum
 from django.utils import timezone
 from datetime import timedelta
 from django.db import models
+import datetime
+
 
 def long_process(df):
     try:
@@ -78,10 +79,10 @@ def sales(request):
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
 
-            # if request.POST.get('delete_bills'):
-            #     Sales.objects.filter(created_date__date=timezone.now()).delete()
-            #     messages.success(request, 'Sales Deleted Successful')
-            #     return HttpResponseRedirect(reverse("Sales:sales"))
+            if request.POST.get('delete_all'):
+                Sales.objects.filter(created_on__date=timezone.now()).delete()
+                messages.success(request, "All today's Bills have been deleted successfully")
+                return redirect('Sales:sales')
 
             elif request.POST.get('sale_file_submit'):
                 # print("customer_file_submit")
@@ -120,6 +121,16 @@ def sales(request):
             'today_sale': Sales.objects.filter(created_on__date=timezone.now()),
             })
 
+def delete_items(request, pk):
+	queryset = Sales.objects.get(id=pk)
+	if request.method == 'POST':
+		queryset.delete()
+		return redirect('Sales:sales')
+	return render(request, 'Sales/delete_items.html',{
+        'queryset': queryset
+    })
+
+
 def view_sales(request):
     if request.method == "POST":
         try:
@@ -128,7 +139,8 @@ def view_sales(request):
             pass
     else:
         return render(request, "Sales/view_sales.html",
-                {'sales_data': Sales.objects.all().exclude(created_on__date=timezone.now()).select_related('customer_id').order_by("-bill_no"),
+                {'sales_data': Sales.objects.all().select_related('customer_id').order_by("-bill_no"),
+                # exclude(created_on__date=timezone.now()).
                 'total_bills': Sales.objects.select_related('bill_no').count(),
                 'total_amount': Sales.objects.aggregate(Sum('amount'))['amount__sum'],
                 'total_discount': Sales.objects.aggregate(Sum('discount'))['discount__sum'],
@@ -176,9 +188,42 @@ def update_sales(request):
 
 
 def reports(request):
+    print(Sales.objects.filter(customer_id__id=request.GET.get(
+        "id")).select_related('customer_id').order_by("-id"))
+    if request.method == "POST":
+        if request.POST.get("report_generate"):
+            from_date = request.POST.get("from-date")
+            to_date = request.POST.get("to-date")
+            from_date = datetime.datetime.strptime(from_date, '%Y-%m-%d')
+            to_date = datetime.datetime.strptime(to_date, '%Y-%m-%d')
+
+        if request.POST.get('check'):
+            value = request.POST.get('check')
+            if value == 'all_check':
+            #     print('all check')
+                pass               
+            elif value == 'paid_check':
+                print('paid check')
+                return render(request, 'Sales/reports.html', {
+                    'record': Bill.objects.filter(status='Paid').select_related('sale_id').order_by('-id')
+                })
+            elif value == 'comp_check':
+                print('complementary check')
+                return render(request, 'Sales/reports.html', {
+                    'record': Bill.objects.filter(status='Complementery').select_related('sale_id').order_by('-id')
+                })
+            elif value == 'cancel_check':
+                print('cancel check')
+                return render(request, 'Sales/reports.html', {
+                    'record': Bill.objects.filter(status='Cancel').select_related('sale_id').order_by('-id')
+                })
+            else:
+                print('no check')
+                return render(request, 'Sales/reports.html')
     
-        return render(request, "Sales/reports.html",
-                {'sales_data': Sales.objects.select_related('customer_id').order_by("-bill_no")})
+    return render(request, 'Sales/reports.html',{
+                    'record': Bill.objects.all().select_related('sale_id').order_by('-id')
+                })
 
 @api_view(['GET'])
 def SearchbyName(request):
@@ -246,9 +291,12 @@ def sales_cancel_bill(request):
         id = request.POST.get('id')
         date = request.POST.get('cancel_date')
         reason = request.POST.get('reason')
-
+        remaining_amount = request.POST.get('remaining_amount')
+        amount = request.POST.get('amount')
         Bill.objects.create(date=date, reason=reason,
            status='Cancel', sale_id=Sales.objects.get(id=id))
+
+        Sales.objects.filter(id=id).update(amount=amount ,net_amount=remaining_amount)
         return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
 @api_view(['GET', 'POST'])
@@ -276,6 +324,7 @@ sales_templates = [
     path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
     path('reports/', reports, name='reports'),
     path('update_sales/', update_sales, name='update_sales'),
+    path('delete_items/<str:pk>/', delete_items, name="delete_items"),
     path('api/sales/pay_bill/', sales_pay_bill, name='sales_pay_bill'),
     path('api/sales/comp_bill/', sales_comp_bill, name='sales_comp_bill'),
     path('api/sales/cancel_bill/', sales_cancel_bill, name='sales_cancel_bill'),

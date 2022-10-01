@@ -22,16 +22,20 @@
 <body>
     
     {% for message in messages %}
-    {% if message.tags == "error" %}
-    <div class="error">
-        {{message}}
-    </div>
-    {% else %}
-    <div class="success">
-        {{message}}
-    </div>
-    {% endif %}
-    {% endfor %}
+        {% if message.tags == "error" %}
+        <div class="messages">
+            <div class="error">
+                {{message}}
+            </div>
+        </div>
+        {% else %}
+        <div class="messages">
+            <div class="success">
+                {{message}}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
     <div class="container">
         <div class="row">
             <div>
@@ -71,7 +75,8 @@
             <div class="card col-40">
                 <h2 class="title">Edit Customer</h2>
                 <!-- <h2> Customer</h2> -->
-                <form action="{% url 'Customers:customer_update' %}" method="post" enctype="multipart/form-data">
+                <form action="{% url 'Customers:customer_update' %}" method="post" 
+                    enctype="multipart/form-data" class="post-form">
                     {% csrf_token %}
 
                     
@@ -83,7 +88,7 @@
                             <select name="customer_rank" id="rank" class="form-control">
                                 <option value="{{customer_data.customer_rank}}">{{customer_data.customer_rank}}</option>
                                 <option value="Army">Army</option>
-                                <option value="Civilian">Civilian</option>
+                                <option value="Civilian">Members</option>
                                 <option value="Staff">Staff</option>
                                 <option value="Other">Other</option>
                             </select>
@@ -119,7 +124,13 @@
     </div>
 
     </div>
-
+    <script>
+        setTimeout(fade_out, 4000);
+        function fade_out() {
+            $(".messages").fadeOut().empty();
+        }
+        $(".post-form")[0].reset();
+    </script>
     <script src="{% static 'js/customer.js' %}"></script>
 </body>
 

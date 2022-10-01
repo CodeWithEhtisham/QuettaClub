@@ -52,17 +52,31 @@
                 </li>
             </ul>
         </div>
-
+        {% for message in messages %}
+        {% if message.tags == "error" %}
+        <div class="messages error">
+            <div class="">
+                {{message}}
+            </div>
+        </div>
+        {% else %}
+        <div class="messages success">
+            <div class="">
+                {{message}}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
         <div class="row">
             <div class="card">
                 <h2 class="title">Bill Sale / Account</h2>
                 <h2>Sale Details</h2>
-                
-                <form action="{% url 'Sales:sales' %}" method="post">
+
+                <form action="{% url 'Sales:sales' %}" method="post" class="post-form" id="post-form">
                     {% csrf_token %}
 
                     <div class="grid col-100">
-                        <input class="" hidden id="created-date" type="date" name="create_on">
+                        <input class="" id="created-date" type="date" name="create_on" hidden>
                         <div class="grid-item">
                             <label class="form-label">Bill No</label>
                             <input class="form-control" type="text" required name="bill_no" id="bill_no"
@@ -128,15 +142,15 @@
                         </div>
                         <div class="">
                             <label class="form-label">Amount</label>
-                            <input class="form-control" type="text" name="amount" required>
+                            <input class="form-control" type="text" name="amount" id="amount" required>
                         </div>
                         <div class="">
                             <label class="form-label">Discount</label>
-                            <input class="form-control" type="text" name="discount" required value="0">
+                            <input class="form-control" type="text" name="discount" id="discount" required value="0">
                         </div>
                         <div class="">
                             <label class="form-label">Net Amount</label>
-                            <input class="form-control" type="text" name="net_amount" required>
+                            <input class="form-control" type="text" name="net_amount" id="net-amount" required>
                         </div>
                         <div class="">
                             <label class="form-label">Remarks</label>
@@ -148,9 +162,9 @@
                         <button class="btn" name="save_bill" value="save_bill">
                             Save
                         </button>
-                        <button class="btn cancel">
+                        <a class="btn cancel" href="{% url 'Customers:customers' %}">
                             Cancel
-                        </button>
+                        </a>
                     </div>
                 </form>
             </div>
@@ -223,20 +237,16 @@
 
     </div>
     <script>
-        var bill_nos = [];
+        let createdDate = new Date();
+        document.getElementById("created-date").value = createdDate.getFullYear() + '-' + ('0' + (createdDate.getMonth() + 1)).slice(-2) + '-' + ('0' + createdDate.getDate()).slice(-2);
+
+        let bill_nos = [];
         let pos = [];
         {% for sale in sales %}
         bill_nos.push('{{ sale.bill_no }}');
         pos.push('{{ sale.PoS_no }}');
         {% endfor %}
 
-        let sale_today = new Date();
-        document.getElementById("sale-today-date").value = sale_today.getFullYear() + '-' + ('0' + (sale_today.getMonth() + 1)).slice(-2) + '-' + ('0' + sale_today.getDate()).slice(-2);
-
-        let createdDate = new Date();
-        document.getElementById("created-date").value = createdDate.getFullYear() + '-' + ('0' + (createdDate.getMonth() + 1)).slice(-2) + '-' + ('0' + createdDate.getDate()).slice(-2);
-
-        
         // function for check duplicate bills
         function billCheck(data) {
             if (bill_nos.includes(data.value)) {
@@ -262,8 +272,25 @@
             }
 
         };
-        
 
+        document.getElementById("discount").onchange = function () {
+            var amount = document.getElementById('amount').value;
+            var discount = document.getElementById('discount').value;
+            var total = amount - discount;
+            document.getElementById('net-amount').value = total;
+        };
+    </script>
+    <script>
+        let sale_today = new Date();
+        document.getElementById("sale-today-date").value =
+            sale_today.getFullYear() + '-' + ('0' + (sale_today.getMonth() + 1)).slice(-2) + '-' + ('0' + sale_today.getDate()).slice(-2);
+    </script>
+    <script>
+        setTimeout(fade_out, 4000);
+        function fade_out() {
+            $(".messages").fadeOut().empty();
+        }
+        $(".post-form")[0].reset();
     </script>
 
 </body>

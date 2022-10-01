@@ -47,11 +47,14 @@ def customers(request):
     if request.method == 'POST':
         try:
             if request.POST.get('Save'):
-                for address in Customers.objects.all():
-                    if (address.customer_address == request.POST.get('customer_address') and 
-                        address.customer_rank == request.POST.get('customer_rank') and 
-                        address.customer_name == request.POST.get('customer_name')):
-                        messages.error(request, 'Customer is Already Exists')
+                if Customers.objects.filter(
+                    customer_address =request.POST.get('customer_address'),
+                    customer_name=request.POST.get("customer_name"),
+                    customer_rank=request.POST.get('customer_rank')).exists():
+                    messages.error(request, 'Customer is Already Exists')
+                    return redirect('Customers:customers')
+                if Customers.objects.filter(customer_id=request.POST.get('customer_id')).exists():
+                        messages.error(request, 'Customer ID is Already Exists')
                         return redirect('Customers:customers')
                 else:
                     Customers(customer_name=request.POST.get('customer_name'),
@@ -125,6 +128,32 @@ def customer_update(request):
 def customer_details(request):
     print(Sales.objects.filter(customer_id__id=request.GET.get(
         "id")).select_related('customer_id').order_by("-id"))
+    if request.method == "POST":
+        if request.POST.get('check'):
+            value = request.POST.get('check')
+            if value == 'all_check':
+                print('all check')
+                return render(request, 'Customers/customer_details.html',{
+                    'all_bills': Bill.objects.all().select_related('sale_id').order_by('-id')
+                })
+            elif value == 'paid_check':
+                print('paid check')
+                return render(request, 'Customers/customer_details.html', {
+                    'paid': Bill.objects.filter(status='Paid').select_related('sale_id').order_by('-id')
+                })
+            elif value == 'comp_check':
+                print('complementary check')
+                return render(request, 'Customers/customer_details.html', {
+                    'paid': Bill.objects.filter(status='Complementery').select_related('sale_id').order_by('-id')
+                })
+            elif value == 'cancel_check':
+                print('cancel check')
+                return render(request, 'Customers/customer_details.html', {
+                    'paid': Bill.objects.filter(status='Cancel').select_related('sale_id').order_by('-id')
+                })
+            else:
+                print('no check')
+                return render(request, 'Customers/customer_details.html')
     return render(request, "Customers/customer_details.html", {
         'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")
         })
@@ -133,6 +162,9 @@ def customer_details(request):
 def customer_bill(request):
     if request.method == 'POST':
         if request.POST.get('save_bill'):
+            if Bill.objects.filter(sale_id__id=request.POST.get('sale_id')).exists():
+                messages.error(request, 'This Bill No is Already Exists')
+                return redirect('Customers:customer_bill')
             customer = Customers.objects.filter(
                 customer_name=request.POST.get('customer_name'),
                 customer_rank=request.POST.get('customer_rank')).first()
@@ -151,12 +183,12 @@ def customer_bill(request):
                               customer_id=customer
                               ).save()
             messages.success(request, 'Sales Added Successful')
-            # return render(request, "Customers/customers.html",)
-            return HttpResponse("success")
+            return redirect("Customers:customers")
+            # return HttpResponse("success")
     else:
         return render(request, 'Customers/customer_bill.html', {
             'customer_data': Customers.objects.filter(id=request.GET.get("id")).first(),
-            # 'today_sale': Sales.objects.filter(created_on__date=timezone.now())
+            'sales': Sales.objects.all()
         })
 
 
@@ -172,6 +204,8 @@ def SearchCustomer(request):
             return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
         elif field == 'ID':
             return Response(CustomersSerializer(Customers.objects.filter(customer_id__icontains=value).order_by('-id'), many=True).data)
+        elif field == 'Address':
+            return Response(CustomersSerializer(Customers.objects.filter(customer_address__icontains=value).order_by('-id'), many=True).data)
 
     except Exception as e:
         return Response({"message": "No data found {}".format(e)})
@@ -221,9 +255,14 @@ def cancel_bill(request):
         id = request.POST.get('id')
         date = request.POST.get('cancel_date')
         reason = request.POST.get('reason')
+        remaining_amount = request.POST.get('remaining_amount')
+        remaining_amount = 0
+        amount = request.POST.get('amount')
+        amount = 0
 
         Bill.objects.create(date=date, reason=reason,
                             status='Cancel', sale_id=Sales.objects.get(id=id))
+        Sales.objects.filter(id=id).update(amount=amount ,net_amount=remaining_amount)
         return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
 

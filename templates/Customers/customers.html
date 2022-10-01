@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script> -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
- 
+
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> -->
- 
+
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet"
         type="text/css" />
     <title>Quetta Club</title>
@@ -53,24 +53,27 @@
                 </li>
             </ul>
         </div>
-
+        {% for message in messages %}
+        {% if message.tags == "error" %}
+        <div class="messages">
+            <div class="error">
+                {{message}}
+            </div>
+        </div>
+        {% else %}
+        <div class="messages">
+            <div class="success">
+                {{message}}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
         <div class="row">
             <!-- Add customer -->
             <div class="card col-40">
-                <form action="{% url 'Customers:customers' %}" method="POST" enctype="multipart/form-data">
+                <form action="{% url 'Customers:customers' %}" method="POST" class="post-form"
+                    enctype="multipart/form-data">
                     {% csrf_token %}
-
-                    {% for message in messages %}
-                        {% if message.tags == "error" %}
-                        <div class="error" id="message">
-                            {{message}}
-                        </div>
-                        {% else %}
-                        <div class="success" id="message">
-                            {{message}}
-                        </div>
-                        {% endif %}
-                        {% endfor %}
                     <div class="row">
                         <h3 class="title">
                             Add Customers
@@ -105,24 +108,26 @@
                         </div>
                         <div class="form-group">
                             <label for="" class="form-label">Customer Name</label>
-                            <input type="text" class="form-control" name="customer_name" id="customer_name" required 
-                            placeholder="customer name" onchange="customerCheck(this)">
+                            <input type="text" class="form-control" name="customer_name" id="customer_name" required
+                                placeholder="customer name" onchange="customerCheck(this)">
                             <!-- {{form.customer_rank}} -->
                         </div>
                         <div class="form-group">
-                            
-                        
+
+
                             <label for="" class="form-label">Address</label>
-                            <input type="text" class="form-control" required name="customer_address" placeholder="customer address">
-                            
+                            <input type="text" class="form-control" required name="customer_address"
+                                placeholder="customer address">
+
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="" class="form-label">Customer ID</label>
-                            <input type="text" class="form-control" name="customer_id" placeholder="customer id">
+                            <input type="text" class="form-control" name="customer_id" placeholder="customer id"
+                                required>
                             <!-- {{form.customer_id}} -->
                         </div>
-                        
+
                     </div>
 
                     <hr>
@@ -137,7 +142,7 @@
             <!-- Customers -->
             <div class="card col-60">
                 <div>
-                    
+
                     <!-- <h2>Customers</h2> -->
                     <!-- <div class="choose_file ml-5">
                         <button type="button" class="icon" onclick="download_table_as_csv('Customers_Data');">
@@ -156,9 +161,11 @@
                                 <option value="Name">Name</option>
                                 <option value="Rank">Rank</option>
                                 <option value="ID">ID</option>
+                                <option value="Address">Address</option>
                             </select>
-                            <input type="search" name="search_value" id="search_value" oninput="SearchCustomer();"  class="form-control ml-5 search" placeholder="search ....">
-                            
+                            <input type="search" name="search_value" id="search_value" oninput="SearchCustomer();"
+                                class="form-control ml-5 search" placeholder="search ....">
+
                         </div>
                         <!--  -->
                         <div class="choose_file ml-5">
@@ -174,7 +181,7 @@
                     <table class="table" id="Customers_Data">
                         <thead class="table-header">
                             <tr>
-                                <th>ID</th>
+                                <!-- <th>ID</th> -->
                                 <th>Rank</th>
                                 <th>Name</th>
                                 <th>Address</th>
@@ -185,16 +192,18 @@
                         <tbody>
                             {% for customer in customers %}
                             <tr>
-                                <td>{{ customer.id}}</td>
+                                <!-- <td>{{ customer.id}}</td> -->
                                 <td>{{ customer.customer_rank|default:"--" }}</td>
                                 <td>{{ customer.customer_name|default:"--" }}</td>
                                 <td>{{ customer.customer_address|default:"--" }}</td>
                                 <td>{{ customer.customer_id|default:"Nil" }}</td>
                                 <td>
                                     <div class="list-btn">
-                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}" class="">Add a Bill</a>
-                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}" class="">All Bills</a>
-                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}" class="">Edit</a>
+                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}"
+                                            style="background-color:green ;">Add a  Bill</a>
+                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}">All Bills</a>
+                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}"
+                                            style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
                                     </div>
                                 </td>
                             </tr>
@@ -207,7 +216,7 @@
         </div>
 
     </div>
-    <script>
+    <script text="javascript">
         function download_table_as_csv(Customers_Data, separator = ',') {
             // Select rows from table_id
             var rows = document.querySelectorAll('table#' + Customers_Data + ' tr');
@@ -236,13 +245,17 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        };
-
-        $(document).ready(function() {
-    // messages timeout for 10 sec 
-    setTimeout(function() {
-        $('.success').fadeOut('slow');
-    }, 4000); // <-- time in milliseconds, 1000 =  1 sec
+        }
+        
+    </script>
+    <script>
+        $(document).ready(function () {
+            // messages timeout for 4 sec 
+            setTimeout(fade_out, 4000);
+            function fade_out() {
+                $(".messages").fadeOut().empty();
+            }
+            $(".post-form")[0].reset();
     </script>
     <script src="{% static 'js/customer.js' %}"></script>
 </body>

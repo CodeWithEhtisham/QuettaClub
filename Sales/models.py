@@ -10,7 +10,7 @@ class Sales(models.Model):
     PoS_no = models.CharField(max_length=50, null=False, blank=False)
     month = models.CharField(max_length=50, null=False, blank=False)
     created_date = models.DateTimeField()
-    created_on  = models.DateTimeField(default=timezone.now)
+    created_on  = models.DateTimeField(auto_now_add=True)
     address = models.CharField(max_length=50, null=False, blank=False)
     account_of = models.CharField(max_length=50, null=False, blank=False)
     amount = models.PositiveIntegerField()
