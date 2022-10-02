@@ -157,15 +157,15 @@
             <form action="{% url 'Customers:signin' %}" method="post" class="post-form">
                 {% csrf_token %}
                 <div class="form-field">
-                    <input type="text" placeholder="Username" required />
+                    <input type="text" placeholder="Username" name="username" required />
                 </div>
 
                 <div class="form-field">
-                    <input type="password" placeholder="Password" required />
+                    <input type="password" placeholder="Password" name="password" required />
                 </div>
 
                 <div class="form-field">
-                    <button class="btn" type="submit">Log in</button>
+                    <button class="btn" type="submit" name="login_button" value="login_button">Log in</button>
                 </div>
         </div>
         <div class="ownsoft">

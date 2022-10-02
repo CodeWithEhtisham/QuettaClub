@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from .serializer import CustomersSerializer
 from django.utils import timezone
 from django.contrib.auth.models import User, auth
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 
 
@@ -44,32 +44,58 @@ def long_process(df):
 
 def signin(request):
     if request.method == 'POST':
-        if request.POST.get('login-button'):
-            username = request.POST['username']
-            password = request.POST['password']
-            user = authenticate(username=username, password=password)
-            if user is not None and user.is_active and user.is_authenticated:
-                login(request, user)
-                messages.success(request, f"You are now logged in as {username}")
-                return redirect('index')
-            else:
-                messages.error(request, "Invalid Credentials")
-                return redirect('Customers:signin')
+        try:
+            if request.POST.get('login_button'):
+                username = request.POST.get('username')
+                password = request.POST.get('password')
+                # user = authenticate(username=username, password=password)
+                # print('user: ', user)
+                # if user is not None and user.is_active and user.is_authenticated:
+                #     login(request, user)
+                #     messages.success(request, f"You are now logged in as {username}")
+                #     return redirect('index')
+                # else:
+                #     messages.error(request, "Invalid Credentials")
+                #     return redirect('Customers:signin')
+                if User.objects.get(username=username):
+                    user = User.objects.get(username=username)
+                    auth = authenticate(
+                        username=user.username, password=password)
+                    print('user: ', user)
+                # if user is not None and user.is_authenticated:
+                    if auth:
+                        print('auth')
+                        login(request, user)
+                        messages.success(
+                            request, f"You are now logged in as {username}")
+                        return HttpResponseRedirect(reverse('Customers:index'))
+                    else:
+                        print('user login failed')
+                        messages.error(request, "Invalid username or password")
+                        return HttpResponseRedirect(reverse('Customers:signin'))
+                else:
+                    print('user login failed')
+                    messages.error(request, "Invalid user")
+                    return HttpResponseRedirect(reverse('Customers:signin'))
+        except Exception as e:
+            print('login error', e)
+            messages.error(request, "Invalid user")
+            return HttpResponseRedirect(reverse('Customers:signin'))
     else:
         return render(request, 'Customers/signin.html')
 
-def signout(request):
-    logout(request)
-    return render(request, 'Customers/signin.html')
+
+
 
 @login_required
 def index(request):
-    # if request.user.is_authenticated:
+
     return render(request, "index.html")
-    # else:
-        # return render(request, 'Customers/signin.html')
 
-
+def logout_user(request):
+    logout(request)
+    return render(request, 'Customers/signin.html')
+@login_required
 def customers(request):
     if request.method == 'POST':
         try:
@@ -134,6 +160,7 @@ def customers(request):
                       {'customers': Customers.objects.all().order_by("-id")
                        })
 
+
 @login_required
 def customer_update(request):
     if request.method == 'POST':
@@ -152,6 +179,7 @@ def customer_update(request):
     else:
         return render(request, "Customers/customer_update.html",
                       {'customer_data': Customers.objects.filter(id=request.GET.get("id")).first()})
+
 
 @login_required
 def customer_details(request):
@@ -186,6 +214,7 @@ def customer_details(request):
     return render(request, "Customers/customer_details.html", {
         'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")
     })
+
 
 @login_required
 def customer_bill(request):
@@ -298,12 +327,12 @@ def cancel_bill(request):
 index_template = [
     path('', index, name='index'),
     path('signin/', signin, name='signin'),
-    paht('signout', signout, name='signout'),
     path('index/', index, name='index'),
     path('customers/', customers, name='customers'),
     path('customer_details/', customer_details, name='customer_details'),
     path('customer_update/', customer_update, name='customer_update'),
     path('customer_bill/', customer_bill, name='customer_bill'),
+    path('logout', logout_user, name='logout'),
     # api url paths
     path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('api/customer/pay_bill/', pay_bill, name='pay_bill'),

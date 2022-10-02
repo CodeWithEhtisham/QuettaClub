@@ -32,12 +32,12 @@
                 </li>
                 <li>
                     <a href="{% url 'Sales:sales' %}">
-                        <div>Sales</div>
+                        <div>Bills</div>
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'Sales:view_sales' %}">
-                        <div>View Sales</div>
+                        <div>View Bills</div>
                     </a>
                 </li>
                 <li class="">
@@ -49,7 +49,9 @@
                 
             </ul>
             <div>
-                <a id="login-button" ms-hide-element="true" href="" class="button logout login w-button">Login</a>
+                
+                <a id="login-button" ms-hide-element="true" href="{% url 'Customers:logout' %}" class="button logout login w-button">Log out</a>
+                
             </div>
         </div>
     </div>

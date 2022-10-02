@@ -14,6 +14,7 @@ from django.db.models import Sum
 import datetime
 import re
 import os
+from django.contrib.auth.decorators import login_required
 
 def long_process(df):
     try:
@@ -73,6 +74,7 @@ def long_process(df):
         print(e)
         return False
 
+@login_required
 def sales(request):
     print("###############################################",request.method)
     print("dummy date ",dummyTable.objects.values().last())
@@ -161,7 +163,7 @@ def delete_items(request, pk):
         'queryset': queryset
     })
 
-
+@login_required
 def view_sales(request):
     if request.method == "POST":
         try:
@@ -217,7 +219,7 @@ def update_sales(request):
                 'sales_data': dummyTable.objects.filter(id=request.GET.get('id')).first()
             })
 
-
+@login_required
 def reports(request):
     print(Sales.objects.filter(customer_id__id=request.GET.get(
         "id")).select_related('customer_id').order_by("-id"))
