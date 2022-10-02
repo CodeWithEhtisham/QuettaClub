@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from .serializer import SalesSerializer
 from django.db.models import Sum
 import datetime
+import re
 import os
 
 def long_process(df):
@@ -74,13 +75,14 @@ def long_process(df):
 
 def sales(request):
     print("###############################################",request.method)
+    print("dummy date ",dummyTable.objects.values().last())
     if request.method == 'POST':
         try:
             if request.POST.get('Save'):
                 print(request.POST.get('customer_name'))
                 
                 customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),customer_rank=request.POST.get('customer_rank'))
-                print(customer)
+                # print(customer)
                 dummyTable.objects.create(
                                 bill_no=request.POST.get('bill_no'),
                                 rank=request.POST.get('customer_rank'),
@@ -96,7 +98,7 @@ def sales(request):
                                 remarks=request.POST.get('remarks'),
                                 status="new" if not customer else "already exists"
                                 ).save()
-
+                print('dummy date ',dummyTable.date)
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
             
@@ -334,6 +336,8 @@ def sales_cancel_bill(request):
 
 @api_view(['POST'])
 def sales_upload(request):
+    print("sale sale sale get ")
+    print('sale data ', Sales.objects.values().last())
     if request.method == "POST":
         jsons = request.data
         print(jsons['myrows'][0])
@@ -343,14 +347,15 @@ def sales_upload(request):
                 Sales.objects.create(
                     bill_no=obj['Bill No'],
                     PoS_no=obj['POS NO'],
-                    created_date=datetime.datetime.strptime(obj['Dated'], '%d-%m-%Y').strftime('%Y-%m-%d'),
-                    month=obj['Month'],
+                    created_date=datetime.datetime.strptime(obj['Dated'], "%d-%m-%Y").date(),
+                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
                     account_of=obj['On Account Of'],
                     amount=obj['Amount'],
                     net_amount=obj['Net Amount'],
                     discount=obj['Discount'],
                     customer_id=customer
                 ).save()
+                print('sale date: ',Sales.objects.values().last())
             else:
                 customer=Customers.objects.create(
                     customer_name=obj['Name'],
@@ -361,14 +366,15 @@ def sales_upload(request):
                 Sales.objects.create(
                     bill_no=obj['Bill No'],
                     PoS_no=obj['POS NO'],
-                    created_date=datetime.datetime.strptime(obj['Dated'], '%d-%m-%Y').strftime('%Y-%m-%d'),
-                    month=obj['Month'],
+                    created_date=datetime.datetime.strptime(obj['Dated'], "%d-%m-%Y").date(),
+                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
                     account_of=obj['On Account Of'],
                     amount=obj['Amount'],
                     net_amount=obj['Net Amount'],
                     discount=obj['Discount'],
                     customer_id=customer
                 ).save()
+                print(dummyTable.objects.values().last())
         dummyTable.objects.all().delete()
         return Response({"message": "Sales Data Uploaded Successfully"})
     else:

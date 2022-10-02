@@ -77,25 +77,22 @@
                         <!--  -->
                         <form class="row" action="{% url 'Sales:reports' %}" method="post">
                             {% csrf_token %}
-                            <div class="form-data ml-5">
-                                <label for="" class="form-label">All</label>
-                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="all_check" onclick="onlyOne(this)">
-                            </div>
+                            
                             <div class="form-data ml-5">
                                 <label for="" class="form-label">Paid</label>
+                                <hr>
                                 <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="paid_check" onclick="onlyOne(this)">
+                                    value="paid_check" onclick="onlyOne(this)" style="width:20px; height:20px;">
                             </div>
                             <div class="form-data ml-5">
-                                <label for="" class="form-label">Complementary</label>
+                                <label for="" class="form-label">Complementary</label><hr>
                                 <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="comp_check" onclick="onlyOne(this)">
+                                    value="comp_check" onclick="onlyOne(this)" style="width:20px; height:20px;">
                             </div>
                             <div class="form-data ml-5">
-                                <label for="" class="form-label">Cancelled</label>
+                                <label for="" class="form-label">Cancelled</label><hr>
                                 <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="cancel_check" onclick="onlyOne(this)">
+                                    value="cancel_check" onclick="onlyOne(this)" style="width:20px; height:20px;">
                             </div>
                             <div class="flex flex-row gap-x-2 ml-5">
                                 <div class="form-data ml-5">
@@ -116,7 +113,7 @@
                                 <button class="icon" name="report_generate" value="report_generate"><strong>Generate</strong></button>
                             </div>
                             <div class="form-data ml-5">
-                                <button type="button" class="icon" id="print_bills">Print</button>
+                                <input type="button" class="icon" id="print_bill" value=" Print " style="font-weight: bold;"/>
                             </div>
 
                             <div class="choose_file ml-5">
@@ -292,6 +289,8 @@
                 if (item !== checkbox) item.checked = false
             })
         }
+        const print = document.getElementById('print_bill');
+        print.addEventListener('click', () => {window.print();});
     </script>
     <script src="{% static 'js/sales.js' %}"></script>
     <script src="{% static 'js/report.js' %}"></script>

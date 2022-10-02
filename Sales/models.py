@@ -10,7 +10,7 @@ class Sales(models.Model):
     bill_no = models.CharField(max_length=50)
     PoS_no = models.CharField(max_length=50, null=False, blank=False)
     month = models.CharField(max_length=50, null=False, blank=False)
-    created_date = models.DateTimeField()
+    created_date = models.DateField()
     created_on  = models.DateTimeField(auto_now_add=True)
     address = models.CharField(max_length=50, null=False, blank=False)
     account_of = models.CharField(max_length=50, null=False, blank=False)
@@ -20,8 +20,8 @@ class Sales(models.Model):
     remarks = models.CharField(max_length=50, null=True, blank=True)    
     customer_id = models.ForeignKey(Customers, on_delete=models.CASCADE, null=True, blank=True)
 
-    def datepublished(self):
-        return self.created_date.strftime('%B %d %Y')
+    def publish_date(self):
+        return self.created_date.strftime('%d-%m-%Y')
 
 
 

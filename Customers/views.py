@@ -13,6 +13,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import CustomersSerializer
 from django.utils import timezone
+from django.contrib.auth.models import User, auth
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 
 
 def long_process(df):
@@ -21,7 +24,7 @@ def long_process(df):
         df.drop(df.index[0], inplace=True)
         # rename columns
         df.rename(columns={'Name': 'customer_name', 'Rank': 'customer_rank',
-                  'Ser No ': 'customer_id'}, inplace=True)
+                           'Ser No ': 'customer_id'}, inplace=True)
         print(df.columns)
         cols = ['customer_name', 'customer_rank', 'customer_id']
         df = df[cols]
@@ -36,11 +39,35 @@ def long_process(df):
         print("failed", e)
         return False
 
-##################################### Add & details Customer Functions ##########################################
+##################################### Add & details Customer Functions ###
 
 
+def signin(request):
+    if request.method == 'POST':
+        if request.POST.get('login-button'):
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+            if user is not None and user.is_active and user.is_authenticated:
+                login(request, user)
+                messages.success(request, f"You are now logged in as {username}")
+                return redirect('index')
+            else:
+                messages.error(request, "Invalid Credentials")
+                return redirect('Customers:signin')
+    else:
+        return render(request, 'Customers/signin.html')
+
+def signout(request):
+    logout(request)
+    return render(request, 'Customers/signin.html')
+
+@login_required
 def index(request):
+    # if request.user.is_authenticated:
     return render(request, "index.html")
+    # else:
+        # return render(request, 'Customers/signin.html')
 
 
 def customers(request):
@@ -48,14 +75,14 @@ def customers(request):
         try:
             if request.POST.get('Save'):
                 if Customers.objects.filter(
-                    customer_address =request.POST.get('customer_address'),
-                    customer_name=request.POST.get("customer_name"),
-                    customer_rank=request.POST.get('customer_rank')).exists():
+                        customer_address=request.POST.get('customer_address'),
+                        customer_name=request.POST.get("customer_name"),
+                        customer_rank=request.POST.get('customer_rank')).exists():
                     messages.error(request, 'Customer is Already Exists')
                     return redirect('Customers:customers')
                 if Customers.objects.filter(customer_id=request.POST.get('customer_id')).exists():
-                        messages.error(request, 'Customer ID is Already Exists')
-                        return redirect('Customers:customers')
+                    messages.error(request, 'Customer ID is Already Exists')
+                    return redirect('Customers:customers')
                 else:
                     Customers(customer_name=request.POST.get('customer_name'),
                               customer_rank=request.POST.get('customer_rank'),
@@ -81,13 +108,13 @@ def customers(request):
                     print("." + excel_file)
                     print(csv.name.split('.')[-1])
                     if csv.name.split('.')[-1] in ['csv', 'CSV']:
-                        df = pd.read_csv("."+excel_file)
+                        df = pd.read_csv("." + excel_file)
                         if long_process(df):
                             messages.success(request, 'csv added to database')
                             return HttpResponseRedirect(reverse('Customers:customers'))
                     elif csv.name.split('.')[-1] in ['xlsx', 'XLSX', 'xls', 'XLS']:
                         print("excel")
-                        df = pd.read_excel("."+excel_file)
+                        df = pd.read_excel("." + excel_file)
                         if long_process(df):
                             messages.success(
                                 request, 'excel added to database')
@@ -95,7 +122,9 @@ def customers(request):
 
                     raise Exception("File not found")
             # if request.POST.get('edit_customer'):
-            #     return render(request, "Customers/customer_update.html", {'customer_data': Customers.objects.filter(id=request.POST.get("cid"))[0]})
+            # return render(request, "Customers/customer_update.html",
+            # {'customer_data':
+            # Customers.objects.filter(id=request.POST.get("cid"))[0]})
 
         except Exception as e:  # Exception as e:
             messages.error(request, 'Customer Added Failed {}'.format(e))
@@ -105,7 +134,7 @@ def customers(request):
                       {'customers': Customers.objects.all().order_by("-id")
                        })
 
-
+@login_required
 def customer_update(request):
     if request.method == 'POST':
         try:
@@ -124,7 +153,7 @@ def customer_update(request):
         return render(request, "Customers/customer_update.html",
                       {'customer_data': Customers.objects.filter(id=request.GET.get("id")).first()})
 
-
+@login_required
 def customer_details(request):
     print(Sales.objects.filter(customer_id__id=request.GET.get(
         "id")).select_related('customer_id').order_by("-id"))
@@ -133,7 +162,7 @@ def customer_details(request):
             value = request.POST.get('check')
             if value == 'all_check':
                 print('all check')
-                return render(request, 'Customers/customer_details.html',{
+                return render(request, 'Customers/customer_details.html', {
                     'all_bills': Bill.objects.all().select_related('sale_id').order_by('-id')
                 })
             elif value == 'paid_check':
@@ -156,9 +185,9 @@ def customer_details(request):
                 return render(request, 'Customers/customer_details.html')
     return render(request, "Customers/customer_details.html", {
         'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")
-        })
+    })
 
-
+@login_required
 def customer_bill(request):
     if request.method == 'POST':
         if request.POST.get('save_bill'):
@@ -170,18 +199,18 @@ def customer_bill(request):
                 customer_rank=request.POST.get('customer_rank')).first()
 
             Sales(bill_no=request.POST.get('bill_no'),
-                              PoS_no=request.POST.get('PoS_no'),
-                              month=request.POST.get('month'),
-                              created_date=request.POST.get('date'),
-                              created_on=request.POST.get('created_on'),
-                              address=request.POST.get('address'),
-                              account_of=request.POST.get('account_of'),
-                              amount=request.POST.get('amount'),
-                              discount=request.POST.get('discount'),
-                              net_amount=request.POST.get('net_amount'),
-                              remarks=request.POST.get('remarks'),
-                              customer_id=customer
-                              ).save()
+                  PoS_no=request.POST.get('PoS_no'),
+                  month=request.POST.get('month'),
+                  created_date=request.POST.get('date'),
+                  created_on=request.POST.get('created_on'),
+                  address=request.POST.get('address'),
+                  account_of=request.POST.get('account_of'),
+                  amount=request.POST.get('amount'),
+                  discount=request.POST.get('discount'),
+                  net_amount=request.POST.get('net_amount'),
+                  remarks=request.POST.get('remarks'),
+                  customer_id=customer
+                  ).save()
             messages.success(request, 'Sales Added Successful')
             return redirect("Customers:customers")
             # return HttpResponse("success")
@@ -258,15 +287,18 @@ def cancel_bill(request):
         remaining_amount = request.POST.get('remaining_amount')
         amount = request.POST.get('amount')
         Bill.objects.create(date=date, reason=reason,
-           status='Cancel', sale_id=Sales.objects.get(id=id))
+                            status='Cancel', sale_id=Sales.objects.get(id=id))
 
-        Sales.objects.filter(id=id).update(amount=amount ,net_amount=remaining_amount)
+        Sales.objects.filter(id=id).update(
+            amount=amount, net_amount=remaining_amount)
         messages.success(request, "Bill Cancelled Successfully")
         return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
-
+# urls paths and apis
 index_template = [
     path('', index, name='index'),
+    path('signin/', signin, name='signin'),
+    paht('signout', signout, name='signout'),
     path('index/', index, name='index'),
     path('customers/', customers, name='customers'),
     path('customer_details/', customer_details, name='customer_details'),

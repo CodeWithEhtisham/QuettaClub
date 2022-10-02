@@ -138,7 +138,7 @@
                                 <td>{{sale.customer_id.customer_name}}</td>
                                 <td>{{ sale.customer_id.customer_address|default_if_none:"--" }}</td>
                                 <td>{{ sale.account_of|default_if_none:"--" }}</td>
-                                <td>{{ sale.datepublished }}</td>
+                                <td>{{ sale.publish_date }}</td>
                                 <td>{{ sale.month|default_if_none:"--" }}</td>
                                 <td>{{ sale.amount|intcomma|default_if_none:"00" }}</td>
                                 <td>{{ sale.discount|intcomma|default_if_none:"00" }}</td>
