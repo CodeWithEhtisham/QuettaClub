@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User, auth
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Count
 
 
 def long_process(df):
@@ -157,7 +158,8 @@ def customers(request):
             return HttpResponseRedirect(reverse('Customers:customers'))
     else:
         return render(request, 'Customers/customers.html',
-                      {'customers': Customers.objects.all().order_by("-id")
+                      {'customers': Customers.objects.all().order_by("-id"),
+                      'total_bills_amount': Sales.objects.values('customer_id').annotate(bills_count=Count('bill_no'), total_amount=Sum('net_amount')),
                        })
 
 
@@ -261,7 +263,7 @@ def SearchCustomer(request):
         elif field == 'Rank':
             return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
         elif field == 'ID':
-            return Response(CustomersSerializer(Customers.objects.filter(customer_id__icontains=value).order_by('-id'), many=True).data)
+            return Response(CustomersSerializer(Customers.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
         elif field == 'Address':
             return Response(CustomersSerializer(Customers.objects.filter(customer_address__icontains=value).order_by('-id'), many=True).data)
 
@@ -318,14 +320,15 @@ def cancel_bill(request):
         Bill.objects.create(date=date, reason=reason,
                             status='Cancel', sale_id=Sales.objects.get(id=id))
 
-        Sales.objects.filter(id=id).update(
-            amount=amount, net_amount=remaining_amount)
+        remaining_amount = 0
+        amount = 0
+        Sales.objects.filter(id=id).update(amount=amount ,net_amount=remaining_amount)
         messages.success(request, "Bill Cancelled Successfully")
         return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
 # urls paths and apis
 index_template = [
-    path('', index, name='index'),
+    path('', signin, name='signin'),
     path('signin/', signin, name='signin'),
     path('index/', index, name='index'),
     path('customers/', customers, name='customers'),

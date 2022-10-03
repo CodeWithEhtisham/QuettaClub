@@ -16,6 +16,7 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
 </head>
 
 <body>
@@ -55,12 +56,12 @@
         </div>
 
         <div class="row">
-            <div class="card">
-                <div>
-                    <div class="row">
-                        <h2>Customer Bills</h2>
-                        <div class="form-group ml-5">
-                            <select name="search_field" id="search_field" class="form-control">
+            <div class="card w-100">
+                <div class="row">
+                    <h2>Customer Bills</h2>
+                    <div class="row ml-5">
+                        <div class="row">
+                            <select name="search_field" id="search_field" class="form-control" style="height: 2.5rem;">
                                 <option value="">Search By</option>
                                 <option value="bill_no">Bill No.</option>
                                 <option value="pos_no">PoS No</option>
@@ -69,35 +70,15 @@
                                 <option value="date">Date</option>
                             </select>
                             <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"
-                                class="form-control ml-5 search" placeholder="search ....">
-                            <div class="form-data ml-5">
-
-                            </div>
-                            <div></div>
-
-                            <!--  -->
-                            <!-- <div class="form-data ml-5">
-                                <label for="" class="form-label">All</label>
-                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="all_check" onclick="onlyOne(this)">
-                            </div>
-                            <div class="form-data ml-5">
-                                <label for="" class="form-label">Paid</label>
-                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="paid_check" onclick="onlyOne(this)">
-                            </div>
-                            <div class="form-data ml-5">
-                                <label for="" class="form-label">Complementary</label>
-                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="comp_check" onclick="onlyOne(this)">
-                            </div>
-                            <div class="form-data ml-5">
-                                <label for="" class="form-label">Cancelled</label>
-                                <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="cancel_check" onclick="onlyOne(this)">
-                            </div> -->
+                                class="form-control ml-5 search" placeholder="search ...." style="height: 2.5rem;">
+                        </div>
+                        
+                        <div class="row">
                             <div class="form-data ml-5">
                                 <button type="button" class="icon" id="print_bills">Print</button>
+                            </div>
+                            <div class="form-data ml-5">
+                                <button type="button" class="icon" >Paid</button>
                             </div>
                             <div class="choose_file ml-5">
                                 <button type="button" class="icon" onclick="download_table_as_csv('Sales_data');">
@@ -109,8 +90,9 @@
                                 </button>
                             </div>
                         </div>
-
+                        
                     </div>
+
                 </div>
                 <table class="table" id="Sales_data">
                     <thead class="table-header">
@@ -202,6 +184,7 @@
             <label class="form-label">Remaining</label>
             <input class="form-control" type="text" name="remaining_balance" id="remaing_amount">
 
+            <hr>
             <div class="flex">
                 <button class="btn" type="submit" name="bill_paid" value="bill_paid" onclick="paidModalSubmit()">
                     Save
@@ -210,10 +193,6 @@
                     Cancel
                 </button>
             </div>
-        </div>
-        <!-- </form> -->
-        <div class="modal-footer">
-            <h2>I am the Footer</h2>
         </div>
     </div>
 
@@ -241,7 +220,7 @@
             <label class="form-label">Total Remaining</label>
             <input class="form-control" id="comp_bill_modal_balance" type="text" name="comp_balance">
 
-
+            <hr>
             <div class="flex">
                 <button class="btn" name="comp_bill" type="submit" id="comp_bill" onclick="compModalSubmit()">
                     Save
@@ -250,10 +229,6 @@
                     Cancel
                 </button>
             </div>
-        </div>
-        <!-- </form> -->
-        <div class="modal-footer">
-            <h2>I am the Footer</h2>
         </div>
     </div>
 
@@ -281,6 +256,7 @@
             <label class="form-label">Amount</label>
             <input class="form-control" type="text" id="bill_amount" name="bill_amount">
 
+            <hr>
             <div class="flex">
                 <button class="btn" name="bill_paid" value="bill_paid" type="submit" onclick="cancelModalSubmit()">
                     Save
@@ -290,10 +266,7 @@
                 </button>
             </div>
         </div>
-        <!-- </form> -->
-        <div class="modal-footer">
-            <h2>I am the Footer</h2>
-        </div>
+
     </div>
     <!-- <script>
             let modalBtn = document.getElementById("paid_modal")
@@ -349,6 +322,7 @@
         }
     </script>
     <script src="{% static 'js/customer.js' %}"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}"></script>
     <!-- <script src="{% static 'js/sale.js' %}"></script> -->
 </body>
 

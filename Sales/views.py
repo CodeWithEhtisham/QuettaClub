@@ -14,7 +14,7 @@ from django.db.models import Sum
 import datetime
 import re
 import os
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 def long_process(df):
     try:
@@ -269,9 +269,11 @@ def SearchbyName(request):
         elif field=='rank':
             return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
         elif field=='bill_no':
-            return Response(SalesSerializer(Sales.objects.filter(bill_no__icontains=value).order_by('-id'), many=True).data)
+            return Response(SalesSerializer(Sales.objects.filter(bill_no__exact=value).order_by('-id'), many=True).data)
         elif field=='Pos_no':
-            return Response(SalesSerializer(Sales.objects.filter(PoS_no__icontains=value).order_by('-id'), many=True).data)
+            return Response(SalesSerializer(Sales.objects.filter(PoS_no__exact=value).order_by('-id'), many=True).data)
+        elif field=='customer_id':
+            return Response(SalesSerializer(Sales.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
         elif field=='month':
             return Response(SalesSerializer(Sales.objects.filter(month__icontains=value).order_by('-id'), many=True).data)
         elif field=='account_of':
@@ -337,6 +339,8 @@ def sales_cancel_bill(request):
 
 
 @api_view(['POST'])
+@login_required
+# @permission_required('Sales.sales', raise_exception=True)
 def sales_upload(request):
     print("sale sale sale get ")
     print('sale data ', Sales.objects.values().last())

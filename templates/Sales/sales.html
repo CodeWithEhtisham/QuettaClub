@@ -12,9 +12,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <title>Quetta Club</title>
-
+    
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
 </head>
 
 <body>
@@ -249,7 +250,7 @@
                                     </td>
                                 </tr>
                                 {% else %}
-                                <tr style="background-color:#f67474">
+                                <tr style="background-color:#8ced92">
                                     <td>{{ sale.bill_no|default:"00" }}</td>
                                     <td>{{sale.rank}}</td>
                                     <td>{{ sale.pos_no|default:"00" }}</td>
@@ -267,7 +268,7 @@
                                             <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
                                                 style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
                                             <a href="{% url 'Sales:delete_items' sale.id %}"
-                                                style="background-color: #f44336; color: black;">Delete</a>
+                                                style="background-color: #de0f00; color: white;">Delete</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -277,10 +278,10 @@
                         </table>
                         <hr>
                         <div class="flex">
-                            <a class="btn" style="background-color: #481ef0; color: black;" onclick="sendTable()">
+                            <a class="btn" style="background-color: #6d49fd; color: white;" onclick="sendTable()">
                                 Upload All
                             </a>
-                            <button class="btn" style="background-color: #f44336; color: black;" name="delete_all"
+                            <button class="btn ml-5" style="background-color: #f44336; color: white;" name="delete_all"
                                 value="delete_all">
                                 Delete All
                             </button>
@@ -384,6 +385,7 @@
     </script>
 
     <script src="{% static 'js/sale.js' %}"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}"></script>
 
 </body>
 

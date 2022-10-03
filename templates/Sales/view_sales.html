@@ -17,6 +17,7 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
 
     <script>
         window.state = {
@@ -68,10 +69,11 @@
                     <div class="row">
                         <h2>Customers</h2>
                         <div class="form-group ml-5 w-50">
-                            <select name="search_field" id="search_field" class="form-control">
+                            <select name="search_field" id="search_field" class="form-control option">
                                 <option value="">Search By</option>
                                 <option value="bill_no">Bill No.</option>
                                 <option value="pos_no">PoS No</option>
+                                <option value="customer_id">Customer ID</option>
                                 <option value="month">Month</option>
                                 <option value="account_of">On Account of</option>
                                 <option value="date">Date</option>
@@ -147,29 +149,36 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
-                                            style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                            style="background-color: blue; color: white;">Edit</a>
                                         <button class="modal" id="paid_modal"
                                             onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')"
-                                            style="background-color: green; color: rgb(246, 244, 244);">Paid</button>
-                                        <button id="comp_modal" class="modal"
+                                            style="background-color: green; color: white;">Paid</button>
+                                        <button id="comp_modal" class="modal" style="background-color: yellow; color: black;"
                                             onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
                                         <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}','{{sale.net_amount}}', '{{sale.amount}}')"
-                                            style="background-color: #fd7e14;">Cancelled</button>
+                                            style="background-color: red;">Cancelled</button>
                                     </div>
                                 </td>
                             </tr>
                             {% endif %}
                             {% endfor %}
-                            <tr>
-                                <td><b>Total Bills: {{total_bills|intcomma}}</b></td>
-                                <td><b>Total Paid Bills: </b></td>
-                                <td><b>Total Cancelled Bills: </b></td>
-                                <td><b>Total Complemantery Bills: </b></td>
-                                <td><b>Total Amount: {{total_amount|intcomma}}</b></td>
-                                <td><b>Total Paid: </b></td>
-                                <td><b>Total Discounts: {{total_discount|intcomma}}</b></td>
-                                <td><b>Total Net Amount: {{total_net_amount|intcomma}}</b></td>
-                            </tr>
+                            <tfoot>
+                                <tr>
+                                    <td>Total Bills:</td>
+                                    <td><b>{{total_bills|intcomma}}</b></td>
+                                    <td><b>Total Paid Bills: </b></td>
+                                    <td><b>Total Cancelled Bills: </b></td>
+                                    <td><b>Total Complemantery Bills: </b></td>
+                                    <td>Total Amount:</td>
+                                    <td><b>{{total_amount|intcomma}}</b></td>
+                                    <td><b>Total Paid: </b></td>
+                                    <td></td>
+                                    <td>Total Discounts:</td>
+                                    <td><b>{{total_discount|intcomma}}</b></td>
+                                    <td>Total Net Amount:</td>
+                                    <td><b>{{total_net_amount|intcomma}}</b></td>
+                                </tr>
+                            </tfoot>
                         </tbody>
 
 
@@ -207,6 +216,7 @@
                 <label class="form-label">Remaining</label>
                 <input class="form-control" type="text" name="remaining_balance" id="remaing_amount">
 
+                <hr>
                 <div class="flex">
                     <button class="btn" type="submit" name="bill_paid" value="bill_paid" onclick="paidModalSubmit()">
                         Save
@@ -215,10 +225,6 @@
                         Cancel
                     </button>
                 </div>
-            </div>
-            <!-- </form> -->
-            <div class="modal-footer">
-                <h2>I am the Footer</h2>
             </div>
         </div>
 
@@ -246,7 +252,7 @@
                 <label class="form-label">Total Bill</label>
                 <input class="form-control" id="comp_bill_modal_balance" type="text" name="comp_balance">
 
-
+                <hr>
                 <div class="flex">
                     <button class="btn" name="comp_bill" type="submit" id="comp_bill" onclick="compModalSubmit()">
                         Save
@@ -255,10 +261,6 @@
                         Cancel
                     </button>
                 </div>
-            </div>
-            <!-- </form> -->
-            <div class="modal-footer">
-                <h2>I am the Footer</h2>
             </div>
         </div>
 
@@ -286,6 +288,7 @@
                 <label hidden class="">Amount</label>
                 <input hidden class="" type="text" id="bill_amount" name="bill_amount">
 
+                <hr>
                 <div class="flex">
                     <button class="btn" name="bill_paid" value="bill_paid" type="submit" onclick="cancelModalSubmit()">
                         Save
@@ -294,10 +297,6 @@
                         Cancel
                     </button>
                 </div>
-            </div>
-            <!-- </form> -->
-            <div class="modal-footer">
-                <h2>I am the Footer</h2>
             </div>
         </div>
     </div>
@@ -373,6 +372,7 @@
     </script>
 
     <script src="{% static 'js/sale.js' %}"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}"></script>
 </body>
 
 </html>

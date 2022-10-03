@@ -139,6 +139,18 @@ li a:hover {
   position: sticky;
   top: 0;
 }
+.table tfoot tr {
+  position: sticky;
+  bottom: 0;
+  background-color: #95a5a6;
+  color: white;
+  font-size: larger;
+}
+.table tfoot tr:hover {
+  background-color: #95a5a6;
+  color: white;
+  font-size: larger;
+}
 .table tbody tr {
   overflow-y: auto;
   overflow: scroll;
@@ -215,6 +227,7 @@ td a {
   font-size: large;
   font-weight: 600;
   color: #000000;
+  width: 40%;
 }
 
 .form-control {
@@ -235,8 +248,9 @@ td a {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-select {
-  width: 90%;
+.option {
+  font-size: medium;
+  width: auto;
 }
 
 .form-control:focus {
@@ -411,7 +425,7 @@ a#login-button.button.logout.login.w-button:hover {
   background-color: white;
   padding: 20px;
   margin: auto;
-  width: 75%;
+  width: 30%;
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
   animation-name: animatetop;
@@ -422,7 +436,7 @@ a#login-button.button.logout.login.w-button:hover {
   background-color: white;
   padding: 5px 20px;
   margin: auto;
-  width: 75%;
+  width: 30%;
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
   animation-name: animatetop;

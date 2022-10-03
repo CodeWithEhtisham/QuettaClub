@@ -186,10 +186,13 @@
                                 <th>Name</th>
                                 <th>Address</th>
                                 <th>Customer ID</th>
+                                <th>Amount</th>
                                 <th>Actions</th>
+                                
                             </tr>
                         </thead>
                         <tbody>
+                            {% for bill in total_bills_amount %}
                             {% for customer in customers %}
                             <tr>
                                 <!-- <td>{{ customer.id}}</td> -->
@@ -197,6 +200,7 @@
                                 <td>{{ customer.customer_name|default:"--" }}</td>
                                 <td>{{ customer.customer_address|default:"--" }}</td>
                                 <td>{{ customer.customer_id|default:"Nil" }}</td>
+                                <td>{{ bill}}</td>
                                 <td>
                                     <div class="list-btn">
                                         <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}"
@@ -207,6 +211,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>

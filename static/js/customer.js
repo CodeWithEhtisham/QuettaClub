@@ -121,6 +121,21 @@ function paidMOdalOpen(id, value) {
 
 // paid Modal submit
 function paidModalSubmit() {
+
+  var csrftoken = $.cookie('csrftoken');
+
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
   $.ajax({
     method: 'POST',
     url: "/api/customer/pay_bill/",
@@ -130,6 +145,7 @@ function paidModalSubmit() {
       "paid_date": $("#today-date").val(),
       "amount": $("#paid_amount").val(),
       "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+      csrfmiddlewaretoken: window.CSRF_TOKEN,
     },
     dataType: "json",
   })
@@ -152,6 +168,21 @@ function compModalOpen(id, value) {
 
 // complementory modal submit button
 function compModalSubmit() {
+
+  var csrftoken = $.cookie('csrftoken');
+
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
   $.ajax({
     method: "POST",
     url: "/api/customer/comp_bill/",
@@ -162,6 +193,7 @@ function compModalSubmit() {
       'comp_amount': $("#comp_amount").val(),
       // 'balance': $("#comp_bill_modal_balance").val(),
       "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
+      csrfmiddlewaretoken: window.CSRF_TOKEN,
     },
     dataType: "json",
   })
@@ -179,6 +211,21 @@ function cancelModalOpen(id, value, amount) {
 
 // cancel modal submit button
 function cancelModalSubmit() {
+
+  var csrftoken = $.cookie('csrftoken');
+
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
   $.ajax({
     method: "POST",
     url: "/api/customer/cancel_bill/",
@@ -188,6 +235,7 @@ function cancelModalSubmit() {
       'reason': $("#reason").val(),
       "remaining_amount": $("#cancel_bill_modal_balance").val() * 0 ,
       'amount': $("#bill_amount").val() * 0,
+      csrfmiddlewaretoken: window.CSRF_TOKEN,
     },
     dataType: "json",
   })
