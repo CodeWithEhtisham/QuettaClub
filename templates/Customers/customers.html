@@ -74,7 +74,7 @@
                 <form action="{% url 'Customers:customers' %}" method="POST" class="post-form"
                     enctype="multipart/form-data">
                     {% csrf_token %}
-                    <!-- <div class="row">
+                    <div class="row">
                         <h3 class="title">
                             Add Customers
                         </h3>
@@ -90,7 +90,7 @@
                             <input name="customer_file" type="file" accept=".xlsx, .xls, .csv" />
                         </div>
                     </div>
-                    <input class="btn" type="submit" id="customer_file_submit" name="customer_file_submit"> -->
+                    <input class="btn" type="submit" id="customer_file_submit" name="customer_file_submit">
                 </form>
                 <form action="{% url 'Customers:customers' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -136,9 +136,47 @@
                             Save
                         </button>
                     </div>
+                    <hr style="margin-top: 45px;">
+                    <div>
+                        <label style="font-size: 22px; font-weight: bold; tab-size: 4;">Total Customers: </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold; ">{{all_customers}}</span>
+                    </div>
+                    <hr>
+                    <div style="margin-top: 20px;">
+                        <label style="font-size: 22px; font-weight: bold;">Total Staffs:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_staffs}}</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label style="font-size: 22px; font-weight: bold;">Total Mrs:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_mrs}}</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label style="font-size: 22px; font-weight: bold;">Total Misses:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_misses}}</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label style="font-size: 22px; font-weight: bold;">Total Army:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_army}}</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label style="font-size: 22px; font-weight: bold;">Total Brigadiers:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_brigediers}}</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label style="font-size: 22px; font-weight: bold;">Total Majors:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_majors}}</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label style="font-size: 22px; font-weight: bold;">Total Lieutenants:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_lt}}</span>
+                    </div>
+                    <div style="margin-top: 10px;"> 
+                        <label style="font-size: 22px; font-weight: bold;">Total Secretaries:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_secerteries}}</span>
+                    </div>
                 </form>
             </div>
-
+            
             <!-- Customers -->
             <div class="card col-60">
                 <div>
@@ -188,7 +226,7 @@
                                 <th>Customer ID</th>
                                 <th>Amount</th>
                                 <th>Actions</th>
-                                
+
                             </tr>
                         </thead>
                         <tbody>
@@ -204,8 +242,9 @@
                                 <td>
                                     <div class="list-btn">
                                         <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}"
-                                            style="background-color:green ;">Add a  Bill</a>
-                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}">All Bills</a>
+                                            style="background-color:green ;">Add a Bill</a>
+                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}">All
+                                            Bills</a>
                                         <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}"
                                             style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
                                     </div>
@@ -252,10 +291,10 @@
             document.body.removeChild(link);
         }
         setTimeout(fade_out, 4000);
-            function fade_out() {
-                $(".messages").fadeOut().empty();
-            }
-            $(".post-form")[0].reset();
+        function fade_out() {
+            $(".messages").fadeOut().empty();
+        }
+        $(".post-form")[0].reset();
     </script>
     <!-- <script>
         $(document).ready(function () {

@@ -78,7 +78,7 @@
                                 <button type="button" class="icon" id="print_bills">Print</button>
                             </div>
                             <div class="form-data ml-5">
-                                <button type="button" class="icon" >Paid</button>
+                                <button type="button" class="icon" onclick="sendBillsTable()">Pay All Bills</button>
                             </div>
                             <div class="choose_file ml-5">
                                 <button type="button" class="icon" onclick="download_table_as_csv('Sales_data');">
@@ -117,7 +117,7 @@
                     </thead>
                     <tbody>
                         {% for sale in Sales_data %}
-                        {% if sale.amount > 0 or sale.net_amount > 0 %}
+                        {% if sale.amount > 0 and sale.net_amount > 0 %}
                         <tr>
                             <!-- <td>{{sale.id}}</td> -->
                             <td>{{ sale.bill_no|default:"00" }}</td>

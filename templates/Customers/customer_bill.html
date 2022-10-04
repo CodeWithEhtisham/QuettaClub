@@ -88,8 +88,11 @@
                         </div>
                         <div class="grid-item">
                             <label class="form-label">Date</label>
-                            <input class="form-control" id="sale-today-date" type="date" name="date">
+                            <input class="form-control" id="datePicker" type="date" name="date">
                         </div>
+                        <script>
+                            document.getElementById('datePicker').valueAsDate = new Date();
+                        </script>
                         <div class="">
                             <label class="form-label">Month</label>
                             <input class="form-control" required type="text" name="month">
@@ -279,10 +282,7 @@
         };
     </script>
     <script>
-        let sale_today = new Date();
-        document.getElementById("sale-today-date").value =
-            sale_today.getFullYear() + '-' + ('0' + (sale_today.getMonth() + 1)).slice(-2) + '-' + ('0' + sale_today.getDate()).slice(-2);
-
+        
         setTimeout(fade_out, 4000);
         function fade_out() {
             $(".messages").fadeOut().empty();

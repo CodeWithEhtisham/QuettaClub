@@ -21,21 +21,44 @@ from django.db.models import Sum, Count
 
 def long_process(df):
     try:
-        df.rename(columns=df.iloc[0], inplace=True)
-        df.drop(df.index[0], inplace=True)
-        # rename columns
-        df.rename(columns={'Name': 'customer_name', 'Rank': 'customer_rank',
-                           'Ser No ': 'customer_id'}, inplace=True)
+        rename={
+            'ID': 'customer_id',
+            'Address': 'customer_address',
+            'Name ': 'customer_name',
+            'Rank': 'customer_rank',
+        }
+        df.rename(columns=rename, inplace=True)
+        # df.rename(columns=df.iloc[0], inplace=True)
+        # df.drop(df.index[0], inplace=True)
+        # # rename columns
+        # df.rename(columns={'Name': 'customer_name', 'Address': 'customer_address', 'Rank': 'customer_rank',
+        #                    'ID': 'customer_id'}, inplace=True)
         print(df.columns)
-        cols = ['customer_name', 'customer_rank', 'customer_id']
-        df = df[cols]
-        df = df.to_dict('records')
-        print(df)
-        model_isntance = [Customers(**data) for data in df]
-        obj = Customers.objects.bulk_create(model_isntance)
-        print(obj)
-        print("success")
+        for index, row in df.iterrows():
+            if Customers.objects.filter(customer_rank=row['customer_rank'],
+                customer_address=row['customer_address'],customer_name=row['customer_name']).exists():
+                pass
+                # messages.error("Customer already exists")
+            elif Customers.objects.filter(customer_id=row['customer_id']).exists():
+                pass
+                # messages.error("Customer id already exists")
+            # else:
+                Customers.objects.create(
+                    customer_id=row['customer_id'],
+                    customer_name=row['customer_name'],
+                    customer_address=row['customer_address'],
+                    customer_rank=row['customer_rank'],
+            ).save()
         return True
+        # cols = ['customer_name', 'customer_rank', 'customer_id', 'customer_address']
+        # df = df[cols]
+        # df = df.to_dict('records')
+        # print(df)
+        # model_isntance = [Customers(**data) for data in df]
+        # obj = Customers.objects.bulk_create(model_isntance)
+        # print(obj)
+        # print("success")
+        # return True
     except Exception as e:
         print("failed", e)
         return False
@@ -90,8 +113,11 @@ def signin(request):
 
 @login_required
 def index(request):
-
-    return render(request, "index.html")
+    if User.is_authenticated:
+        return render(request, 'index.html')
+    else:
+        return render(request, 'Customers/signin.html')
+    # return render(request, "index.html")
 
 def logout_user(request):
     logout(request)
@@ -119,6 +145,7 @@ def customers(request):
                               customer_file=request.FILES.get('customer_file')).save()
                     messages.success(request, 'Customer Added Successfully')
                     return HttpResponseRedirect(reverse('Customers:customers'))
+
             elif request.POST.get('customer_file_submit'):
                 # print("customer_file_submit")
                 csv = request.FILES['customer_file']
@@ -160,6 +187,15 @@ def customers(request):
         return render(request, 'Customers/customers.html',
                       {'customers': Customers.objects.all().order_by("-id"),
                       'total_bills_amount': Sales.objects.values('customer_id').annotate(bills_count=Count('bill_no'), total_amount=Sum('net_amount')),
+                      'all_customers': Customers.objects.all().count(),
+                      'all_staffs': Customers.objects.filter(customer_rank__startswith="Staff").annotate(total_staffs=Count('customer_rank')).count(),
+                      'all_mrs': Customers.objects.filter(customer_rank__startswith="Mr").annotate(total_staffs=Count('customer_rank')).count(),
+                      'all_misses': Customers.objects.filter(customer_rank__startswith="Miss").annotate(total_staffs=Count('customer_rank')).count(),
+                      'all_army': Customers.objects.filter(customer_rank__startswith="Army").annotate(total_staffs=Count('customer_rank')).count(),
+                      'all_brigediers': Customers.objects.filter(customer_rank__startswith="Brig").annotate(total_staffs=Count('customer_rank')).count(),
+                      'all_majors': Customers.objects.filter(customer_rank__startswith="Maj").annotate(total_staffs=Count('customer_rank')).count(),
+                      'all_lt': Customers.objects.filter(customer_rank__startswith="Lt").annotate(total_staffs=Count('customer_rank')).count(),
+                      'all_secerteries': Customers.objects.filter(customer_rank__startswith="Sec").annotate(total_staffs=Count('customer_rank')).count(),
                        })
 
 
@@ -326,6 +362,27 @@ def cancel_bill(request):
         messages.success(request, "Bill Cancelled Successfully")
         return HttpResponse({"message": "Cancel Bill Added Successfully"})
 
+@api_view(['POST'])
+@login_required
+def bills_upload(request):
+    if request.method == "POST":
+        id = request.POST.get('id')
+        print(id)
+        jsons = request.data
+        print(jsons['myrows'][0])
+        for obj in jsons['myrows']:
+            print(obj)
+            Bill.objects.create(
+                rv_no=obj['rv_no'],
+                date=obj['date'],
+                amount=obj['amount'],
+                status="Paid",
+                sale_id=Sales.objects.get(id=id)
+            ).save()
+        print(Bill.objects.values().last())
+        return Response({"message": "Bills Uploaded Successfully"})
+        
+
 # urls paths and apis
 index_template = [
     path('', signin, name='signin'),
@@ -341,4 +398,5 @@ index_template = [
     path('api/customer/pay_bill/', pay_bill, name='pay_bill'),
     path('api/customer/comp_bill/', comp_bill, name='comp_bill'),
     path('api/customer/cancel_bill/', cancel_bill, name='cancel_bill'),
+    path('api/customer/bills_upload/', bills_upload, name='bills_upload'),
 ]

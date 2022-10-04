@@ -131,7 +131,7 @@
                         <tbody>
                             {% for sale in sales_data %}
 
-                            {% if sale.amount > 0 or sale.net_amount > 0 %}
+                            {% if sale.amount > 0 and sale.net_amount > 0 %}
                             <tr>
                                 <!-- <td>{{sale.id}}</td> -->
                                 <td>{{ sale.bill_no|default:"00" }}</td>
@@ -368,6 +368,8 @@
             var total = balance - amount;
             document.getElementById('remaing_amount').value = total;
         };
+
+        document.getElementById('today-date').value = new Date().toDateInputValue();
 
     </script>
 

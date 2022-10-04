@@ -290,3 +290,47 @@ document.getElementById("paid_amount").onchange = function () {
   document.getElementById('remaing_amount').value = total;
 };
 
+function sendBillsTable() {
+  var myRows = [];
+  var $headers = $("th");
+  var $rows = $("tbody tr").each(function (index) {
+    $cells = $(this).find("td");
+    myRows[index] = {};
+    $cells.each(function (cellIndex) {
+      myRows[index][$($headers[cellIndex]).html()] = $(this).html();
+    });
+  });
+
+  // Let's put this in the object like you want and convert to JSON (Note: jQuery will also do this for you on the Ajax request)
+  var myObj = {};
+  myObj.myrows = myRows;
+
+  var csrftoken = $.cookie('csrftoken');
+
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+  // Ajax request goes here
+  $.ajax({
+    type: "POST",
+    url: "/api/customer/bills_upload/",
+    data: JSON.stringify(myObj),
+    csrfmiddlewaretoken: window.CSRF_TOKEN,
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (data) {
+      // clear table all data
+      $("#Sales_data tbody").empty();
+    }
+  });
+
+}

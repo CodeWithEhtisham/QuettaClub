@@ -7,9 +7,9 @@ from django.utils import timezone
 
 class Sales(models.Model):
 
-    bill_no = models.CharField(max_length=50)
-    PoS_no = models.CharField(max_length=50, null=False, blank=False)
-    month = models.CharField(max_length=50, null=False, blank=False)
+    bill_no = models.CharField(max_length=20)
+    PoS_no = models.CharField(max_length=50, null=True, blank=True)
+    month = models.CharField(max_length=50, null=True, blank=True)
     created_date = models.DateField()
     created_on  = models.DateTimeField(auto_now_add=True)
     address = models.CharField(max_length=50, null=False, blank=False)
@@ -41,13 +41,13 @@ class Bill(models.Model):
 
 
 class dummyTable(models.Model):
-    bill_no = models.CharField(max_length=50, null=True, blank=True)
+    bill_no = models.PositiveIntegerField()
     rank= models.CharField(max_length=50, null=True, blank=True)
     pos_no= models.CharField(max_length=50, null=True, blank=True)
     cname = models.CharField(max_length=50, null=True, blank=True)
     address = models.CharField(max_length=50,  null=True, blank=True)
     account_of = models.CharField(max_length=50, null=True, blank=True)
-    date= models.CharField(max_length=50, null=True, blank=True)
+    date= models.DateField(default=timezone.now)
     month= models.CharField(max_length=50, null=True, blank=True)
     amount= models.CharField(max_length=50, null=True, blank=True)
     discount= models.CharField(max_length=50, null=True, blank=True)

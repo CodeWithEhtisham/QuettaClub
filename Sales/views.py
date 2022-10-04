@@ -45,7 +45,7 @@ def long_process(df):
                     cname=row['cname'],
                     address=row['address'],
                     account_of=row['account_of'],
-                    date=row['date'],
+                    date=datetime.datetime.strptime(row['date'], "%d-%m-%Y").date(),
                     month=row['month'],
                     amount=row['amount'],
                     discount=row['discount'],
@@ -61,7 +61,7 @@ def long_process(df):
                     cname=row['cname'],
                     address=row['address'],
                     account_of=row['account_of'],
-                    date=row['date'],
+                    date=datetime.datetime.strptime(row['date'], "%d-%m-%Y").date(),
                     month=row['month'],
                     amount=row['amount'],
                     discount=row['discount'],
@@ -354,13 +354,14 @@ def sales_upload(request):
                     bill_no=obj['Bill No'],
                     PoS_no=obj['POS NO'],
                     created_date=datetime.datetime.strptime(obj['Dated'], "%d-%m-%Y").date(),
-                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
+                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])), 
                     account_of=obj['On Account Of'],
                     amount=obj['Amount'],
                     net_amount=obj['Net Amount'],
                     discount=obj['Discount'],
                     customer_id=customer
                 ).save()
+                # messages.success(request, "Sale Data Uploaded Successfully")
                 print('sale date: ',Sales.objects.values().last())
             else:
                 customer=Customers.objects.create(
@@ -369,26 +370,24 @@ def sales_upload(request):
                     customer_rank=obj['Rank']
                 )
                 customer.save()
+                # messages.success(request, "Sale Data Uploaded Successfully")
                 Sales.objects.create(
                     bill_no=obj['Bill No'],
                     PoS_no=obj['POS NO'],
                     created_date=datetime.datetime.strptime(obj['Dated'], "%d-%m-%Y").date(),
-                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
+                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])), 
                     account_of=obj['On Account Of'],
                     amount=obj['Amount'],
                     net_amount=obj['Net Amount'],
                     discount=obj['Discount'],
                     customer_id=customer
                 ).save()
-                print(dummyTable.objects.values().last())
         dummyTable.objects.all().delete()
+        messages.success(request, "Sale Data Uploaded Successfully")
         return Response({"message": "Sales Data Uploaded Successfully"})
     else:
         return Response({"message": "Sales Data Not Uploaded"})
             
-
-
-        return Response({"message": "Data Uploaded Successfully"})
 
 sales_templates = [
     path('sales/', sales, name='sales'),

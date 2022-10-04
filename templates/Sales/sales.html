@@ -117,8 +117,12 @@
                         </div>
                         <div class="grid-item">
                             <label class="form-label">Date</label>
-                            <input class="form-control" id="today-date" type="date" name="date">
+                            <input class="form-control" id="datePicker" type="date" name="date"
+                            >
                         </div>
+                        <script>
+                            document.getElementById('datePicker').valueAsDate = new Date();
+                        </script>
 
                         <div class="grid-item">
                             <label class="form-label">Month</label>
@@ -233,7 +237,7 @@
                                     <td>{{sale.cname}}</td>
                                     <td>{{ sale.address|default:"--" }}</td>
                                     <td>{{ sale.account_of|default:"--" }}</td>
-                                    <td>{{ sale.date }}</td>
+                                    <td>{{ sale.date|date:'d-m-Y' }}</td>
                                     <td>{{ sale.month|default:"--" }}</td>
                                     <td>{{ sale.amount|default:"00" }}</td>
                                     <td>{{ sale.discount|default:"00" }}</td>
@@ -257,7 +261,7 @@
                                     <td>{{sale.cname}}</td>
                                     <td>{{ sale.address|default:"--" }}</td>
                                     <td>{{ sale.account_of|default:"--" }}</td>
-                                    <td>{{ sale.date }}</td>
+                                    <td>{{ sale.date|date:'d-m-Y' }}</td>
                                     <td>{{ sale.month|default:"--" }}</td>
                                     <td>{{ sale.amount|default:"00" }}</td>
                                     <td>{{ sale.discount|default:"00" }}</td>
@@ -278,7 +282,7 @@
                         </table>
                         <hr>
                         <div class="flex">
-                            <a class="btn" style="background-color: #6d49fd; color: white;" onclick="sendTable()">
+                            <a class="btn" style="background-color: #6d49fd; color: white;"  onclick="sendTable()">
                                 Upload All
                             </a>
                             <button class="btn ml-5" style="background-color: #f44336; color: white;" name="delete_all"
@@ -298,6 +302,8 @@
 
     </div>
     <script>
+
+
         let names = [];
         let ranks = [];
         let addresses = [];
@@ -372,16 +378,18 @@
             var total = amount - discount;
             document.getElementById('net-amount').value = total;
         };
-        let today = new Date();
-        document.getElementById("today-date").value =
-            today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
-            '-' + ('0' + today.getDate()).slice(-2);
+        // let today = new Date();
+        // document.getElementById("todayDate").value =
+        //     today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
+        //     '-' + ('0' + today.getDate()).slice(-2);
 
         setTimeout(fade_out, 3000);
         function fade_out() {
             $(".messages").fadeOut().empty();
         }
         $(".post-form")[0].reset();
+
+        
     </script>
 
     <script src="{% static 'js/sale.js' %}"></script>
