@@ -75,11 +75,11 @@
                         
                         <div class="row">
                             <div class="form-data ml-5">
-                                <button type="button" class="icon" id="print_bills">Print</button>
+                                <input type="button" class="icon" id="print_bill" value=" Print " style="font-weight: bold;"/>
                             </div>
-                            <div class="form-data ml-5">
+                            <!-- <div class="form-data ml-5">
                                 <button type="button" class="icon" onclick="sendBillsTable()">Pay All Bills</button>
-                            </div>
+                            </div> -->
                             <div class="choose_file ml-5">
                                 <button type="button" class="icon" onclick="download_table_as_csv('Sales_data');">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -150,6 +150,21 @@
             </tr>
             {% endif %}
             {% endfor %}
+            <tfoot>
+                <tr>
+                    <td>Total Bills:</td>
+                    <td><b>{{all_bills|intcomma}}</b></td>
+                    <td></td>
+                    <td>Total Amount:</td>
+                    <td><b>{{total_amount|intcomma}}</b></td>
+                    <td></td>
+                    <td>Total Discounts:</td>
+                    <td><b>{{total_discount|intcomma}}</b></td>
+                    <td></td>
+                    <td>Total Net Amount:</td>
+                    <td><b>{{total_net_amount|intcomma}}</b></td>
+                </tr>
+            </tfoot>
             </tbody>
             </table>
             
@@ -320,6 +335,9 @@
                 if (item !== checkbox) item.checked = false
             })
         }
+
+        const print = document.getElementById('print_bill');
+        print.addEventListener('click', () => {window.print();});
     </script>
     <script src="{% static 'js/customer.js' %}"></script>
     <script src="{% static 'js/jquery.cookie.js' %}"></script>

@@ -37,28 +37,16 @@ def long_process(df):
         for index, row in df.iterrows():
             if Customers.objects.filter(customer_rank=row['customer_rank'],
                 customer_address=row['customer_address'],customer_name=row['customer_name']).exists():
-                pass
-                # messages.error("Customer already exists")
-            elif Customers.objects.filter(customer_id=row['customer_id']).exists():
-                pass
-                # messages.error("Customer id already exists")
-            # else:
-                Customers.objects.create(
+                continue
+            #  
+            Customers.objects.create(
                     customer_id=row['customer_id'],
                     customer_name=row['customer_name'],
                     customer_address=row['customer_address'],
                     customer_rank=row['customer_rank'],
             ).save()
         return True
-        # cols = ['customer_name', 'customer_rank', 'customer_id', 'customer_address']
-        # df = df[cols]
-        # df = df.to_dict('records')
-        # print(df)
-        # model_isntance = [Customers(**data) for data in df]
-        # obj = Customers.objects.bulk_create(model_isntance)
-        # print(obj)
-        # print("success")
-        # return True
+        
     except Exception as e:
         print("failed", e)
         return False
@@ -193,8 +181,8 @@ def customers(request):
                       'all_misses': Customers.objects.filter(customer_rank__startswith="Miss").annotate(total_staffs=Count('customer_rank')).count(),
                       'all_army': Customers.objects.filter(customer_rank__startswith="Army").annotate(total_staffs=Count('customer_rank')).count(),
                       'all_brigediers': Customers.objects.filter(customer_rank__startswith="Brig").annotate(total_staffs=Count('customer_rank')).count(),
-                      'all_majors': Customers.objects.filter(customer_rank__startswith="Maj").annotate(total_staffs=Count('customer_rank')).count(),
                       'all_lt': Customers.objects.filter(customer_rank__startswith="Lt").annotate(total_staffs=Count('customer_rank')).count(),
+                      'all_majors': Customers.objects.filter(customer_rank__startswith="Maj").annotate(total_staffs=Count('customer_rank')).count(),
                       'all_secerteries': Customers.objects.filter(customer_rank__startswith="Sec").annotate(total_staffs=Count('customer_rank')).count(),
                        })
 
@@ -250,7 +238,11 @@ def customer_details(request):
                 print('no check')
                 return render(request, 'Customers/customer_details.html')
     return render(request, "Customers/customer_details.html", {
-        'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")
+        'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id"),
+        'all_bills': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').count(),
+        'total_amount': Sales.objects.filter(customer_id__id=request.GET.get("id")).aggregate(Sum('amount'))['amount__sum'],
+        'total_discount': Sales.objects.filter(customer_id__id=request.GET.get("id")).aggregate(Sum('discount'))['discount__sum'],
+        'total_net_amount': Sales.objects.filter(customer_id__id=request.GET.get("id")).aggregate(Sum('net_amount'))['net_amount__sum'],
     })
 
 
