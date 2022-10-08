@@ -78,7 +78,7 @@
                                 <button type="button" class="icon" id="print_bills">Print</button>
                             </div>
                             <div class="form-data ml-5">
-                                <button type="button" class="icon" onclick="sendBillsTable()">Pay All Bills</button>
+                                <button type="button" class="icon" onclick="paid_all_bills()">Pay All Bills</button>
                             </div>
                             <div class="choose_file ml-5">
                                 <button type="button" class="icon" onclick="download_table_as_csv('Sales_data');">
@@ -111,6 +111,7 @@
                             <th>Amount</th>
                             <th>Discount</th>
                             <th>Net Amount</th>
+                            <th style="visibility: hidden; display: none;"></th>
                             <th>Remarks</th>
                             <th>Action</th>
                         </tr>
@@ -130,7 +131,8 @@
                             <td>{{ sale.date|default_if_none:"--" }}</td>
                             <td>{{ sale.amount|default_if_none:"00" }}</td>
                             <td>{{ sale.discount|default_if_none:"00" }}</td>
-                            <td>{{ sale.net_amount|default_if_none:"00" }}</td>
+                            <td id="row_net_amount">{{ sale.net_amount|default_if_none:"00" }}</td>
+                            <td style="visibility: hidden; display: none;">{{sale.id}}</td>
                             <td>{{ sale.remarks|default_if_none:" " }}</td>
                             <td>
                                 <div class="list">

@@ -21,34 +21,29 @@ from django.db.models import Sum, Count
 
 def long_process(df):
     try:
-        rename={
+        rename = {
             'ID': 'customer_id',
             'Address': 'customer_address',
-            'Name ': 'customer_name',
+            'Name': 'customer_name',
             'Rank': 'customer_rank',
         }
         df.rename(columns=rename, inplace=True)
-        # df.rename(columns=df.iloc[0], inplace=True)
-        # df.drop(df.index[0], inplace=True)
-        # # rename columns
-        # df.rename(columns={'Name': 'customer_name', 'Address': 'customer_address', 'Rank': 'customer_rank',
-        #                    'ID': 'customer_id'}, inplace=True)
         print(df.columns)
         for index, row in df.iterrows():
-            if Customers.objects.filter(customer_rank=row['customer_rank'],
-                customer_address=row['customer_address'],customer_name=row['customer_name']).exists():
-                pass
-                # messages.error("Customer already exists")
-            elif Customers.objects.filter(customer_id=row['customer_id']).exists():
-                pass
+            print(row)
+            if (Customers.objects.filter(
+                customer_rank=row['customer_rank'],
+                customer_address=row['customer_address'],
+                customer_name=row['customer_name']).exists()):
+                continue
                 # messages.error("Customer id already exists")
             # else:
-                Customers.objects.create(
+            Customers.objects.create(
                     customer_id=row['customer_id'],
                     customer_name=row['customer_name'],
                     customer_address=row['customer_address'],
                     customer_rank=row['customer_rank'],
-            ).save()
+                ).save()
         return True
         # cols = ['customer_name', 'customer_rank', 'customer_id', 'customer_address']
         # df = df[cols]
@@ -109,8 +104,6 @@ def signin(request):
         return render(request, 'Customers/signin.html')
 
 
-
-
 @login_required
 def index(request):
     if User.is_authenticated:
@@ -119,9 +112,12 @@ def index(request):
         return render(request, 'Customers/signin.html')
     # return render(request, "index.html")
 
+
 def logout_user(request):
     logout(request)
     return render(request, 'Customers/signin.html')
+
+
 @login_required
 def customers(request):
     if request.method == 'POST':
@@ -185,17 +181,12 @@ def customers(request):
             return HttpResponseRedirect(reverse('Customers:customers'))
     else:
         return render(request, 'Customers/customers.html',
-                      {'customers': Customers.objects.all().order_by("-id"),
-                      'total_bills_amount': Sales.objects.values('customer_id').annotate(bills_count=Count('bill_no'), total_amount=Sum('net_amount')),
-                      'all_customers': Customers.objects.all().count(),
-                      'all_staffs': Customers.objects.filter(customer_rank__startswith="Staff").annotate(total_staffs=Count('customer_rank')).count(),
-                      'all_mrs': Customers.objects.filter(customer_rank__startswith="Mr").annotate(total_staffs=Count('customer_rank')).count(),
-                      'all_misses': Customers.objects.filter(customer_rank__startswith="Miss").annotate(total_staffs=Count('customer_rank')).count(),
-                      'all_army': Customers.objects.filter(customer_rank__startswith="Army").annotate(total_staffs=Count('customer_rank')).count(),
-                      'all_brigediers': Customers.objects.filter(customer_rank__startswith="Brig").annotate(total_staffs=Count('customer_rank')).count(),
-                      'all_majors': Customers.objects.filter(customer_rank__startswith="Maj").annotate(total_staffs=Count('customer_rank')).count(),
-                      'all_lt': Customers.objects.filter(customer_rank__startswith="Lt").annotate(total_staffs=Count('customer_rank')).count(),
-                      'all_secerteries': Customers.objects.filter(customer_rank__startswith="Sec").annotate(total_staffs=Count('customer_rank')).count(),
+                      {
+                        # 'customers': Customers.objects.all().order_by("-id"),
+                       'customers_table': Sales.objects.select_related('customer_id').annotate(total_amount=Sum('net_amount')),
+                       'all_customers': Customers.objects.all().count(),
+                       'all_staffs': Customers.objects.all().values('customer_rank').annotate(count=Count('pk', distinct=True))
+                       
                        })
 
 
@@ -250,6 +241,7 @@ def customer_details(request):
                 print('no check')
                 return render(request, 'Customers/customer_details.html')
     return render(request, "Customers/customer_details.html", {
+        'sale_id': request.GET.get("id"),
         'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")
     })
 
@@ -327,6 +319,25 @@ def pay_bill(request):
         print("sale net amount ", Sales.objects.filter(id=id).first())
         return Response({"message": "Bill Paid Successfully"})
 
+@api_view(['GET','POST'])
+def pay_all_bills(request):
+    if request.method=="POST":
+        id = request.POST.get('id')
+        print('dasfjaskdfj ',id)
+        rv_no = request.POST.get('rv_no')
+        paid_date = timezone.now()
+        amount = request.POST.get('amount')
+        remaining_amount = request.POST.get('remaining_amount')
+        print("remaining amount ", remaining_amount)
+
+        Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
+                            status="Paid", sale_id=Sales.objects.get(id=id))
+
+        Sales.objects.filter(id=id).update(net_amount=remaining_amount)
+
+        print("sale net amount ", Sales.objects.filter(id=id).first())
+        return Response({"message": "Bill Paid Successfully"})
+
 
 @api_view(['GET', 'POST'])
 def comp_bill(request):
@@ -358,9 +369,11 @@ def cancel_bill(request):
 
         remaining_amount = 0
         amount = 0
-        Sales.objects.filter(id=id).update(amount=amount ,net_amount=remaining_amount)
+        Sales.objects.filter(id=id).update(
+            amount=amount, net_amount=remaining_amount)
         messages.success(request, "Bill Cancelled Successfully")
         return HttpResponse({"message": "Cancel Bill Added Successfully"})
+
 
 @api_view(['POST'])
 @login_required
@@ -373,15 +386,15 @@ def bills_upload(request):
         for obj in jsons['myrows']:
             print(obj)
             Bill.objects.create(
-                rv_no=obj['rv_no'],
-                date=obj['date'],
-                amount=obj['amount'],
+                # rv_no=obj['rv_no'],
+                date=timezone.now(),
+                amount=obj['Net Amount'],
                 status="Paid",
                 sale_id=Sales.objects.get(id=id)
             ).save()
         print(Bill.objects.values().last())
         return Response({"message": "Bills Uploaded Successfully"})
-        
+
 
 # urls paths and apis
 index_template = [
@@ -399,4 +412,5 @@ index_template = [
     path('api/customer/comp_bill/', comp_bill, name='comp_bill'),
     path('api/customer/cancel_bill/', cancel_bill, name='cancel_bill'),
     path('api/customer/bills_upload/', bills_upload, name='bills_upload'),
+    path('api/customer/pay_all_bills/', pay_all_bills, name='pay_all_bills'),
 ]

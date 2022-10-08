@@ -142,38 +142,12 @@
                         <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold; ">{{all_customers}}</span>
                     </div>
                     <hr>
+                    {% for staff in all_staffs %}
                     <div style="margin-top: 20px;">
-                        <label style="font-size: 22px; font-weight: bold;">Total Staffs:  </label>
-                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_staffs}}</span>
+                        <label style="font-size: 22px; font-weight: bold;">Total {{staff.customer_rank}}:  </label>
+                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{staff.count}}</span>
                     </div>
-                    <div style="margin-top: 10px;">
-                        <label style="font-size: 22px; font-weight: bold;">Total Mrs:  </label>
-                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_mrs}}</span>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <label style="font-size: 22px; font-weight: bold;">Total Misses:  </label>
-                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_misses}}</span>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <label style="font-size: 22px; font-weight: bold;">Total Army:  </label>
-                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_army}}</span>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <label style="font-size: 22px; font-weight: bold;">Total Brigadiers:  </label>
-                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_brigediers}}</span>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <label style="font-size: 22px; font-weight: bold;">Total Majors:  </label>
-                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_majors}}</span>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <label style="font-size: 22px; font-weight: bold;">Total Lieutenants:  </label>
-                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_lt}}</span>
-                    </div>
-                    <div style="margin-top: 10px;"> 
-                        <label style="font-size: 22px; font-weight: bold;">Total Secretaries:  </label>
-                        <span style="color: rgb(71, 0, 186); font-size: 22px; font-weight: bold;">{{all_secerteries}}</span>
-                    </div>
+                    {% endfor %}
                 </form>
             </div>
             
@@ -230,27 +204,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for bill in total_bills_amount %}
-                            {% for customer in customers %}
+                            {% for customer in customers_table %}
                             <tr>
-                                <!-- <td>{{ customer.id}}</td> -->
-                                <td>{{ customer.customer_rank|default:"--" }}</td>
-                                <td>{{ customer.customer_name|default:"--" }}</td>
-                                <td>{{ customer.customer_address|default:"--" }}</td>
-                                <td>{{ customer.customer_id|default:"Nil" }}</td>
-                                <td>{{ bill}}</td>
+                                <td>{{ customer.customer_id.customer_rank}}</td>
+                                <td>{{ customer.customer_id.customer_name}}</td>
+                                <td>{{ customer.customer_id.customer_address}}</td>
+                                <td>{{ customer.customer_id.customer_id }}</td>
+                                <td>{{ customer.total_amount}}</td>
                                 <td>
                                     <div class="list-btn">
-                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}"
+                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.customer_id.id}}"
                                             style="background-color:green ;">Add a Bill</a>
-                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}">All
+                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.customer_id.id}}">All
                                             Bills</a>
-                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}"
+                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.customer_id.id}}"
                                             style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
                                     </div>
                                 </td>
                             </tr>
-                            {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>

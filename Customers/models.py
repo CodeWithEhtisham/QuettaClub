@@ -8,6 +8,5 @@ class Customers(models.Model):
     customer_address = models.CharField(max_length=100, default='')
     customer_file = models.FileField(upload_to='media/', blank=True, null=True)
 
-    def __str__(self):
-        return self.customer_name
+ 
 

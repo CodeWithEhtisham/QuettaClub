@@ -3,193 +3,210 @@ from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
 from django.contrib import messages
-from .models import Sales, Bill ,dummyTable
+from .models import Sales, Bill, dummyTable
 from Customers.models import Customers
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import SalesSerializer
-from django.db.models import Sum
+from django.db.models import Sum, Count
 import datetime
 import re
 import os
 from django.contrib.auth.decorators import login_required, permission_required
 
+
 def long_process(df):
     try:
         # rename
-        rename={
-            "BILL No":'bill_no',
-            "Rank":'rank',
-            "POS No":'PoS_no',
-            "Name":'cname',
-            "Address":'address',
-            "On Account Of":'account_of',
-            "Dated":'date',
-            "Month":'month',
-            "Amount":'amount',
-            "Discount ":'discount',
-            "Net Amount":'net_amount'
+        print('dsafasdf',df.columns)
+        rename = {
+            "Bill No": 'bill_no',
+            "Rank": 'rank',
+            "POS No": 'PoS_no',
+            "Name": 'cname',
+            "Address": 'address',
+            "On Account of": 'account_of',
+            "Dated": 'date',
+            "Month": 'month',
+            "Amount": 'amount',
+            "Discount": 'discount',
+            "Net Amount": 'net_amount'
         }
         df.rename(columns=rename, inplace=True)
-        print(df.columns)
-        for index,row in df.iterrows():
-            print(row['cname'])
-            if Customers.objects.filter(customer_name=row['cname'],
-                customer_rank=row['rank'],customer_address=row['address']).exists():
-                dummyTable.objects.create(
-                    bill_no=row['bill_no'],
-                    rank=row['rank'],
-                    pos_no=row['PoS_no'],
-                    cname=row['cname'],
-                    address=row['address'],
-                    account_of=row['account_of'],
-                    date=datetime.datetime.strptime(row['date'], "%d-%m-%Y").date(),
-                    month=row['month'],
-                    amount=row['amount'],
-                    discount=row['discount'],
-                    net_amount=row['net_amount'],
-                    status="already exists"
+        # print(df.columns)
+        for index, row in df.iterrows():
+            try:
+                # print(row['cname'])
+                if Customers.objects.filter(customer_name=row['cname'],
+                                            customer_rank=row['rank'], customer_address=row['address']).exists():
+                    dummyTable.objects.create(
+                        bill_no=row['bill_no'],
+                        rank=row['rank'],
+                        pos_no=row['PoS_no'],
+                        cname=row['cname'],
+                        address=row['address'],
+                        account_of=row['account_of'],
+                        # date=datetime.datetime.strptime(
+                        #     row['date'], "%d-%m-%Y").date(),
+                        date=row['date'],
+                        month=row['month'],
+                        amount=row['amount'],
+                        discount=row['discount'],
+                        net_amount=row['net_amount'],
+                        status="already exists"
 
-                ).save()
-            else:
-                dummyTable.objects.create(
-                    bill_no=row['bill_no'],
-                    rank=row['rank'],
-                    pos_no=row['PoS_no'],
-                    cname=row['cname'],
-                    address=row['address'],
-                    account_of=row['account_of'],
-                    date=datetime.datetime.strptime(row['date'], "%d-%m-%Y").date(),
-                    month=row['month'],
-                    amount=row['amount'],
-                    discount=row['discount'],
-                    net_amount=row['net_amount'],
-                    status="new"
+                    ).save()
+                else:
+                    dummyTable.objects.create(
+                        bill_no=row['bill_no'],
+                        rank=row['rank'],
+                        pos_no=row['PoS_no'],
+                        cname=row['cname'],
+                        address=row['address'],
+                        account_of=row['account_of'],
+                        # date=datetime.datetime.strptime(
+                        #     row['date'], "%d-%b-%Y").date(),
+                        date=row['date'],
+                        month=row['month'],
+                        amount=row['amount'],
+                        discount=row['discount'],
+                        net_amount=row['net_amount'],
+                        status="new"
 
-                ).save()
+                    ).save()
+            except Exception as e:
+                print(e)
+                continue
         return True
     except Exception as e:
-        print(e)
+        print(
+        type(e).__name__,          # TypeError
+        __file__,                  # /tmp/example.py
+        e.__traceback__.tb_lineno  # 2
+    )
         return False
+
 
 @login_required
 def sales(request):
-    print("###############################################",request.method)
-    print("dummy date ",dummyTable.objects.values().last())
+    print("###############################################", request.method)
+    print("dummy date ", dummyTable.objects.values().last())
     if request.method == 'POST':
         try:
             if request.POST.get('Save'):
-                print(request.POST.get('customer_name'))
-                
-                customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),customer_rank=request.POST.get('customer_rank'))
+                # print(request.POST.get('customer_name'))
+
+                customer = Customers.objects.filter(customer_name=request.POST.get(
+                    'customer_name'), customer_rank=request.POST.get('customer_rank'))
                 # print(customer)
                 dummyTable.objects.create(
-                                bill_no=request.POST.get('bill_no'),
-                                rank=request.POST.get('customer_rank'),
-                                pos_no=request.POST.get('PoS_no'),
-                                cname=request.POST.get('customer_name'),
-                                address=request.POST.get('address'),
-                                account_of=request.POST.get('account_of'),
-                                date=request.POST.get('date'),
-                                month=request.POST.get('month'),
-                                amount=request.POST.get('amount'),
-                                discount=request.POST.get('discount'),
-                                net_amount=request.POST.get('net_amount'),
-                                remarks=request.POST.get('remarks'),
-                                status="new" if not customer else "already exists"
-                                ).save()
-                print('dummy date ',dummyTable.date)
+                    bill_no=request.POST.get('bill_no'),
+                    rank=request.POST.get('customer_rank'),
+                    pos_no=request.POST.get('PoS_no'),
+                    cname=request.POST.get('customer_name'),
+                    address=request.POST.get('address'),
+                    account_of=request.POST.get('account_of'),
+                    date=request.POST.get('date'),
+                    month=request.POST.get('month'),
+                    amount=request.POST.get('amount'),
+                    discount=request.POST.get('discount'),
+                    net_amount=request.POST.get('net_amount'),
+                    remarks=request.POST.get('remarks'),
+                    status="new" if not customer else "already exists"
+                ).save()
+                # print('dummy date ', dummyTable.date)
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
-            
+
             elif request.POST.get('upload_bills'):
-                
+
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
 
             elif request.POST.get('delete_all'):
                 dummyTable.objects.all().delete()
-                messages.success(request, "All today's Bills have been deleted successfully")
+                messages.success(
+                    request, "All today's Bills have been deleted successfully")
                 return redirect('Sales:sales')
 
             elif request.POST.get('sale_file_submit'):
                 print("customer_file_submit")
-                csv= request.FILES['sale_file']
+                csv = request.FILES['sale_file']
                 if not csv.name.split('.')[1] in ['csv', 'xlsx', 'xls']:
-                    messages.error(request, 'This is not a correct format file')
+                    messages.error(
+                        request, 'This is not a correct format file')
                 else:
-                    myfile = request.FILES["sale_file"]        
+                    myfile = request.FILES["sale_file"]
                     fs = FileSystemStorage()
                     filename = fs.save(myfile.name, myfile)
                     uploaded_file_url = fs.url(filename)
                     excel_file = uploaded_file_url
                     # print("."+excel_file)
                     # print(csv.name.split('.')[-1])
-                    if csv.name.split('.')[-1] in ['csv','CSV']:
+                    if csv.name.split('.')[-1] in ['csv', 'CSV']:
                         print("csv")
-                        df = pd.read_csv("."+excel_file)
-                        os.remove("."+excel_file)
+                        df = pd.read_csv("." + excel_file)
+                        for file in os.listdir("media/"):
+                            print(os.path.join("media/", file))
+                            os.remove(os.path.join("media/", file))
                         if long_process(df):
-                            messages.success(request, 'Sales csv Added Successful')
+                            messages.success(
+                                request, 'Sales csv Added Successful')
                             return HttpResponseRedirect(reverse("Sales:sales"))
-                    elif csv.name.split('.')[-1] in ['xlsx','XLSX','xls','XLS']:
+                    elif csv.name.split('.')[-1] in ['xlsx', 'XLSX', 'xls', 'XLS']:
                         print("excel")
-                        df = pd.read_excel("."+excel_file)
-                        os.remove("."+excel_file)
+                        df = pd.read_excel("." + excel_file)
+                        for file in os.listdir("media/"):
+                            print(os.path.join("media/", file))
+                            os.remove(os.path.join("media/", file))
                         if long_process(df):
-                            messages.success(request, 'Sales excel Added Successful')
+                            messages.success(
+                                request, 'Sales excel Added Successful')
                             return HttpResponseRedirect(reverse("Sales:sales"))
-                raise Exception("File not found") 
+                raise Exception("File not found")
         except Exception as e:  # Exception as e:
-                messages.error(request, 'Sales Added Failed',e)
-                return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)
+            messages.error(request, 'Sales Added Failed', e)
+            return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)
 
     else:
-        print(dummyTable.objects.all())          
+        print(dummyTable.objects.all())
         return render(request, "Sales/sales.html", {
             'customers': Customers.objects.all(),
             'sales': Sales.objects.all(),
             'dummy': dummyTable.objects.all().order_by('-id'),
-            })
+        })
+
 
 def delete_items(request, pk):
-	queryset = dummyTable.objects.get(id=pk)
-	if request.method == 'POST':
-		queryset.delete()
-		return redirect('Sales:sales')
-	return render(request, 'Sales/delete_items.html',{
+    queryset = dummyTable.objects.get(id=pk)
+    if request.method == 'POST':
+        queryset.delete()
+        return redirect('Sales:sales')
+    return render(request, 'Sales/delete_items.html', {
         'queryset': queryset
     })
 
+
 @login_required
 def view_sales(request):
-    if request.method == "POST":
-        try:
-            pass
-        except Exception as e:
-            pass
-    else:
-        return render(request, "Sales/view_sales.html",
-                {'sales_data': Sales.objects.all().select_related('customer_id').order_by("-bill_no"),
-                # exclude(created_on__date=timezone.now()).
-                'total_bills': Sales.objects.select_related('bill_no').count(),
-                'total_amount': Sales.objects.aggregate(Sum('amount'))['amount__sum'],
-                'total_discount': Sales.objects.aggregate(Sum('discount'))['discount__sum'],
-                'total_net_amount': Sales.objects.aggregate(Sum('net_amount'))['net_amount__sum'],
-                # 'total_paid': Sales.objects.aggregate(Sum('paid')['paid__sum']),
-                # 'total_paid_bills': Sales.objects.aggregate(Sum('paid_bill'),
-                # 'total_cancelled_bills': Sales.objects.aggregate(Sum('cancelled_bill'),
-                # 'total_complement_bills': Sales.objects.aggregate(Sum('complement_bill')
-                })
+
+    return render(request, "Sales/view_sales.html", {
+        'sales_data': Sales.objects.all().select_related('customer_id').order_by("-bill_no"),
+        'total_bills': Sales.objects.select_related('bill_no').count(),
+        'total_amount': Sales.objects.aggregate(Sum('amount'))['amount__sum'],
+        'total_discount': Sales.objects.aggregate(Sum('discount'))['discount__sum'],
+        'total_net_amount': Sales.objects.aggregate(Sum('net_amount'))['net_amount__sum'],
+    })
+
 
 def update_sales(request):
     if request.method == "POST":
         try:
             if request.POST.get('update_bill'):
-                customer=Customers.objects.filter(customer_name=request.POST.get('customer_name'),
-                    customer_rank=request.POST.get('customer_rank'))
+                customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                                                    customer_rank=request.POST.get('customer_rank'))
 
                 dummyTable.objects.filter(id=request.POST.get('edit_id')).update(
                     bill_no=request.POST.get('bill_no'),
@@ -205,8 +222,8 @@ def update_sales(request):
                     status="new" if not customer else "already exists",
                     cname=request.POST.get('customer_name'),
                     rank=request.POST.get('customer_rank'),
-                    )
-                
+                )
+
                 return HttpResponseRedirect(reverse("Sales:sales"))
             if request.POST.get('cancel'):
                 return HttpResponseRedirect(reverse("Sales:sales"))
@@ -216,8 +233,9 @@ def update_sales(request):
 
     else:
         return render(request, "Sales/update_sales.html", {
-                'sales_data': dummyTable.objects.filter(id=request.GET.get('id')).first()
-            })
+            'sales_data': dummyTable.objects.filter(id=request.GET.get('id')).first()
+        })
+
 
 @login_required
 def reports(request):
@@ -233,8 +251,8 @@ def reports(request):
         if request.POST.get('check'):
             value = request.POST.get('check')
             if value == 'all_check':
-            #     print('all check')
-                pass               
+                #     print('all check')
+                pass
             elif value == 'paid_check':
                 print('paid check')
                 return render(request, 'Sales/reports.html', {
@@ -253,34 +271,42 @@ def reports(request):
             else:
                 print('no check')
                 return render(request, 'Sales/reports.html')
-    
-    return render(request, 'Sales/reports.html',{
-                    'record': Bill.objects.all().select_related('sale_id').order_by('-id')
-                })
+
+    return render(request, 'Sales/reports.html', {
+        'record': Bill.objects.all().select_related('sale_id').order_by('-id'),
+        'total_paid': Bill.objects.filter(status__startswith="Paid").annotate(total_paid=Count('status')).count(),
+        'total_complementary': Bill.objects.filter(status__startswith="Complementery").annotate(total_comp=Count('status')).count(),
+        'total_cancelled': Bill.objects.filter(status__startswith="Cancel").annotate(total_cancelled=Count('status')).count(),
+        'total_paid_amount': Bill.objects.filter(status__startswith="Paid").aggregate(Sum('amount'))['amount__sum'],
+        'total_comp_amount': Bill.objects.filter(status__startswith="Complementery").aggregate(Sum('amount'))['amount__sum'],
+        'total_cancel_amount': Bill.objects.filter(status__startswith="cancel").aggregate(Sum('amount'))['amount__sum'],
+        'total_amount': Bill.objects.aggregate(Sum('amount'))['amount__sum'],
+    })
+
 
 @api_view(['GET'])
 def SearchbyName(request):
     field = request.GET.get('field')
     value = request.GET.get('value')
-    print(field,value)
+    print(field, value)
     try:
-        if field=='name':
+        if field == 'name':
             return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
-        elif field=='rank':
+        elif field == 'rank':
             return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
-        elif field=='bill_no':
+        elif field == 'bill_no':
             return Response(SalesSerializer(Sales.objects.filter(bill_no__exact=value).order_by('-id'), many=True).data)
-        elif field=='Pos_no':
+        elif field == 'Pos_no':
             return Response(SalesSerializer(Sales.objects.filter(PoS_no__exact=value).order_by('-id'), many=True).data)
-        elif field=='customer_id':
+        elif field == 'customer_id':
             return Response(SalesSerializer(Sales.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
-        elif field=='month':
+        elif field == 'month':
             return Response(SalesSerializer(Sales.objects.filter(month__icontains=value).order_by('-id'), many=True).data)
-        elif field=='account_of':
+        elif field == 'account_of':
             return Response(SalesSerializer(Sales.objects.filter(account_of__icontains=value).order_by('-id'), many=True).data)
-        elif field=='date':
+        elif field == 'date':
             return Response(SalesSerializer(Sales.objects.filter(date__icontains=value).order_by('-id'), many=True).data)
-        elif field=='address':
+        elif field == 'address':
             return Response(SalesSerializer(Sales.objects.filter(address__icontains=value).order_by('-id'), many=True).data)
     except Exception as e:
         return Response({"message": "No data found {}".format(e)})
@@ -296,13 +322,14 @@ def sales_pay_bill(request):
         remaining_amount = request.POST.get('remaining_amount')
         print("remaining amount ", remaining_amount)
 
-        Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount, 
-            status = "Paid", sale_id=Sales.objects.get(id=id))
+        Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
+                            status="Paid", sale_id=Sales.objects.get(id=id))
 
         Sales.objects.filter(id=id).update(net_amount=remaining_amount)
 
         print("sale net amount ", Sales.objects.filter(id=id).first())
         return Response({"message": "Bill Paid Successfully"})
+
 
 @api_view(['GET', 'POST'])
 def sales_comp_bill(request):
@@ -313,11 +340,12 @@ def sales_comp_bill(request):
         remarks = request.POST.get('comp_remarks')
         remaining_amount = request.POST.get('remaining_amount')
 
-        Bill.objects.create(amount=amount, date=date, bill_remarks=remarks, 
-            status="Complementery", sale_id=Sales.objects.get(id=id))
+        Bill.objects.create(amount=amount, date=date, bill_remarks=remarks,
+                            status="Complementery", sale_id=Sales.objects.get(id=id))
 
         Sales.objects.filter(id=id).update(net_amount=remaining_amount)
         return Response({"message": "Complement Bill Added Successfully"})
+
 
 @api_view(['GET', 'POST'])
 def sales_cancel_bill(request):
@@ -329,13 +357,13 @@ def sales_cancel_bill(request):
         remaining_amount = request.POST.get('remaining_amount')
         amount = request.POST.get('amount')
         Bill.objects.create(date=date, reason=reason, amount=amount,
-           status='Cancel', sale_id=Sales.objects.get(id=id))
+                            status='Cancel', sale_id=Sales.objects.get(id=id))
         remaining_amount = 0
         amount = 0
-        Sales.objects.filter(id=id).update(amount=amount ,net_amount=remaining_amount)
+        Sales.objects.filter(id=id).update(
+            amount=amount, net_amount=remaining_amount)
         messages.success(request, "Bill Cancelled Successfully")
         return redirect('sales:view_sales')
-
 
 
 @api_view(['POST'])
@@ -348,13 +376,16 @@ def sales_upload(request):
         jsons = request.data
         print(jsons['myrows'][0])
         for obj in jsons['myrows']:
-            if Customers.objects.filter(customer_name=obj['Name'],customer_address=obj['Address']).exists():
-                customer = Customers.objects.get(customer_name=obj['Name'],customer_address=obj['Address'])
+            if (Customers.objects.filter(customer_name=obj['Name'], customer_address=obj['Address']).exists()):
+                
+                customer = Customers.objects.get(
+                    customer_name=obj['Name'], customer_address=obj['Address'])
                 Sales.objects.create(
                     bill_no=obj['Bill No'],
                     PoS_no=obj['POS NO'],
-                    created_date=datetime.datetime.strptime(obj['Dated'], "%d-%m-%Y").date(),
-                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])), 
+                    created_date=datetime.datetime.strptime(
+                        obj['Dated'], "%d-%m-%Y").date(),
+                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
                     account_of=obj['On Account Of'],
                     amount=obj['Amount'],
                     net_amount=obj['Net Amount'],
@@ -362,9 +393,9 @@ def sales_upload(request):
                     customer_id=customer
                 ).save()
                 # messages.success(request, "Sale Data Uploaded Successfully")
-                print('sale date: ',Sales.objects.values().last())
+                # print('sale date: ', Sales.objects.values().last())
             else:
-                customer=Customers.objects.create(
+                customer = Customers.objects.create(
                     customer_name=obj['Name'],
                     customer_address=obj['Address'],
                     customer_rank=obj['Rank']
@@ -374,8 +405,9 @@ def sales_upload(request):
                 Sales.objects.create(
                     bill_no=obj['Bill No'],
                     PoS_no=obj['POS NO'],
-                    created_date=datetime.datetime.strptime(obj['Dated'], "%d-%m-%Y").date(),
-                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])), 
+                    created_date=datetime.datetime.strptime(
+                        obj['Dated'], "%d-%m-%Y").date(),
+                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
                     account_of=obj['On Account Of'],
                     amount=obj['Amount'],
                     net_amount=obj['Net Amount'],
@@ -387,7 +419,7 @@ def sales_upload(request):
         return Response({"message": "Sales Data Uploaded Successfully"})
     else:
         return Response({"message": "Sales Data Not Uploaded"})
-            
+
 
 sales_templates = [
     path('sales/', sales, name='sales'),

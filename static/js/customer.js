@@ -334,3 +334,63 @@ function sendBillsTable() {
   });
 
 }
+
+
+
+function paid_all_bills() {
+  check=window.confirm("Are you sure you want to paid all bills?");
+  if(check==true){
+    let rv=window.prompt("Enter your RV number");
+
+     var csrftoken = $.cookie('csrftoken');
+
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+  // loop table using jquery
+  $("tbody > tr").each(function(row, tr) {
+    let amount=$(tr).find('td:eq(10)').text();
+    let id = $(tr).find('td:eq(11)').text();
+    console.log(amount,id);
+    $.ajax({
+      method: 'POST',
+      url: "/api/customer/pay_all_bills/",
+      data: {
+        "id": id,
+        "rv_no": rv,
+        "paid_date": new Date(),
+        "amount": amount,
+        "remaining_amount": 0,
+        csrfmiddlewaretoken: window.CSRF_TOKEN,
+      },
+      dataType: "json",
+    })
+    // console.log(id)
+    paidModal.style.display = "none";
+    window.location.reload();
+
+
+  });
+  
+
+  
+  // window.location.reload();
+
+
+
+  }
+  else{
+    return false;
+  }
+ 
+};
