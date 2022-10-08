@@ -45,15 +45,7 @@ def long_process(df):
                     customer_rank=row['customer_rank'],
                 ).save()
         return True
-        # cols = ['customer_name', 'customer_rank', 'customer_id', 'customer_address']
-        # df = df[cols]
-        # df = df.to_dict('records')
-        # print(df)
-        # model_isntance = [Customers(**data) for data in df]
-        # obj = Customers.objects.bulk_create(model_isntance)
-        # print(obj)
-        # print("success")
-        # return True
+        
     except Exception as e:
         print("failed", e)
         return False
