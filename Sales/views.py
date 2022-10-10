@@ -114,8 +114,9 @@ def sales(request):
                     discount=request.POST.get('discount'),
                     net_amount=request.POST.get('net_amount'),
                     remarks=request.POST.get('remarks'),
-                    status="new" if not customer else "already exists"
+                    status="already exists" if customer else "new",
                 ).save()
+
                 # print('dummy date ', dummyTable.date)
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
@@ -134,7 +135,7 @@ def sales(request):
             elif request.POST.get('sale_file_submit'):
                 print("customer_file_submit")
                 csv = request.FILES['sale_file']
-                if not csv.name.split('.')[1] in ['csv', 'xlsx', 'xls']:
+                if csv.name.split('.')[1] not in ['csv', 'xlsx', 'xls']:
                     messages.error(
                         request, 'This is not a correct format file')
                 else:
@@ -168,7 +169,11 @@ def sales(request):
                 raise Exception("File not found")
         except Exception as e:  # Exception as e:
             messages.error(request, 'Sales Added Failed', e)
-            return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)
+            return HttpResponse(
+                f"Please fill the required fields! Back to Sales page {e}",
+                status=400,
+            )
+
 
     else:
         print(dummyTable.objects.all())
@@ -202,79 +207,76 @@ def view_sales(request):
 
 
 def update_sales(request):
-    if request.method == "POST":
-        try:
-            if request.POST.get('update_bill'):
-                customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
-                                                    customer_rank=request.POST.get('customer_rank'))
-
-                dummyTable.objects.filter(id=request.POST.get('edit_id')).update(
-                    bill_no=request.POST.get('bill_no'),
-                    pos_no=request.POST.get('PoS_no'),
-                    month=request.POST.get('month'),
-                    date=request.POST.get('date'),
-                    address=request.POST.get('address'),
-                    account_of=request.POST.get('account_of'),
-                    amount=request.POST.get('amount'),
-                    discount=request.POST.get('discount'),
-                    net_amount=request.POST.get('net_amount'),
-                    remarks=request.POST.get('remarks'),
-                    status="new" if not customer else "already exists",
-                    cname=request.POST.get('customer_name'),
-                    rank=request.POST.get('customer_rank'),
-                )
-
-                return HttpResponseRedirect(reverse("Sales:sales"))
-            
-            elif request.POST.get('cancel'):
-                return HttpResponseRedirect(reverse("Sales:sales"))
-        except Exception as e:
-            messages.error(request, f'Sales Update Failed {e}')
-            return HttpResponseRedirect(reverse("Sales:view_sales"))
-
-    else:
+    if request.method != "POST":
         return render(request, "Sales/update_sales.html", {
             'dummy_data': dummyTable.objects.filter(id=request.GET.get('id')).first(),
             'customers': Customers.objects.all(),
             'sales': Sales.objects.all(),
         })
+    try:
+        if request.POST.get('update_bill'):
+            customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                                                customer_rank=request.POST.get('customer_rank'))
+
+            dummyTable.objects.filter(id=request.POST.get('edit_id')).update(
+                bill_no=request.POST.get('bill_no'),
+                pos_no=request.POST.get('PoS_no'),
+                month=request.POST.get('month'),
+                date=request.POST.get('date'),
+                address=request.POST.get('address'),
+                account_of=request.POST.get('account_of'),
+                amount=request.POST.get('amount'),
+                discount=request.POST.get('discount'),
+                net_amount=request.POST.get('net_amount'),
+                remarks=request.POST.get('remarks'),
+                status="already exists" if customer else "new",
+                cname=request.POST.get('customer_name'),
+                rank=request.POST.get('customer_rank'),
+            )
+
+
+            return HttpResponseRedirect(reverse("Sales:sales"))
+
+        elif request.POST.get('cancel'):
+            return HttpResponseRedirect(reverse("Sales:sales"))
+    except Exception as e:
+        messages.error(request, f'Sales Update Failed {e}')
+        return HttpResponseRedirect(reverse("Sales:view_sales"))
 
 def update_view_sale(request):
-    if request.method == "POST":
-        try:
-            if request.POST.get("update_sale"):
-                customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
-                                                    customer_rank=request.POST.get('customer_rank'))
-                print("customer... ",customer.count())
-
-                Sales.objects.filter(id=request.POST.get('saleId')).update(
-                    bill_no=request.POST.get('bill_no'),
-                    PoS_no=request.POST.get('PoS_no'),
-                    month=request.POST.get('month'),
-                    created_date=request.POST.get('date'),
-                    address=request.POST.get('address'),
-                    account_of=request.POST.get('account_of'),
-                    amount=request.POST.get('amount'),
-                    discount=request.POST.get('discount'),
-                    net_amount=request.POST.get('net_amount'),
-                    remarks=request.POST.get('remarks'),
-                    customer_id = customer
-                )
-                messages.success(request, "sale bill updated successfully")
-                return HttpResponseRedirect(reverse("Sales:view_sales"))
-
-            elif request.POST.get('cancel'):
-                return HttpResponseRedirect(reverse("Sales:view_sales"))
-        except Exception as e:
-            messages.error(request, f"Sales update failed {e}")
-            return HttpResponse("Error: {}".format(e), status=400)
-    
-    else:
+    if request.method != "POST":
         return render(request, "Sales/update_view_sale.html", {
             'sales_data': Sales.objects.filter(id=request.GET.get('id')).first(),
             'customers': Customers.objects.all(),
             # 'sales': Sales.objects.all(),
         })
+    try:
+        if request.POST.get("update_sale"):
+            customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                                                customer_rank=request.POST.get('customer_rank'))
+            print("customer... ",customer.count())
+
+            Sales.objects.filter(id=request.POST.get('saleId')).update(
+                bill_no=request.POST.get('bill_no'),
+                PoS_no=request.POST.get('PoS_no'),
+                month=request.POST.get('month'),
+                created_date=request.POST.get('date'),
+                address=request.POST.get('address'),
+                account_of=request.POST.get('account_of'),
+                amount=request.POST.get('amount'),
+                discount=request.POST.get('discount'),
+                net_amount=request.POST.get('net_amount'),
+                remarks=request.POST.get('remarks'),
+                customer_id = customer
+            )
+            messages.success(request, "sale bill updated successfully")
+            return HttpResponseRedirect(reverse("Sales:view_sales"))
+
+        elif request.POST.get('cancel'):
+            return HttpResponseRedirect(reverse("Sales:view_sales"))
+    except Exception as e:
+        messages.error(request, f"Sales update failed {e}")
+        return HttpResponse(f"Error: {e}", status=400)
 
 @login_required
 def reports(request):
@@ -348,7 +350,7 @@ def SearchbyName(request):
         elif field == 'address':
             return Response(SalesSerializer(Sales.objects.filter(address__icontains=value).order_by('-id'), many=True).data)
     except Exception as e:
-        return Response({"message": "No data found {}".format(e)})
+        return Response({"message": f"No data found {e}"})
 
 
 @api_view(['GET', 'POST'])
@@ -407,57 +409,42 @@ def sales_cancel_bill(request):
 
 @api_view(['POST'])
 @login_required
-# @permission_required('Sales.sales', raise_exception=True)
 def sales_upload(request):
     print("sale sale sale get ")
     print('sale data ', Sales.objects.values().last())
-    if request.method == "POST":
-        jsons = request.data
-        print(jsons['myrows'][0])
-        for obj in jsons['myrows']:
-            if (Customers.objects.filter(customer_name=obj['Name'], customer_address=obj['Address']).exists()):
-
-                customer = Customers.objects.get(
-                    customer_name=obj['Name'], customer_address=obj['Address'])
-                Sales.objects.create(
-                    bill_no=obj['Bill No'],
-                    PoS_no=obj['POS NO'],
-                    created_date=datetime.datetime.strptime(
-                        obj['Dated'], "%d-%m-%Y").date(),
-                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
-                    account_of=obj['On Account Of'],
-                    amount=obj['Amount'],
-                    net_amount=obj['Net Amount'],
-                    discount=obj['Discount'],
-                    customer_id=customer
-                ).save()
-                # messages.success(request, "Sale Data Uploaded Successfully")
-                # print('sale date: ', Sales.objects.values().last())
-            else:
-                customer = Customers.objects.create(
-                    customer_name=obj['Name'],
-                    customer_address=obj['Address'],
-                    customer_rank=obj['Rank']
-                )
-                customer.save()
-                # messages.success(request, "Sale Data Uploaded Successfully")
-                Sales.objects.create(
-                    bill_no=obj['Bill No'],
-                    PoS_no=obj['POS NO'],
-                    created_date=datetime.datetime.strptime(
-                        obj['Dated'], "%d-%m-%Y").date(),
-                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
-                    account_of=obj['On Account Of'],
-                    amount=obj['Amount'],
-                    net_amount=obj['Net Amount'],
-                    discount=obj['Discount'],
-                    customer_id=customer
-                ).save()
-        dummyTable.objects.all().delete()
-        messages.success(request, "Sale Data Uploaded Successfully")
-        return Response({"message": "Sales Data Uploaded Successfully"})
-    else:
+    if request.method != "POST":
         return Response({"message": "Sales Data Not Uploaded"})
+    jsons = request.data
+    print(jsons['myrows'][0])
+    for obj in jsons['myrows']:
+        if (Customers.objects.filter(customer_name=obj['Name'], customer_address=obj['Address']).exists()):
+
+            customer = Customers.objects.get(
+                customer_name=obj['Name'], customer_address=obj['Address'])
+                        # messages.success(request, "Sale Data Uploaded Successfully")
+                        # print('sale date: ', Sales.objects.values().last())
+        else:
+            customer = Customers.objects.create(
+                customer_name=obj['Name'],
+                customer_address=obj['Address'],
+                customer_rank=obj['Rank']
+            )
+            customer.save()
+        Sales.objects.create(
+            bill_no=obj['Bill No'],
+            PoS_no=obj['POS NO'],
+            created_date=datetime.datetime.strptime(
+                obj['Dated'], "%d-%m-%Y").date(),
+            month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
+            account_of=obj['On Account Of'],
+            amount=obj['Amount'],
+            net_amount=obj['Net Amount'],
+            discount=obj['Discount'],
+            customer_id=customer
+        ).save()
+    dummyTable.objects.all().delete()
+    messages.success(request, "Sale Data Uploaded Successfully")
+    return Response({"message": "Sales Data Uploaded Successfully"})
 
 
 sales_templates = [
