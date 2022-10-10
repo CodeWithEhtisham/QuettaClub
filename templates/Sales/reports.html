@@ -147,10 +147,11 @@
                                 <th>Rank</th>
                                 <th>Name</th>
                                 <th>Address</th>
+                                <th>Sale Date</th>
                                 <th>On Account Of</th>
-                                <th>Dated</th>
                                 <th>Month</th>
                                 <th>Amount</th>
+                                <th>Date</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -165,10 +166,11 @@
                                 <td>{{paid.sale_id.customer_id.customer_rank}}</td>
                                 <td>{{paid.sale_id.customer_id.customer_name}}</td>
                                 <td>{{ paid.sale_id.address }}</td>
+                                <td>{{ paid.sale_id.created_date }}</td>
                                 <td>{{ paid.sale_id.account_of }}</td>
-                                <td>{{ paid.date }}</td>
                                 <td>{{ paid.sale_id.month|default:"Nil" }}</td>
                                 <td>{{ paid.amount|intcomma }}</td>
+                                <td>{{ paid.date }}</td>
                                 
                                 <td>
                                     {% if paid.status == "Paid" %}

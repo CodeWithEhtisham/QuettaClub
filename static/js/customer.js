@@ -333,7 +333,7 @@ document.getElementById("paid_amount").onchange = function () {
 //     }
 //   });
 
-}
+// }
 
 
 

@@ -59,62 +59,62 @@
                 
                 <form action="{% url 'Sales:update_sales' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" value="{{sales_data.id}}" name='edit_id'>
+                    <input type="hidden" value="{{dummy_data.id}}" name='edit_id'>
                     <div class="grid col-100">
                         <div class="grid-item">
                             <label class="form-label">Bill No</label>
-                            <input class="form-control" type="text" name="bill_no" value="{{sales_data.bill_no}}">
+                            <input class="form-control" type="text" name="bill_no" value="{{dummy_data.bill_no}}">
                         </div>
                         <div class="grid-item">
                             <label class="form-label">PoS No</label>
-                            <input class="form-control" type="text" name="PoS_no" value="{{sales_data.pos_no}}">
+                            <input class="form-control" type="text" name="PoS_no" value="{{dummy_data.pos_no}}">
                         </div>
                         <div class="grid-item">
                             <label class="form-label">Date</label>
-                            <input class="form-control" id="today-date" type="date" name="date" value="{{sales_data.date}}">
+                            <input class="form-control" id="today-date" type="date" name="date" value="{{dummy_data.date}}">
                         </div>
                         <div class="">
                             <label class="form-label">Month</label>
-                            <input class="form-control" type="text" name="month" value="{{sales_data.month}}">
+                            <input class="form-control" type="text" name="month" value="{{dummy_data.month}}">
                         </div>
                         <div class="">
                             <label class="form-label">Rank</label>
                             <select name="customer_rank" id="rank" class="form-control" aria-readonly="true">
-                                <option value="{{sales_data.rank}}">{{sales_data.rank}}</option>
+                                <option value="{{dummy_data.rank}}">{{dummy_data.rank}}</option>
                                 <option value="Army">Army</option>
-                                <option value="Civilian">Member</option>
+                                <option value="Members">Member</option>
                                 <option value="Staff">Staff</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
                         <div class="">
                             <label class="form-label">Name</label>
-                            <input class="form-control" type="text" value="{{sales_data.cname}}" name="customer_name" id="name" onkeydown="getCustomerName();">
+                            <input class="form-control" type="text" value="{{dummy_data.cname}}" name="customer_name" id="name" onkeydown="getCustomerName();">
                         </div>
 
                         <div class="">
                             <label class="form-label">Address</label>
-                            <input class="form-control" type="text" name="address" value="{{sales_data.address}}" id="address" onkeydown="getCustomerName();">
+                            <input class="form-control" type="text" name="address" value="{{dummy_data.address}}" id="address" onkeydown="getCustomerName();">
                         </div>
                         <div class="">
                             <label class="form-label">On Account of</label>
-                            <input class="form-control" type="text" name="account_of" value="{{sales_data.account_of}}">
+                            <input class="form-control" type="text" name="account_of" value="{{dummy_data.account_of}}">
                         </div>
                         <div class="">
                             <label class="form-label">Amount</label>
-                            <input class="form-control" type="text" name="amount" value="{{sales_data.amount}}">
+                            <input class="form-control" type="text" name="amount" value="{{dummy_data.amount}}">
                         </div>
                         <div class="">
                             <label class="form-label">Discount</label>
-                            <input class="form-control" type="text" name="discount" value="{{sales_data.discount}}">
+                            <input class="form-control" type="text" name="discount" value="{{dummy_data.discount}}">
                         </div>
                         <div class="">
                             <label class="form-label">Net Amount</label>
-                            <input class="form-control" type="text" name="net_amount" value="{{sales_data.net_amount}}">
+                            <input class="form-control" type="text" name="net_amount" value="{{dummy_data.net_amount}}">
                         </div>
                         <div class="">
                             <label class="form-label">Remarks</label>
-                            <input class="form-control" type="text" name="remarks" value="{{sales_data.remarks}}">
+                            <input class="form-control" type="text" name="remarks" value="{{dummy_data.remarks}}">
                         </div>
                     </div>
                     <hr>

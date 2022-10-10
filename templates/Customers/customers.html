@@ -102,7 +102,7 @@
                                 <!-- <option value="">Select Rank</option> -->
                                 <option value="Staff" selected>Staff</option>
                                 <option value="Army">Army</option>
-                                <option value="Civilian">Members</option>
+                                <option value="Members">Members</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
@@ -198,11 +198,37 @@
                                 <th>Name</th>
                                 <th>Address</th>
                                 <th>Customer ID</th>
+                                <th>Due Amount</th>
                                 <th>Actions</th>
 
                             </tr>
                         </thead>
                         <tbody>
+                            {% if customer_table %}
+                            {% for customer in customer_table %}
+                            <tr>
+                                <!-- <td>{{customer.id}}</td> -->
+                                <td>{{customer.customer_rank}}</td>
+                                <td>{{customer.customer_name}}</td>
+                                <td>{{customer.customer_address}}</td>
+                                <td>{{customer.customer_id}}</td>
+                                <td>0</td>
+                                <td>
+                                    <div class="list-btn">
+                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}"
+                                            style="background-color:green ;">Add a Bill</a>
+                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}">All
+                                            Bills</a>
+                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}"
+                                            style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+
+
+                            {% if customers_table %}
                             {% for customer in customers_table %}
                             <tr>
                                 <td>{{ customer.customer_id.customer_rank}}</td>
@@ -222,6 +248,7 @@
                                 </td>
                             </tr>
                             {% endfor %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>

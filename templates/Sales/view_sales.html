@@ -83,18 +83,7 @@
                             </select>
                             <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"
                                 class="form-control ml-5 search" placeholder="search ....">
-                            <!-- <script>
-                                $(function () {
-                                    var availableTags = [
-                                        {% for data in sales_data %}
-                                    "{{data.customer_id.customer_name}}",
-                                    {% endfor %}
-                                    ];
-                                $("#search_value").autocomplete({
-                                    source: availableTags
-                                });
-                          } );
-                            </script> -->
+                           
                         </div>
                         <!--  -->
                         <div class="choose_file ml-5">
@@ -138,17 +127,17 @@
                                 <td>{{sale.customer_id.customer_rank}}</td>
                                 <td>{{ sale.PoS_no|default:"00" }}</td>
                                 <td>{{sale.customer_id.customer_name}}</td>
-                                <td>{{ sale.customer_id.customer_address|default_if_none:"--" }}</td>
-                                <td>{{ sale.account_of|default_if_none:"--" }}</td>
+                                <td>{{ sale.customer_id.customer_address|default:"--" }}</td>
+                                <td>{{ sale.account_of|default:"--" }}</td>
                                 <td>{{ sale.publish_date }}</td>
-                                <td>{{ sale.month|default_if_none:"--" }}</td>
-                                <td>{{ sale.amount|intcomma|default_if_none:"00" }}</td>
-                                <td>{{ sale.discount|intcomma|default_if_none:"00" }}</td>
-                                <td>{{ sale.net_amount|intcomma|default_if_none:"00" }}</td>
-                                <td>{{ sale.remarks|default_if_none:" " }}</td>
+                                <td>{{ sale.month|default:"--" }}</td>
+                                <td>{{ sale.amount|intcomma|default:"00" }}</td>
+                                <td>{{ sale.discount|intcomma|default:"00" }}</td>
+                                <td>{{ sale.net_amount|intcomma|default:"00" }}</td>
+                                <td>{{ sale.remarks|default:" " }}</td>
                                 <td>
                                     <div class="list">
-                                        <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
+                                        <a href="{% url 'Sales:update_view_sale' %}?id={{sale.id}}"
                                             style="background-color: blue; color: white;">Edit</a>
                                         <button class="modal" id="paid_modal"
                                             onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')"

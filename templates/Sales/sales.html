@@ -133,7 +133,7 @@
                             <select name="customer_rank" required id="rank" class="form-control">
                                 <!-- <option value="">Select Rank</option> -->
                                 <option value="Staff" selected>Staff</option>
-                                <option value="Civilian">Members</option>
+                                <option value="Members">Members</option>
                                 <option value="Army">Army</option>
                                 <option value="Other">Other</option>
                             </select>
@@ -230,14 +230,14 @@
                             <tbody id="tbody">
                                 {% for sale in dummy %}
                                 {% if sale.status == "new" %}
-                                <tr style="background-color: #b0fdd3">
+                                <tr style="background-color: #fdb0b0">
                                     <td>{{ sale.bill_no|default:"00" }}</td>
                                     <td>{{sale.rank}}</td>
                                     <td>{{ sale.PoS_no|default:"00" }}</td>
                                     <td>{{sale.cname}}</td>
                                     <td>{{ sale.address|default:"--" }}</td>
                                     <td>{{ sale.account_of|default:"--" }}</td>
-                                    <td>{{ sale.date|date:'d-m-Y' }}</td>
+                                    <td>{{ sale.date }}</td>
                                     <td>{{ sale.month|default:"--" }}</td>
                                     <td>{{ sale.amount|default:"00" }}</td>
                                     <td>{{ sale.discount|default:"00" }}</td>

@@ -20,7 +20,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 def long_process(df):
     try:
         # rename
-        print('dsafasdf',df.columns)
+        print('dsafasdf', df.columns)
         rename = {
             "Bill No": 'bill_no',
             "Rank": 'rank',
@@ -82,10 +82,10 @@ def long_process(df):
         return True
     except Exception as e:
         print(
-        type(e).__name__,          # TypeError
-        __file__,                  # /tmp/example.py
-        e.__traceback__.tb_lineno  # 2
-    )
+            type(e).__name__,          # TypeError
+            __file__,                  # /tmp/example.py
+            e.__traceback__.tb_lineno  # 2
+        )
         return False
 
 
@@ -225,7 +225,8 @@ def update_sales(request):
                 )
 
                 return HttpResponseRedirect(reverse("Sales:sales"))
-            if request.POST.get('cancel'):
+            
+            elif request.POST.get('cancel'):
                 return HttpResponseRedirect(reverse("Sales:sales"))
         except Exception as e:
             messages.error(request, f'Sales Update Failed {e}')
@@ -233,9 +234,45 @@ def update_sales(request):
 
     else:
         return render(request, "Sales/update_sales.html", {
-            'sales_data': dummyTable.objects.filter(id=request.GET.get('id')).first()
+            'dummy_data': dummyTable.objects.filter(id=request.GET.get('id')).first(),
+            'customers': Customers.objects.all(),
+            'sales': Sales.objects.all(),
         })
 
+def update_view_sale(request):
+    if request.method == "POST":
+        try:
+            if request.POST.get("update_sale"):
+                customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                                                    customer_rank=request.POST.get('customer_rank'))
+
+                Sales.objects.filter(id=request.POST.get('edit_id')).update(
+                    bill_no=request.POST.get('bill_no'),
+                    PoS_no=request.POST.get('PoS_no'),
+                    month=request.POST.get('month'),
+                    created_date=request.POST.get('date'),
+                    address=request.POST.get('address'),
+                    account_of=request.POST.get('account_of'),
+                    amount=request.POST.get('amount'),
+                    discount=request.POST.get('discount'),
+                    net_amount=request.POST.get('net_amount'),
+                    remarks=request.POST.get('remarks'),
+                    customer_id = customer
+                )
+                return HttpResponseRedirect(reverse("Sales:view_sales"))
+                messages.success(request, "sale bill updated successfully")
+
+            elif request.POST.get('cancel'):
+                return HttpResponseRedirect(reverse("Sales:view_sales"))
+        except Exception as e:
+            messages.error(request, f"Sales update failed {e}")
+    
+    else:
+        return render(request, "Sales/update_view_sale.html", {
+            'sales_data': Sales.objects.filter(id=request.GET.get('id')).first(),
+            'customers': Customers.objects.all(),
+            'sales': Sales.objects.all(),
+        })
 
 @login_required
 def reports(request):
@@ -377,7 +414,7 @@ def sales_upload(request):
         print(jsons['myrows'][0])
         for obj in jsons['myrows']:
             if (Customers.objects.filter(customer_name=obj['Name'], customer_address=obj['Address']).exists()):
-                
+
                 customer = Customers.objects.get(
                     customer_name=obj['Name'], customer_address=obj['Address'])
                 Sales.objects.create(
@@ -427,6 +464,7 @@ sales_templates = [
     path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
     path('reports/', reports, name='reports'),
     path('update_sales/', update_sales, name='update_sales'),
+    path('update_view_sale/', update_view_sale, name='update_view_sale'),
     path('delete_items/<str:pk>/', delete_items, name="delete_items"),
     path('api/sales/pay_bill/', sales_pay_bill, name='sales_pay_bill'),
     path('api/sales/comp_bill/', sales_comp_bill, name='sales_comp_bill'),

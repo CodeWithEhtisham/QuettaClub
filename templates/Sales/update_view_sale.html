@@ -57,7 +57,7 @@
                 <h2 class="title">Bill Edit</h2>
                 <!-- <h2>Edit Bill</h2> -->
                 
-                <form action="{% url 'Sales:update_sales' %}" method="post" enctype="multipart/form-data">
+                <form action="{% url 'Sales:update_view_sale' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="hidden" value="{{sales_data.id}}" name='edit_id'>
                     <div class="grid col-100">
@@ -80,9 +80,9 @@
                         <div class="">
                             <label class="form-label">Rank</label>
                             <select name="customer_rank" id="rank" class="form-control" aria-readonly="true">
-                                <option value="{{sales_data.rank}}">{{sales_data.customer_id.customer_rank}}</option>
+                                <option value="{{sales_data.customer_id.customer_rank}}">{{sales_data.customer_id.customer_rank}}</option>
                                 <option value="Army">Army</option>
-                                <option value="Civilian">Member</option>
+                                <option value="Members">Member</option>
                                 <option value="Staff">Staff</option>
                                 <option value="Other">Other</option>
                             </select>
@@ -94,7 +94,7 @@
 
                         <div class="">
                             <label class="form-label">Address</label>
-                            <input class="form-control" type="text" name="address" value="{{sales_data.address}}" id="address" onkeydown="getCustomerName();">
+                            <input class="form-control" type="text" name="address" value="{{sales_data.customer_id.customer_address}}" id="address" onkeydown="getCustomerName();">
                         </div>
                         <div class="">
                             <label class="form-label">On Account of</label>
@@ -119,7 +119,7 @@
                     </div>
                     <hr>
                     <div class="flex">
-                        <button class="btn" name="update_bill" value="update_bill">
+                        <button class="btn" name="update_sale" value="update_sale">
                             Update
                         </button>
                         <button class="btn cancel" name="cancel" value="cancel">

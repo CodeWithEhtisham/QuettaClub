@@ -172,12 +172,17 @@ def customers(request):
             messages.error(request, 'Customer Added Failed {}'.format(e))
             return HttpResponseRedirect(reverse('Customers:customers'))
     else:
+        sales=Sales.objects.select_related('customer_id').annotate(total_amount=Sum('net_amount'))
+        ids=Sales.objects.values_list('customer_id', flat=True).distinct()
+        ids=[i for i in ids]
+        customer=Customers.objects.exclude(id__in=ids)
+        print(customer)
         return render(request, 'Customers/customers.html',
                       {
-                        # 'customers': Customers.objects.all().order_by("-id"),
-                       'customers_table': Sales.objects.select_related('customer_id').annotate(total_amount=Sum('net_amount')),
+                        'customer_table': customer,
+                       'customers_table': sales,
                        'all_customers': Customers.objects.all().count(),
-                       'all_staffs': Customers.objects.all().values('customer_rank').annotate(count=Count('pk', distinct=True))
+                       'all_staffs': Customers.objects.all().filter(customer_rank__in=['Army', 'Staff', 'Members']).values('customer_rank').annotate(count=Count('pk', distinct=True))
                        
                        })
 
