@@ -255,9 +255,10 @@ def update_view_sale(request):
     if request.method == "POST":
         try:
             if request.POST.get("update_sale"):
-                customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                customer = Customers.objects.get(customer_name=request.POST.get('customer_name'),
                                                     customer_rank=request.POST.get('customer_rank'))
-                print("customer... ",customer.count())
+                # print("customer... ",customer.count())
+                # print("sale id ",Sales.objects.filter(id=request.POST.get('saleId')).count())
 
                 Sales.objects.filter(id=request.POST.get('saleId')).update(
                     bill_no=request.POST.get('bill_no'),
