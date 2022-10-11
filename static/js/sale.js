@@ -98,6 +98,8 @@ function paidModalSubmit() {
       "rv_no": $("#rv_no").val(),
       "paid_date": $("#today-date").val(),
       "amount": $("#paid_amount").val(),
+      "balance": $("#pay_bill_modal_balance").val(),
+      
       "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
       csrfmiddlewaretoken: window.CSRF_TOKEN,
     },

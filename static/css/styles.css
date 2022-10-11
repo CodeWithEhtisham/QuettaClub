@@ -116,6 +116,7 @@ li a:hover {
 .cancel {
   background-color: #95a5a6;
   margin-left: 5px;
+  text-decoration: none;
 }
 
 .flex {
@@ -271,7 +272,7 @@ td a {
   border-radius: 5px;
   color: #1e659c;
   cursor: pointer;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   padding: 4px;
   height: 42px;
 }

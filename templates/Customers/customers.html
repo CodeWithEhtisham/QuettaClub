@@ -89,8 +89,10 @@
                             </button>
                             <input name="customer_file" type="file" accept=".xlsx, .xls, .csv" />
                         </div>
+                        <div>
+                            <input class="btn ml-5" type="submit" id="customer_file_submit" name="customer_file_submit">
+                        </div>
                     </div>
-                    <input class="btn" type="submit" id="customer_file_submit" name="customer_file_submit">
                 </form>
                 <form action="{% url 'Customers:customers' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}

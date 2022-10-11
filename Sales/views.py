@@ -375,7 +375,7 @@ def sales_pay_bill(request):
 
         Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
                             status="Paid", sale_id=Sales.objects.get(id=id))
-
+        
         Sales.objects.filter(id=id).update(net_amount=remaining_amount)
 
         print("sale net amount ", Sales.objects.filter(id=id).first())
