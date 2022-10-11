@@ -46,11 +46,11 @@ function update_table(data) {
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href="/Sales/update_sales/?id=' + elem['id'] + '" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
-        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
-        '<button id="comp_modal" class="modal" onclick="compModalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')">Complemantery</button>' +
-        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: #dc3545;">Cancelled</button>' +
-
+        '<a href="/Sales/update_sales/?id=' + elem['id'] + '" style="background-color: #1e659c; color: white;">Edit</a>' +
+        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: #0c7ed6; color: white;">Paid</button>' +
+        '<button id="comp_modal" class="modal" onclick="compModalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: #1e659c;">Complemantery</button>' +
+        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: #6a6a6a;">Cancelled</button>' +
+        '<a href="/Sales/delete_sale/sale.id %}" style="background-color: #ae180d; color: white;">Delete</a>'+
         '</div>' +
         '</td>' +
         '</tr>'

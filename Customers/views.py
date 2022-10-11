@@ -34,18 +34,18 @@ def long_process(df):
             if (Customers.objects.filter(
                 customer_rank=row['customer_rank'],
                 customer_address=row['customer_address'],
-                customer_name=row['customer_name']).exists()):
+                    customer_name=row['customer_name']).exists()):
                 continue
                 # messages.error("Customer id already exists")
             # else:
             Customers.objects.create(
-                    customer_id=row['customer_id'],
-                    customer_name=row['customer_name'],
-                    customer_address=row['customer_address'],
-                    customer_rank=row['customer_rank'],
-                ).save()
+                customer_id=row['customer_id'],
+                customer_name=row['customer_name'],
+                customer_address=row['customer_address'],
+                customer_rank=row['customer_rank'],
+            ).save()
         return True
-        
+
     except Exception as e:
         print("failed", e)
         return False
@@ -172,19 +172,20 @@ def customers(request):
             messages.error(request, 'Customer Added Failed {}'.format(e))
             return HttpResponseRedirect(reverse('Customers:customers'))
     else:
-        sales=Sales.objects.select_related('customer_id').annotate(total_amount=Sum('net_amount'))
-        ids=Sales.objects.values_list('customer_id', flat=True).distinct()
-        ids=[i for i in ids]
-        customer=Customers.objects.exclude(id__in=ids)
+        sales = Sales.objects.select_related(
+            'customer_id').annotate(total_amount=Sum('net_amount'))
+        ids = Sales.objects.values_list('customer_id', flat=True).distinct()
+        ids = [i for i in ids]
+        customer = Customers.objects.exclude(id__in=ids)
         print(customer)
         return render(request, 'Customers/customers.html',
                       {
-                        'customer_table': customer,
-                       'customers_table': sales,
-                       'all_customers': Customers.objects.all().count(),
-                       'all_staffs': Customers.objects.all().filter(customer_rank__in=['Army', 'Staff', 'Members']).values('customer_rank').annotate(count=Count('pk', distinct=True))
-                       
-                       })
+                          'customer_table': customer,
+                          'customers_table': sales,
+                          'all_customers': Customers.objects.all().count(),
+                          'all_staffs': Customers.objects.all().filter(customer_rank__in=['Army', 'Staff', 'Members']).values('customer_rank').annotate(count=Count('pk', distinct=True))
+
+                      })
 
 
 @login_required
@@ -209,34 +210,6 @@ def customer_update(request):
 
 @login_required
 def customer_details(request):
-    print(Sales.objects.filter(customer_id__id=request.GET.get(
-        "id")).select_related('customer_id').order_by("-id"))
-    if request.method == "POST":
-        if request.POST.get('check'):
-            value = request.POST.get('check')
-            if value == 'all_check':
-                print('all check')
-                return render(request, 'Customers/customer_details.html', {
-                    'all_bills': Bill.objects.all().select_related('sale_id').order_by('-id')
-                })
-            elif value == 'paid_check':
-                print('paid check')
-                return render(request, 'Customers/customer_details.html', {
-                    'paid': Bill.objects.filter(status='Paid').select_related('sale_id').order_by('-id')
-                })
-            elif value == 'comp_check':
-                print('complementary check')
-                return render(request, 'Customers/customer_details.html', {
-                    'paid': Bill.objects.filter(status='Complementery').select_related('sale_id').order_by('-id')
-                })
-            elif value == 'cancel_check':
-                print('cancel check')
-                return render(request, 'Customers/customer_details.html', {
-                    'paid': Bill.objects.filter(status='Cancel').select_related('sale_id').order_by('-id')
-                })
-            else:
-                print('no check')
-                return render(request, 'Customers/customer_details.html')
     return render(request, "Customers/customer_details.html", {
         'sale_id': request.GET.get("id"),
         'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id"),
@@ -245,10 +218,15 @@ def customer_details(request):
         'total_discount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('discount'))['discount__sum'],
         'total_net_amount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('net_amount'))['net_amount__sum'],
     })
+    
 
 
 @login_required
 def customer_bill(request):
+    return render(request, 'Customers/customer_bill.html', {
+        'customer_data': Customers.objects.filter(id=request.GET.get("id")).first(),
+        'sales': Sales.objects.all()
+    })
     if request.method == 'POST':
         if request.POST.get('save_bill'):
             if Bill.objects.filter(sale_id__id=request.POST.get('sale_id')).exists():
@@ -273,12 +251,6 @@ def customer_bill(request):
                   ).save()
             messages.success(request, 'Sales Added Successful')
             return redirect("Customers:customers")
-            # return HttpResponse("success")
-    else:
-        return render(request, 'Customers/customer_bill.html', {
-            'customer_data': Customers.objects.filter(id=request.GET.get("id")).first(),
-            'sales': Sales.objects.all()
-        })
 
 
 @api_view(['GET'])
@@ -320,11 +292,12 @@ def pay_bill(request):
         print("sale net amount ", Sales.objects.filter(id=id).first())
         return Response({"message": "Bill Paid Successfully"})
 
-@api_view(['GET','POST'])
+
+@api_view(['GET', 'POST'])
 def pay_all_bills(request):
-    if request.method=="POST":
+    if request.method == "POST":
         id = request.POST.get('id')
-        print('dasfjaskdfj ',id)
+        print('dasfjaskdfj ', id)
         rv_no = request.POST.get('rv_no')
         paid_date = timezone.now()
         amount = request.POST.get('amount')

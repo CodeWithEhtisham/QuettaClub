@@ -61,8 +61,9 @@
                         <h2>Customers</h2>
                         <div class="form-group ml-5">
                             <select name="search_field" id="search_field" class="form-control">
-                                <option value="">Search By</option>
-                                <option value="bill_no">Bill No.</option>
+                                <!-- <option value="">Search By</option> -->
+                                <option value="bill_no" selected>Bill No</option>
+                                <option value="rv_no" selected>RV No</option>
                                 <option value="pos_no">PoS No</option>
                                 <option value="month">Month</option>
                                 <option value="account_of">On Account of</option>
@@ -71,7 +72,7 @@
                                 <option value="name">Name</option>
                                 <option value="address">Address</option>
                             </select>
-                            <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"
+                            <input type="search" name="search_value" id="search_value" oninput="SearchbyNameReport();"
                                 class="form-control ml-5 search" placeholder="search ....">
 
                         </div>
@@ -127,13 +128,7 @@
                                             d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
                                     </svg>
                                 </button>
-                                <!-- <a class="form-data ml-5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" height="26px">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
-                                    </svg>
-                                </a> -->
+                                
                             </div>
                     </div>
                     {% if record %}
@@ -168,11 +163,11 @@
                                 <td>{{paid.sale_id.customer_id.customer_rank}}</td>
                                 <td>{{paid.sale_id.customer_id.customer_name}}</td>
                                 <td>{{ paid.sale_id.address }}</td>
-                                <td>{{ paid.sale_id.created_date }}</td>
+                                <td>{{ paid.sale_id.created_date|date:"d-M-Y" }}</td>
                                 <td>{{ paid.sale_id.account_of }}</td>
                                 <td>{{ paid.sale_id.month|default:"Nil" }}</td>
                                 <td>{{ paid.amount|intcomma }}</td>
-                                <td>{{ paid.date }}</td>
+                                <td>{{ paid.date|date:"d-M-Y" }}</td>
 
                                 <td>
                                     {% if paid.status == "Paid" %}
@@ -271,8 +266,8 @@
         const print = document.getElementById('print_bill');
         print.addEventListener('click', () => { window.print(); });
     </script>
-    <script src="{% static 'js/sales.js' %}"></script>
     <script src="{% static 'js/report.js' %}"></script>
+    <!-- <script src="{% static 'js/sales.js' %}"></script> -->
     <script src="{% static 'js/jquery.cookie.js' %}"></script>
 </body>
 

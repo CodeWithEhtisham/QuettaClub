@@ -11,6 +11,10 @@ class SalesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class BillSerializer(serializers.ModelSerializer):
+    sale_id = SalesSerializer(
+            read_only=True,
+            many=False,
+        )
     class Meta:
         model = Bill
         fields = '__all__'

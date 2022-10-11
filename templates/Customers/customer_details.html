@@ -137,7 +137,7 @@
                             <td>
                                 <div class="list">
 
-                                    <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
+                                    <a href="{% url 'Sales:update_view_sale' %}?id={{sale.id}}"
                                         style="background-color: #1e659c; color: rgb(255, 255, 255);">Edit</a>
                                     <button class="modal" id="paid_modal"
                                         onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')"

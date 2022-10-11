@@ -9,7 +9,7 @@ import pandas as pd
 from django.core.files.storage import FileSystemStorage
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializer import SalesSerializer
+from .serializer import SalesSerializer, BillSerializer
 from django.db.models import Sum, Count
 import datetime
 import re
@@ -255,9 +255,8 @@ def update_view_sale(request):
     if request.method == "POST":
         try:
             if request.POST.get("update_sale"):
-                customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                customer = Customers.objects.get(customer_name=request.POST.get('customer_name'),
                                                     customer_rank=request.POST.get('customer_rank'))
-                print("customer... ",customer.count())
 
                 Sales.objects.filter(id=request.POST.get('saleId')).update(
                     bill_no=request.POST.get('bill_no'),
@@ -290,8 +289,18 @@ def update_view_sale(request):
 
 @login_required
 def reports(request):
-    print(Sales.objects.filter(customer_id__id=request.GET.get(
-        "id")).select_related('customer_id').order_by("-id"))
+    return render(request, 'Sales/reports.html', {
+        'record': Bill.objects.all().select_related('sale_id').order_by('-id'),
+        'total_paid': Bill.objects.filter(status__startswith="Paid").annotate(total_paid=Count('status')).count(),
+        'total_complementary': Bill.objects.filter(status__startswith="Complementery").annotate(total_comp=Count('status')).count(),
+        'total_cancelled': Bill.objects.filter(status__startswith="Cancelled").annotate(total_cancelled=Count('status')).count(),
+        'total_paid_amount': Bill.objects.filter(status__startswith="Paid").aggregate(Sum('amount'))['amount__sum'],
+        'total_comp_amount': Bill.objects.filter(status__startswith="Complementery").aggregate(Sum('amount'))['amount__sum'],
+        'total_cancel_amount': Bill.objects.filter(status__startswith="Cancelled").aggregate(Sum('amount'))['amount__sum'],
+        'total_amount': Bill.objects.aggregate(Sum('amount'))['amount__sum'],
+    })
+    # print(Sales.objects.filter(customer_id__id=request.GET.get(
+    #     "id")).select_related('customer_id').order_by("-id"))
     if request.method == "POST":
         if request.POST.get("report_generate"):
             from_date = request.POST.get("from-date")
@@ -323,16 +332,7 @@ def reports(request):
                 print('no check')
                 return render(request, 'Sales/reports.html')
 
-    return render(request, 'Sales/reports.html', {
-        'record': Bill.objects.all().select_related('sale_id').order_by('-id'),
-        'total_paid': Bill.objects.filter(status__startswith="Paid").annotate(total_paid=Count('status')).count(),
-        'total_complementary': Bill.objects.filter(status__startswith="Complementery").annotate(total_comp=Count('status')).count(),
-        'total_cancelled': Bill.objects.filter(status__startswith="Cancelled").annotate(total_cancelled=Count('status')).count(),
-        'total_paid_amount': Bill.objects.filter(status__startswith="Paid").aggregate(Sum('amount'))['amount__sum'],
-        'total_comp_amount': Bill.objects.filter(status__startswith="Complementery").aggregate(Sum('amount'))['amount__sum'],
-        'total_cancel_amount': Bill.objects.filter(status__startswith="Cancelled").aggregate(Sum('amount'))['amount__sum'],
-        'total_amount': Bill.objects.aggregate(Sum('amount'))['amount__sum'],
-    })
+    
 
 
 @api_view(['GET'])
@@ -362,6 +362,33 @@ def SearchbyName(request):
     except Exception as e:
         return Response({"message": "No data found {}".format(e)})
 
+
+@api_view(['GET'])
+def SearchbyNameReport(request):
+    field = request.GET.get('field')
+    value = request.GET.get('value')
+    print(field, value)
+    try:
+        if field == 'rv_no':
+            return Response(BillSerializer(Bill.objects.filter(rv_no__icontains=value).order_by('-id'), many=True).data)
+        if field == 'name':
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
+        elif field == 'rank':
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
+        elif field == 'bill_no':
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__bill_no__iexact=value).order_by('-id'), many=True).data)
+        elif field == 'pos_no':
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__PoS_no__iexact=value).order_by('-id'), many=True).data)
+        elif field == 'month':
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__month__icontains=value).order_by('-id'), many=True).data)
+        elif field == 'account_of':
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__account_of__icontains=value).order_by('-id'), many=True).data)
+        elif field == 'date':
+            return Response(BillSerializer(Bill.objects.filter(date__icontains=value).order_by('-id'), many=True).data)
+        elif field == 'address':
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__address__icontains=value).order_by('-id'), many=True).data)
+    except Exception as e:
+        return Response({"message": "No data found {}".format(e)})
 
 @api_view(['GET', 'POST'])
 def sales_pay_bill(request):
@@ -475,12 +502,14 @@ def sales_upload(request):
 sales_templates = [
     path('sales/', sales, name='sales'),
     path('view_sales/', view_sales, name='view_sales'),
-    path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
     path('reports/', reports, name='reports'),
     path('update_sales/', update_sales, name='update_sales'),
     path('update_view_sale/', update_view_sale, name='update_view_sale'),
     path('delete_items/<int:pk>/', delete_items, name="delete_items"),
     path('delete_sale/<int:pk>/', delete_sale, name="delete_sale"),
+    # api urls
+    path('api/SearchbyName/', SearchbyName, name='SearchbyName'),
+    path('api/SearchbyNameReport/', SearchbyNameReport, name='SearchbyNameReport'),
     path('api/sales/pay_bill/', sales_pay_bill, name='sales_pay_bill'),
     path('api/sales/comp_bill/', sales_comp_bill, name='sales_comp_bill'),
     path('api/sales/cancel_bill/', sales_cancel_bill, name='sales_cancel_bill'),

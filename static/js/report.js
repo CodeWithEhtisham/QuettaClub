@@ -49,54 +49,65 @@ function generate() {
 
         })
     }
-    // doc.autoTable(res4.columns, res4.data);
-    // doc.text(200, y = y + 30, "TOTAL MARKS OF STUDENTS");
-    // doc.output('dataurlnewwindow');
-    // doc.autoTable({
-    //     html: '#myTable',
-    //     startY: 70,
-    //     theme: 'grid',
-    //     // columnStyles: {
-    //     //     0: {
-    //     //         cellWidth: 100,
-    //     //     },
-    //     //     1: {
-    //     //         cellWidth: 100,
-    //     //     },
-    //     //     2: {
-    //     //         cellWidth: 100,
-    //     //     },
-    //     //     3: {
-    //     //         cellWidth: 100,
-    //     //     }
-    //     // },
-    //     styles: {
-    //         minCellHeight: 40
-    //     }
-    // }),
-    // doc.autoTable({
-    //     html: '#myTable1',
-    //     startY: 70,
-    //     theme: 'grid',
-    //     // columnStyles: {
-    //     //     0: {
-    //     //         cellWidth: 100,
-    //     //     },
-    //     //     1: {
-    //     //         cellWidth: 100,
-    //     //     },
-    //     //     2: {
-    //     //         cellWidth: 100,
-    //     //     },
-    //     //     3: {
-    //     //         cellWidth: 100,
-    //     //     }
-    //     // },
-    //     styles: {
-    //         minCellHeight: 40
-    //     }
-    // })
 
     doc.save(fromdate + "__" + todate + '_report.pdf');
     // doc.output('dataurlnewwindow');
 }
+
+
+function SearchbyNameReport() {
+    let field = document.getElementById('search_field').value;
+    let value = document.getElementById('search_value').value;
+  
+    if (field != '' && value != '') {
+      $.ajax({
+        method: "GET",
+        url: "/api/SearchbyNameReport/",
+        data: { "field": field, "value": value },
+        success: function (data) {
+          // console.log("success on search" + data);
+          update_table(data)
+        },
+        error: function () {
+          console.log('error');
+        }
+  
+      })
+    }
+  };
+  
+  function update_table(data) {
+    console.log(data);
+    let row;
+    let all_rows = '';
+  
+    Object.keys(data).forEach(key => {
+      elem = data[key];
+      console.log(elem);
+        row = '<tr>' +
+          // '<td>'+elem['id']+'</td>' +
+          '<td>' + elem['sale_id']['bill_no'] + '</td>' +
+          '<td>' + elem['rv_no'] + '</td>' +
+          '<td>' + elem['sale_id']['PoS_no'] + '</td>' +
+          '<td>' + elem['sale_id']['customer_id']['customer_rank'] + '</td>' +
+          '<td>' + elem['sale_id']['customer_id']['customer_name'] + '</td>' +
+          '<td>' + elem['sale_id']['address'] + '</td>' +
+          '<td>' + elem['sale_id']['created_date'] + '</td>' +
+          '<td>' + elem['sale_id']['account_of'] + '</td>' +
+          '<td>' + elem['sale_id']['month'] + '</td>' +
+          '<td>' + elem['amount'] + '</td>' +
+          '<td>'+elem['date']+'</td>' +
+          '<td>' + elem['status'] + '</td>' +
+          '<td>' +
+          
+        //   '<p class="modal" style="background-color: #0c7ed6; text-align: center; color: rgb(246, 244, 244);">'+elem['status']+'</p>' +
+        //   '<p class="modal" style="background-color: #1e659c; text-align: center; color: rgb(246, 244, 244);">'+elem['status']+'</p>' +
+        //   '<p class="modal" style="background-color: #6a6a6a; text-align: center; color: rgb(246, 244, 244);">'+elem['status']+'</p>'+
+        //   '</td>' +
+          '</tr>'
+        all_rows += row;
+      }
+    );
+    $('#report tbody').html(all_rows);
+  
+  }
