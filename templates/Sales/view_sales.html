@@ -85,8 +85,8 @@
                         <h2>Customers</h2>
                         <div class="form-group ml-5 w-50">
                             <select name="search_field" id="search_field" class="form-control option">
-                                <option value="">Search By</option>
-                                <option value="bill_no">Bill No.</option>
+                                <!-- <option value="">Search By</option> -->
+                                <option value="bill_no" selected>Bill No.</option>
                                 <option value="pos_no">PoS No</option>
                                 <option value="customer_id">Customer ID</option>
                                 <option value="month">Month</option>
@@ -215,7 +215,7 @@
                 <input class="form-control" type="text" id="pay_bill_modal_balance" name="paid_balance">
 
                 <label class="form-label">Amount</label>
-                <input class="form-control" type="text" name="paid_amount" id="paid_amount">
+                <input class="form-control" type="text" name="paid_amount" id="paid_amount" required>
 
 
                 <label class="form-label">Remaining</label>

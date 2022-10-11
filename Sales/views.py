@@ -264,12 +264,14 @@ def update_view_sale(request):
         })
     try:
         if request.POST.get("update_sale"):
-            customer = Customers.objects.get(customer_name=request.POST.get('customer_name'),
-                                             customer_rank=request.POST.get('customer_rank'))
+            customer = Customers.objects.get(
+                customer_name=request.POST.get('customer_name'), 
+                customer_rank=request.POST.get('customer_rank'))
             # print("customer... ",customer.count())
             # print("sale id ",Sales.objects.filter(id=request.POST.get('saleId')).count())
 
-            Sales.objects.filter(id=request.POST.get('saleId')).update(
+            Sales.objects.filter(
+                id=request.POST.get('saleId')).update(
                 bill_no=request.POST.get('bill_no'),
                 PoS_no=request.POST.get('PoS_no'),
                 month=request.POST.get('month'),
@@ -296,13 +298,26 @@ def update_view_sale(request):
 def reports(request):
     return render(request, 'Sales/reports.html', {
         'record': Bill.objects.all().select_related('sale_id').order_by('-id'),
-        'total_paid': Bill.objects.filter(status__startswith="Paid").annotate(total_paid=Count('status')).count(),
-        'total_complementary': Bill.objects.filter(status__startswith="Complementery").annotate(total_comp=Count('status')).count(),
-        'total_cancelled': Bill.objects.filter(status__startswith="Cancelled").annotate(total_cancelled=Count('status')).count(),
-        'total_paid_amount': Bill.objects.filter(status__startswith="Paid").aggregate(Sum('amount'))['amount__sum'],
-        'total_comp_amount': Bill.objects.filter(status__startswith="Complementery").aggregate(Sum('amount'))['amount__sum'],
-        'total_cancel_amount': Bill.objects.filter(status__startswith="Cancelled").aggregate(Sum('amount'))['amount__sum'],
-        'total_amount': Bill.objects.aggregate(Sum('amount'))['amount__sum'],
+        'total_paid': Bill.objects.filter(
+            status__startswith="Paid").annotate(
+                total_paid=Count('status')).count(),
+        'total_complementary': Bill.objects.filter(
+            status__startswith="Complementery").annotate(
+                total_comp=Count('status')).count(),
+        'total_cancelled': Bill.objects.filter(
+            status__startswith="Cancelled").annotate(
+                total_cancelled=Count('status')).count(),
+        'total_paid_amount': Bill.objects.filter(
+            status__startswith="Paid").aggregate(
+                Sum('amount'))['amount__sum'],
+        'total_comp_amount': Bill.objects.filter(
+            status__startswith="Complementery").aggregate(
+                Sum('amount'))['amount__sum'],
+        'total_cancel_amount': Bill.objects.filter(
+            status__startswith="Cancelled").aggregate(
+                Sum('amount'))['amount__sum'],
+        'total_amount': Bill.objects.aggregate(
+            Sum('amount'))['amount__sum'],
     })
     # print(Sales.objects.filter(customer_id__id=request.GET.get(
     #     "id")).select_related('customer_id').order_by("-id"))
@@ -337,8 +352,6 @@ def reports(request):
                 print('no check')
                 return render(request, 'Sales/reports.html')
 
-    
-
 
 @api_view(['GET'])
 def SearchbyName(request):
@@ -347,7 +360,9 @@ def SearchbyName(request):
     print(field, value)
     try:
         if field == 'name':
-            return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
+            return Response(SalesSerializer(
+                Sales.objects.select_related('customer_id').filter(
+                    customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
         elif field == 'rank':
             return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
         elif field == 'bill_no':
@@ -394,6 +409,7 @@ def SearchbyNameReport(request):
             return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__address__icontains=value).order_by('-id'), many=True).data)
     except Exception as e:
         return Response({"message": "No data found {}".format(e)})
+
 
 @api_view(['GET', 'POST'])
 def sales_pay_bill(request):

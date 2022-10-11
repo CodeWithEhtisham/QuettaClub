@@ -26,19 +26,38 @@ function update_table(data) {
     console.log(data[key]);
     elem = data[key];
     console.log(elem['id'])
+    if (elem['customers_table']) {
     row = '<tr>' +
       '<td>' + elem['customer_rank'] + '</td>' +
       '<td>' + elem['customer_name'] + '</td>' +
       '<td>' + elem['customer_address'] + '</td>' +
       '<td>' + elem['customer_id'] + '</td>' +
+      '<td>' + elem['total_amount'] + '</td>' +
       '<td>' +
       '<div class="list-btn">' +
-      '<a href="/customer_bill/?id='+elem['id']+'" style="background-color:green ;">Add a Bill</a>' +
-      '<a href="/customer_details/?id='+elem['id']+'">All Bills</a>' +
-      '<a href="/customer_update/?id='+elem['id']+'" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
+      '<a href="/customer_bill/?id='+elem['id']+'" style="background-color:#1e659c; text-align: center;">Add a Bill</a>' +
+      '<a href="/customer_details/?id='+elem['id']+'" style="text-align: center;">All Bills</a>' +
+      '<a href="/customer_update/?id='+elem['id']+'" style="background-color: #1e659c;">Edit</a>' +
       '</div>' +
       '</td>' +
       '</tr>'
+    }
+    else {
+      row = '<tr>' +
+      '<td>' + elem['customer_rank'] + '</td>' +
+      '<td>' + elem['customer_name'] + '</td>' +
+      '<td>' + elem['customer_address'] + '</td>' +
+      '<td>' + elem['customer_id'] + '</td>' +
+      '<td>' + elem['0'] + '</td>' +
+      '<td>' +
+      '<div class="list-btn">' +
+      '<a href="/customer_bill/?id='+elem['id']+'" style="background-color:#1e659c; text-align: center;">Add a Bill</a>' +
+      '<a href="/customer_details/?id='+elem['id']+'" style="text-align: center;">All Bills</a>' +
+      '<a href="/customer_update/?id='+elem['id']+'" style="background-color: #1e659c;">Edit</a>' +
+      '</div>' +
+      '</td>' +
+      '</tr>'
+    }
     all_rows += row;
   });
   $('#Customers_Data tbody').html(all_rows);
@@ -92,10 +111,10 @@ function update_bill_table(data) {
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href="/Sales/update_sales/?id=' +elem['id']+'" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
-        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
+        '<a href="/Sales/update_sales/?id=' +elem['id']+'" style="background-color: #1e659c; ">Edit</a>' +
+        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: #1e659c; ">Paid</button>' +
         '<button id="comp_modal" class="modal" onclick="compModalOpen('+elem['id']+','+elem['net_amount']+')">Complemantery</button>' +
-        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: #dc3545;">Cancelled</button>' +
+        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: #6a6a6a;;">Cancelled</button>' +
         '</div>' +
         '</td>' +
         '</tr>'
@@ -289,52 +308,6 @@ document.getElementById("paid_amount").onchange = function () {
   var total = balance - amount;
   document.getElementById('remaing_amount').value = total;
 };
-
-// function sendBillsTable() {
-//   var myRows = [];
-//   var $headers = $("th");
-//   var $rows = $("tbody tr").each(function (index) {
-//     $cells = $(this).find("td");
-//     myRows[index] = {};
-//     $cells.each(function (cellIndex) {
-//       myRows[index][$($headers[cellIndex]).html()] = $(this).html();
-//     });
-//   });
-
-//   // Let's put this in the object like you want and convert to JSON (Note: jQuery will also do this for you on the Ajax request)
-//   var myObj = {};
-//   myObj.myrows = myRows;
-
-//   var csrftoken = $.cookie('csrftoken');
-
-//   function csrfSafeMethod(method) {
-//     // these HTTP methods do not require CSRF protection
-//     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-//   }
-
-//   $.ajaxSetup({
-//     beforeSend: function (xhr, settings) {
-//       if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-//         xhr.setRequestHeader("X-CSRFToken", csrftoken);
-//       }
-//     }
-//   });
-//   // Ajax request goes here
-//   $.ajax({
-//     type: "POST",
-//     url: "/api/customer/bills_upload/",
-//     data: JSON.stringify(myObj),
-//     csrfmiddlewaretoken: window.CSRF_TOKEN,
-//     contentType: "application/json; charset=utf-8",
-//     dataType: "json",
-//     success: function (data) {
-//       // clear table all data
-//       $("#Sales_data tbody").empty();
-//     }
-//   });
-
-// }
-
 
 
 function paid_all_bills() {

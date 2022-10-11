@@ -218,7 +218,6 @@ def customer_details(request):
         'total_discount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('discount'))['discount__sum'],
         'total_net_amount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('net_amount'))['net_amount__sum'],
     })
-    
 
 
 @login_required

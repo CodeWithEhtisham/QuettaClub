@@ -72,46 +72,14 @@ function paidMOdalOpen(id, value) {
   document.getElementById("paid-form-id").value = id;
   document.getElementById("pay_bill_modal_balance").value = value;
   todays('today-date');
-  var data;
-  if ($("#paid_amount").val() > $("#pay_bill_modal_balance").val()) {
-    data = {
-      id: $("#paid-form-id").val(),
-      rv_no: $("#rv_no").val(),
-      paid_date: $("#today-date").val(),
-      amount: $("#paid_amount").value() = $("#pay_bill_modal_balance").value(),
-      remainint_amount: $("#remaining_amount").value() = 
-        $("#pay_bill_modal_balance").value() - $("#paid_amount").value(),};
-  }else {
-    data = {
-      id: $("#paid-form-id").val(),
-      rv_no: $("#rv_no").val(),
-      paid_date: $("#today-date").val(),
-      amount: $("#paid_amount").val(),
-      remainint_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val()
-    };
-  }
+  
 }
 
 // paid Modal submit
 function paidModalSubmit() {
-   var data;
-  if ($("#paid_amount").val() > $("#pay_bill_modal_balance").val()) {
-    data = {
-      id: $("#paid-form-id").val(),
-      rv_no: $("#rv_no").val(),
-      paid_date: $("#today-date").val(),
-      amount: $("#paid_amount").value() = $("#pay_bill_modal_balance").value(),
-      remainint_amount: $("#remaining_amount").value() = 
-        $("#pay_bill_modal_balance").value() - $("#paid_amount").value(),};
-  }else {
-    data = {
-      id: $("#paid-form-id").val(),
-      rv_no: $("#rv_no").val(),
-      paid_date: $("#today-date").val(),
-      amount: $("#paid_amount").val(),
-      remainint_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val()
-    };
-  }
+  
+  
+
   var csrftoken = $.cookie('csrftoken');
 
   function csrfSafeMethod(method) {
@@ -126,6 +94,28 @@ function paidModalSubmit() {
       }
     }
   });
+
+  let data;
+  if ($("#paid_amount").val() > $("#pay_bill_modal_balance").val()) {
+    alert("Paid amount is greater than Net Amount! Please enter less or equal Amount");
+    // data = {
+    //   id: $("#paid-form-id").val(),
+    //   rv_no: $("#rv_no").val(),
+    //   paid_date: $("#today-date").val(),
+    //   amount: $("#paid_amount").value() = $("#pay_bill_modal_balance").value(),
+    //   remainint_amount: $("#remaining_amount").value() = 
+    //     $("#pay_bill_modal_balance").value() - $("#paid_amount").value()};
+  }
+  else {
+    data = {
+      id: $("#paid-form-id").val(),
+      rv_no: $("#rv_no").val(),
+      paid_date: $("#today-date").val(),
+      amount: $("#paid_amount").val(),
+      remainint_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val()
+    };
+  }
+  
   $.ajax({
     method: 'POST',
     url: "/api/sales/pay_bill/",
