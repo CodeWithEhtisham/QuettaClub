@@ -189,34 +189,29 @@
                             </tr>
                             {% endfor %}
                         </tbody>
+                        <tfoot>
+                            <tr style="background-color: #727272;">
+                                <td>Total Paid Bills:</td>
+                                <td style="font-size: 1.5rem;"><b>{{total_paid|intcomma|default:"00"}}</b></td>
+                                <!-- <td></td> -->
+                                <td>Total Complementary Bills:</td>
+                                <td style="font-size: 1.5rem;"><b>{{total_complementary|intcomma|default:"00"}}</b></td>
+                                <!-- <td></td> -->
+                                <td>Total Cancelled Bills:</td>
+                                <td style="font-size: 1.5rem;"><b>{{total_cancelled|intcomma|default:"00"}}</b></td>
+                                <!-- <td></td> -->
+                            <td>Total Paid Amount:</td>
+                            <td style="font-size: 1.5rem;"><b>{{total_paid_amount|intcomma|default:"00"}}</b></td>
+                            <td>Total Complementary Amount:</td>
+                            <td style="font-size: 1.5rem;"><b>{{total_comp_amount|intcomma|default:"00"}}</b></td>
+                            <!-- <td>Total Cancelled Amount:</td>
+                                <td><b>{{total_cancel_amount|intcomma|default:"00"}}</b></td> -->
+                                <td>Total Bills Amount:</td>
+                                <td style="font-size: 1.5rem;"><b>{{total_amount|intcomma|default:"0"}}</b></td>
+                            </tr>
+                        </tfoot>
                     </table>
                     {% endif %}
-                    <table class="table">
-                        <tbody>
-
-                            <tfoot>
-                                <tr style="background-color: #727272;">
-                                    <td>Total Paid Bills:</td>
-                                    <td style="font-size: 1.5rem;"><b>{{total_paid|intcomma|default:"00"}}</b></td>
-                                    <!-- <td></td> -->
-                                    <td>Total Complementary Bills:</td>
-                                    <td style="font-size: 1.5rem;"><b>{{total_complementary|intcomma|default:"00"}}</b></td>
-                                    <!-- <td></td> -->
-                                    <td>Total Cancelled Bills:</td>
-                                    <td style="font-size: 1.5rem;"><b>{{total_cancelled|intcomma|default:"00"}}</b></td>
-                                    <!-- <td></td> -->
-                                <td>Total Paid Amount:</td>
-                                <td style="font-size: 1.5rem;"><b>{{total_paid_amount|intcomma|default:"00"}}</b></td>
-                                <td>Total Complementary Amount:</td>
-                                <td style="font-size: 1.5rem;"><b>{{total_comp_amount|intcomma|default:"00"}}</b></td>
-                                <!-- <td>Total Cancelled Amount:</td>
-                                    <td><b>{{total_cancel_amount|intcomma|default:"00"}}</b></td> -->
-                                    <td>Total Bills Amount:</td>
-                                    <td style="font-size: 1.5rem;"><b>{{total_amount|intcomma|default:"0"}}</b></td>
-                                </tr>
-                            </tfoot>
-                        </tbody>
-                    </table>
 
                 </div>
             </div>

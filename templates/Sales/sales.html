@@ -91,8 +91,10 @@
                             <input name="sale_file" type="file" accept=".xlsx, .xls, .csv" />
 
                         </div>
+                        <div>
+                            <input class="btn ml-5" type="submit" id="sale_file_submit" name="sale_file_submit">
+                        </div>
                     </div>
-                    <input class="btn ml-5" type="submit" id="sale_file_submit" name="sale_file_submit">
 
                 </form>
                 <form class="post-form" action="{% url 'Sales:sales' %}" method="post">

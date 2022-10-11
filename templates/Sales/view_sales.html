@@ -79,7 +79,7 @@
         {% endfor %} -->
 
         <div class="row">
-            <div class="card">
+            <div class="card w-100">
                 <div>
                     <div class="row">
                         <h2>Customers</h2>
@@ -169,6 +169,7 @@
                             </tr>
                             {% endif %}
                             {% endfor %}
+                        </tbody>
                         <tfoot>
                             <tr style="background-color: #727272;">
                                 <td>Total Bills:</td>
@@ -186,7 +187,6 @@
                                 <td tyle="font-size: 1.5rem;"><b>{{total_net_amount|intcomma}}</b></td>
                             </tr>
                         </tfoot>
-                        </tbody>
                     </table>
                 </div>
             </div>

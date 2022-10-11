@@ -178,6 +178,7 @@ def sales(request):
             'dummy': dummyTable.objects.all().order_by('-id'),
         })
 
+
 @login_required
 def delete_items(request, pk):
     queryset = dummyTable.objects.get(id=pk)
@@ -188,6 +189,7 @@ def delete_items(request, pk):
     return render(request, 'Sales/delete_items.html', {
         'queryset': queryset
     })
+
 
 def delete_sale(request, pk):
     querysale = Sales.objects.get(id=pk)
@@ -210,6 +212,7 @@ def view_sales(request):
         'total_discount': Sales.objects.aggregate(Sum('discount'))['discount__sum'],
         'total_net_amount': Sales.objects.aggregate(Sum('net_amount'))['net_amount__sum'],
     })
+
 
 @login_required
 def update_sales(request):
@@ -236,7 +239,7 @@ def update_sales(request):
                 )
 
                 return HttpResponseRedirect(reverse("Sales:sales"))
-            
+
             elif request.POST.get('cancel'):
                 return HttpResponseRedirect(reverse("Sales:sales"))
         except Exception as e:
@@ -250,42 +253,44 @@ def update_sales(request):
             'sales': Sales.objects.all(),
         })
 
+
 @login_required
 def update_view_sale(request):
-    if request.method == "POST":
-        try:
-            if request.POST.get("update_sale"):
-                customer = Customers.objects.get(customer_name=request.POST.get('customer_name'),
-                                                    customer_rank=request.POST.get('customer_rank'))
-
-                Sales.objects.filter(id=request.POST.get('saleId')).update(
-                    bill_no=request.POST.get('bill_no'),
-                    PoS_no=request.POST.get('PoS_no'),
-                    month=request.POST.get('month'),
-                    created_date=request.POST.get('date'),
-                    address=request.POST.get('address'),
-                    account_of=request.POST.get('account_of'),
-                    amount=request.POST.get('amount'),
-                    discount=request.POST.get('discount'),
-                    net_amount=request.POST.get('net_amount'),
-                    remarks=request.POST.get('remarks'),
-                    customer_id = customer
-                )
-                messages.success(request, "sale bill updated successfully")
-                return HttpResponseRedirect(reverse("Sales:view_sales"))
-
-            elif request.POST.get('cancel'):
-                return HttpResponseRedirect(reverse("Sales:view_sales"))
-        except Exception as e:
-            messages.error(request, f"Sales update failed {e}")
-            return HttpResponse("Error: {}".format(e), status=400)
-    
-    else:
+    if request.method != "POST":
         return render(request, "Sales/update_view_sale.html", {
             'sales_data': Sales.objects.filter(id=request.GET.get('id')).first(),
             'customers': Customers.objects.all(),
-            # 'sales': Sales.objects.all(),
+            'sales': Sales.objects.all(),
         })
+    try:
+        if request.POST.get("update_sale"):
+            customer = Customers.objects.get(customer_name=request.POST.get('customer_name'),
+                                             customer_rank=request.POST.get('customer_rank'))
+            # print("customer... ",customer.count())
+            # print("sale id ",Sales.objects.filter(id=request.POST.get('saleId')).count())
+
+            Sales.objects.filter(id=request.POST.get('saleId')).update(
+                bill_no=request.POST.get('bill_no'),
+                PoS_no=request.POST.get('PoS_no'),
+                month=request.POST.get('month'),
+                created_date=request.POST.get('date'),
+                address=request.POST.get('address'),
+                account_of=request.POST.get('account_of'),
+                amount=request.POST.get('amount'),
+                discount=request.POST.get('discount'),
+                net_amount=request.POST.get('net_amount'),
+                remarks=request.POST.get('remarks'),
+                customer_id=customer
+            )
+            messages.success(request, "sale bill updated successfully")
+            return HttpResponseRedirect(reverse("Sales:view_sales"))
+
+        elif request.POST.get('cancel'):
+            return HttpResponseRedirect(reverse("Sales:view_sales"))
+    except Exception as e:
+        messages.error(request, f"Sales update failed {e}")
+        return HttpResponse(f"Error: {e}", status=400)
+
 
 @login_required
 def reports(request):
