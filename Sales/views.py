@@ -257,8 +257,9 @@ def update_view_sale(request):
             if request.POST.get("update_sale"):
                 customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
                                                     customer_rank=request.POST.get('customer_rank'))
+                print("customer... ",customer.count())
 
-                Sales.objects.filter(id=request.POST.get('edit_id')).update(
+                Sales.objects.filter(id=request.POST.get('saleId')).update(
                     bill_no=request.POST.get('bill_no'),
                     PoS_no=request.POST.get('PoS_no'),
                     month=request.POST.get('month'),
@@ -271,19 +272,20 @@ def update_view_sale(request):
                     remarks=request.POST.get('remarks'),
                     customer_id = customer
                 )
-                return HttpResponseRedirect(reverse("Sales:view_sales"))
                 messages.success(request, "sale bill updated successfully")
+                return HttpResponseRedirect(reverse("Sales:view_sales"))
 
             elif request.POST.get('cancel'):
                 return HttpResponseRedirect(reverse("Sales:view_sales"))
         except Exception as e:
             messages.error(request, f"Sales update failed {e}")
+            return HttpResponse("Error: {}".format(e), status=400)
     
     else:
         return render(request, "Sales/update_view_sale.html", {
             'sales_data': Sales.objects.filter(id=request.GET.get('id')).first(),
             'customers': Customers.objects.all(),
-            'sales': Sales.objects.all(),
+            # 'sales': Sales.objects.all(),
         })
 
 @login_required
