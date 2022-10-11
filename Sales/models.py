@@ -29,7 +29,7 @@ class Bill(models.Model):
     STATUS = (
         ('paid', 'Paid'),
         ('complementery', 'Complementery'),
-        ('cancel', 'Cancel')
+        ('cancelled', 'Cancelled')
     )
     status = models.CharField(max_length=50, choices=STATUS, null=True, blank=True)
     rv_no = models.CharField(max_length=50, null=True) # only paid modal will have this field

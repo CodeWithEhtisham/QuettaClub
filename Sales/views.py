@@ -178,14 +178,25 @@ def sales(request):
             'dummy': dummyTable.objects.all().order_by('-id'),
         })
 
-
+@login_required
 def delete_items(request, pk):
     queryset = dummyTable.objects.get(id=pk)
     if request.method == 'POST':
         queryset.delete()
-        return redirect('Sales:sales')
+        messages.success(request, 'Sales Deleted Successful')
+        return HttpResponseRedirect(reverse("Sales:sales"))
     return render(request, 'Sales/delete_items.html', {
         'queryset': queryset
+    })
+
+def delete_sale(request, pk):
+    querysale = Sales.objects.get(id=pk)
+    if request.method == 'POST':
+        querysale.delete()
+        messages.success(request, 'Sales Deleted Successful')
+        return HttpResponseRedirect(reverse("Sales:view_sales"))
+    return render(request, 'Sales/delete_sale.html', {
+        'querysale': querysale
     })
 
 
@@ -200,7 +211,7 @@ def view_sales(request):
         'total_net_amount': Sales.objects.aggregate(Sum('net_amount'))['net_amount__sum'],
     })
 
-
+@login_required
 def update_sales(request):
     if request.method == "POST":
         try:
@@ -239,6 +250,7 @@ def update_sales(request):
             'sales': Sales.objects.all(),
         })
 
+@login_required
 def update_view_sale(request):
     if request.method == "POST":
         try:
@@ -303,7 +315,7 @@ def reports(request):
             elif value == 'cancel_check':
                 print('cancel check')
                 return render(request, 'Sales/reports.html', {
-                    'record': Bill.objects.filter(status='Cancel').select_related('sale_id').order_by('-id')
+                    'record': Bill.objects.filter(status='Cancelled').select_related('sale_id').order_by('-id')
                 })
             else:
                 print('no check')
@@ -313,10 +325,10 @@ def reports(request):
         'record': Bill.objects.all().select_related('sale_id').order_by('-id'),
         'total_paid': Bill.objects.filter(status__startswith="Paid").annotate(total_paid=Count('status')).count(),
         'total_complementary': Bill.objects.filter(status__startswith="Complementery").annotate(total_comp=Count('status')).count(),
-        'total_cancelled': Bill.objects.filter(status__startswith="Cancel").annotate(total_cancelled=Count('status')).count(),
+        'total_cancelled': Bill.objects.filter(status__startswith="Cancelled").annotate(total_cancelled=Count('status')).count(),
         'total_paid_amount': Bill.objects.filter(status__startswith="Paid").aggregate(Sum('amount'))['amount__sum'],
         'total_comp_amount': Bill.objects.filter(status__startswith="Complementery").aggregate(Sum('amount'))['amount__sum'],
-        'total_cancel_amount': Bill.objects.filter(status__startswith="cancel").aggregate(Sum('amount'))['amount__sum'],
+        'total_cancel_amount': Bill.objects.filter(status__startswith="Cancelled").aggregate(Sum('amount'))['amount__sum'],
         'total_amount': Bill.objects.aggregate(Sum('amount'))['amount__sum'],
     })
 
@@ -394,7 +406,7 @@ def sales_cancel_bill(request):
         remaining_amount = request.POST.get('remaining_amount')
         amount = request.POST.get('amount')
         Bill.objects.create(date=date, reason=reason, amount=amount,
-                            status='Cancel', sale_id=Sales.objects.get(id=id))
+                            status='Cancelled', sale_id=Sales.objects.get(id=id))
         remaining_amount = 0
         amount = 0
         Sales.objects.filter(id=id).update(
@@ -465,7 +477,8 @@ sales_templates = [
     path('reports/', reports, name='reports'),
     path('update_sales/', update_sales, name='update_sales'),
     path('update_view_sale/', update_view_sale, name='update_view_sale'),
-    path('delete_items/<str:pk>/', delete_items, name="delete_items"),
+    path('delete_items/<int:pk>/', delete_items, name="delete_items"),
+    path('delete_sale/<int:pk>/', delete_sale, name="delete_sale"),
     path('api/sales/pay_bill/', sales_pay_bill, name='sales_pay_bill'),
     path('api/sales/comp_bill/', sales_comp_bill, name='sales_comp_bill'),
     path('api/sales/cancel_bill/', sales_cancel_bill, name='sales_cancel_bill'),

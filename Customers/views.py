@@ -239,7 +239,11 @@ def customer_details(request):
                 return render(request, 'Customers/customer_details.html')
     return render(request, "Customers/customer_details.html", {
         'sale_id': request.GET.get("id"),
-        'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")
+        'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id"),
+        'all_bills': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').count(),
+        'total_amount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('amount'))['amount__sum'],
+        'total_discount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('discount'))['discount__sum'],
+        'total_net_amount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('net_amount'))['net_amount__sum'],
     })
 
 

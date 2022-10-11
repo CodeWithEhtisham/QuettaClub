@@ -62,6 +62,21 @@
                 </li>
             </ul>
         </div>
+        <!-- {% for message in messages %}
+        {% if message.tags == "error" %}
+        <div class="messages">
+            <div class="error">
+                {{message}}
+            </div>
+        </div>
+        {% else %}
+        <div class="messages">
+            <div class="success">
+                {{message}}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %} -->
 
         <div class="row">
             <div class="card">
@@ -83,7 +98,7 @@
                             </select>
                             <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"
                                 class="form-control ml-5 search" placeholder="search ....">
-                           
+
                         </div>
                         <!--  -->
                         <div class="choose_file ml-5">
@@ -138,37 +153,40 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_view_sale' %}?id={{sale.id}}"
-                                            style="background-color: blue; color: white;">Edit</a>
+                                            style="background-color: #1e659c; color: white;">Edit</a>
                                         <button class="modal" id="paid_modal"
                                             onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')"
-                                            style="background-color: green; color: white;">Paid</button>
-                                        <button id="comp_modal" class="modal" style="background-color: yellow; color: black;"
+                                            style="background-color: #0c7ed6; color: white;">Paid</button>
+                                        <button id="comp_modal" class="modal" style="background-color: #1e659c;"
                                             onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
-                                        <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}','{{sale.net_amount}}', '{{sale.amount}}')"
-                                            style="background-color: red;">Cancelled</button>
+                                        <button id="cancel_modal" class="modal"
+                                            onclick="cancelModalOpen('{{sale.id}}','{{sale.net_amount}}', '{{sale.amount}}')"
+                                            style="background-color: #6a6a6a;">Cancelled</button>
+                                        <a href="{% url 'Sales:delete_sale' sale.id %}"
+                                            style="background-color: #ae180d; color: white;">Delete</a>
                                     </div>
                                 </td>
                             </tr>
                             {% endif %}
                             {% endfor %}
-                            <tfoot>
-                                <tr style="color: black;">
-                                    <td>Total Bills:</td>
-                                    <td><b>{{total_bills|intcomma}}</b></td>
-                                    <td></td>
-                                    <td>Total Amount:</td>
-                                    <td><b>{{total_amount|intcomma}}</b></td>
-                                    <td></td>
-                                    <td>Total Discounts:</td>
-                                    <td><b>{{total_discount|intcomma}}</b></td>
-                                    <td></td>
-                                    <td>Total Net Amount:</td>
-                                    <td><b>{{total_net_amount|intcomma}}</b></td>
-                                </tr>
-                            </tfoot>
+                        <tfoot>
+                            <tr style="background-color: #727272;">
+                                <td>Total Bills:</td>
+                                <td tyle="font-size: 1.5rem;"><b>{{total_bills|intcomma}}</b></td>
+                                <td ></td>
+                                <td>Total Amount:</td>
+                                <td tyle="font-size: 1.5rem;"><b>{{total_amount|intcomma}}</b></td>
+                                <td></td>
+                                <td></td>
+                                <td>Total Discounts:</td>
+                                <td tyle="font-size: 1.5rem;"><b>{{total_discount|intcomma}}</b></td>
+                                <td></td>
+                                <td></td>
+                                <td>Total Net Amount:</td>
+                                <td tyle="font-size: 1.5rem;"><b>{{total_net_amount|intcomma}}</b></td>
+                            </tr>
+                        </tfoot>
                         </tbody>
-
-
                     </table>
                 </div>
             </div>
@@ -289,36 +307,6 @@
     </div>
 
     <script>
-
-    </script>
-    <!-- <script>
-        function download_to_excel() {
-
-            var tab_text = "<table><tr>";
-            var textRange = '';
-            var j = 0;
-            var tab = document.getElementById('MyTableID_Value'); // id of table
-
-            for (j = 0; j < tab.rows.length; j++) {
-                tab_text += tab.rows[j].innerHTML + "</tr>";
-            }
-
-            tab_text += "</table>";
-
-            var a = document.createElement('a');
-            var data_type = 'data:application/vnd.ms-excel';
-            a.href = data_type + ', ' + encodeURIComponent(tab_text);
-            //setting the file name
-            a.download = 'file_name.xls';
-            //triggering the function
-            a.click();
-            //just in case, prevent default behaviour
-            e.preventDefault();
-
-        }
-    </script> -->
-
-    <script>
         function download_table_as_csv(Sales_data, separator = ',') {
             // Select rows from table_id
             var rows = document.querySelectorAll('table#' + Sales_data + ' tr');
@@ -357,6 +345,12 @@
         };
 
         document.getElementById('today-date').value = new Date().toDateInputValue();
+
+        setTimeout(fade_out, 3000);
+        function fade_out() {
+            $(".messages").fadeOut().empty();
+        }
+        $(".post-form")[0].reset();
 
     </script>
 
