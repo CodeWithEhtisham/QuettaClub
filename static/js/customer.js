@@ -155,17 +155,35 @@ function paidModalSubmit() {
       }
     }
   });
+
+  let data;
+  if ($("#paid_amount").val() > $("#pay_bill_modal_balance").val()) {
+    alert("Paid amount is greater than Net Amount! Please enter less or equal Amount");
+    return false;
+  }
+  else {
+    data = {
+      id: $("#paid-form-id").val(),
+      rv_no: $("#rv_no").val(),
+      paid_date: $("#today-date").val(),
+      amount: $("#paid_amount").val(),
+      remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val()
+    };
+  }
+  console.log(data);
   $.ajax({
     method: 'POST',
     url: "/api/customer/pay_bill/",
-    data: {
-      "id": $("#paid-form-id").val(),
-      "rv_no": $("#rv_no").val(),
-      "paid_date": $("#today-date").val(),
-      "amount": $("#paid_amount").val(),
-      "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
-      csrfmiddlewaretoken: window.CSRF_TOKEN,
-    },
+    data: data,
+    csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // data: {
+    //   "id": $("#paid-form-id").val(),
+    //   "rv_no": $("#rv_no").val(),
+    //   "paid_date": $("#today-date").val(),
+    //   "amount": $("#paid_amount").val(),
+    //   "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+    //   csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // },
     dataType: "json",
   })
   paidModal.style.display = "none";
@@ -202,18 +220,35 @@ function compModalSubmit() {
       }
     }
   });
+
+  let data;
+  if ($("#comp_amount").val() > $("#comp_bill_modal_balance").val()) {
+    alert("Complementary amount is greater than Net Amount! Please enter less or equal Amount");
+    return false;
+  }
+  else {
+    data = {
+      id: $("#comp-form-id").val(),
+      comp_date: $("#comp-today-date").val(),
+      comp_remarks: $("#comp_remarks").val(),
+      comp_amount: $("#comp_amount").val(),
+      remaining_amount: $("#comp_bill_modal_balance").val() - $("#comp_amount").val()
+    };
+  }
   $.ajax({
     method: "POST",
     url: "/api/customer/comp_bill/",
-    data: {
-      "id": $("#comp-form-id").val(),
-      'comp_date': $("#comp-today-date").val(),
-      'comp_remarks': $("#comp_remarks").val(),
-      'comp_amount': $("#comp_amount").val(),
-      // 'balance': $("#comp_bill_modal_balance").val(),
-      "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
-      csrfmiddlewaretoken: window.CSRF_TOKEN,
-    },
+    data: data,
+    csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // data: {
+    //   "id": $("#comp-form-id").val(),
+    //   'comp_date': $("#comp-today-date").val(),
+    //   'comp_remarks': $("#comp_remarks").val(),
+    //   'comp_amount': $("#comp_amount").val(),
+    //   // 'balance': $("#comp_bill_modal_balance").val(),
+    //   "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
+    //   csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // },
     dataType: "json",
   })
   compModal.style.display = "none";

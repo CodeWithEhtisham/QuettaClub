@@ -153,6 +153,7 @@
             {% endif %}
             {% endfor %}
             <tfoot>
+                {% if total_net_amount > 0 %}
                 <tr style="background-color: #727272;">
                     <td>Total Bills:</td>
                     <td tyle="font-size: 1.5rem;"><b>{{all_bills|intcomma}}</b></td>
@@ -168,6 +169,7 @@
                     <td>Total Net Amount:</td>
                     <td tyle="font-size: 1.5rem;"><b>{{total_net_amount|intcomma}}</b></td>
                 </tr>
+                {% endif %}
             </tfoot>
             </tbody>
             </table>
