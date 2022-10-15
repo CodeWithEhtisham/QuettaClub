@@ -176,7 +176,7 @@ def customers(request):
             'customer_id').annotate(total_amount=Sum('net_amount'))
         ids = Sales.objects.values_list('customer_id', flat=True).distinct()
         ids = [i for i in ids]
-        customer = Customers.objects.exclude(id__in=ids)
+        customer = Customers.objects.exclude(id__in=ids).order_by('-id')
         print(customer)
         return render(request, 'Customers/customers.html',
                       {
