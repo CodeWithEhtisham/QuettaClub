@@ -20,7 +20,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 def long_process(df):
     try:
         # rename
-        print('dsafasdf', df.columns)
+        # print('dsafasdf', df.columns)
         rename = {
             "Bill No": 'bill_no',
             "Rank": 'rank',
@@ -39,8 +39,11 @@ def long_process(df):
         for index, row in df.iterrows():
             try:
                 # print(row['cname'])
-                if Customers.objects.filter(customer_name=row['cname'],
-                                            customer_rank=row['rank'], customer_address=row['address']).exists():
+                if Customers.objects.filter(
+                    customer_name=row['cname'],
+                    customer_rank=row['rank'], 
+                    customer_address=row['address']).exists():
+                    
                     dummyTable.objects.create(
                         bill_no=row['bill_no'],
                         rank=row['rank'],
@@ -420,6 +423,7 @@ def sales_pay_bill(request):
         amount = request.POST.get('amount')
         remaining_amount = request.POST.get('remaining_amount')
         print("remaining amount ", remaining_amount)
+
 
         Bill.objects.create(rv_no=rv_no, date=paid_date, amount=amount,
                             status="Paid", sale_id=Sales.objects.get(id=id))

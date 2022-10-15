@@ -114,11 +114,11 @@
                         </div>
                         <div class="grid-item">
                             <label class="form-label">Date</label>
-                            <input class="form-control" id="datePicker" type="date" name="date"
+                            <input class="form-control" id="todayDate" type="date" name="date"
                             >
                         </div>
                         <script>
-                            document.getElementById('datePicker').valueAsDate = new Date();
+                            document.getElementById("todayDate").valueAsDate  = new Date();
                         </script>
 
                         <div class="grid-item">
@@ -378,10 +378,7 @@
             var total = amount - discount;
             document.getElementById('net-amount').value = total;
         };
-        // let today = new Date();
-        // document.getElementById("todayDate").value =
-        //     today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
-        //     '-' + ('0' + today.getDate()).slice(-2);
+        
 
         setTimeout(fade_out, 3000);
         function fade_out() {

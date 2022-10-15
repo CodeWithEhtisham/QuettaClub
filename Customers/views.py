@@ -263,6 +263,8 @@ def SearchCustomer(request):
         elif field == 'Rank':
             return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
         elif field == 'ID':
+            # return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_id__icontains=value).annotate(total_amount=Sum('net_amount')),many=True).data)
+            
             return Response(CustomersSerializer(Customers.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
         elif field == 'Address':
             return Response(CustomersSerializer(Customers.objects.filter(customer_address__icontains=value).order_by('-id'), many=True).data)

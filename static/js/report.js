@@ -23,8 +23,8 @@ function generate() {
   };
   var y = 20;
   doc.setLineWidth(2);
-  if (document.getElementById('myTable')) {
-    var res = doc.autoTableHtmlToJson(document.getElementById('myTable'));
+  if (document.getElementById('report')) {
+    var res = doc.autoTableHtmlToJson(document.getElementById('report'));
     doc.autoTable(res.columns, res.data);
   }
   if (document.getElementById('myTable1')) {
@@ -83,7 +83,7 @@ function update_table(data) {
 
   Object.keys(data).forEach(key => {
     elem = data[key];
-    console.log(elem);
+    console.log(elem['status']);
     if (elem['status'] == 'Paid') {
       row = '<tr>' +
         // '<td>'+elem['id']+'</td>' +

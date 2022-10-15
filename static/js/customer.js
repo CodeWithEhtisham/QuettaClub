@@ -25,7 +25,7 @@ function update_table(data) {
   Object.keys(data).forEach(key => {
     console.log(data[key]);
     elem = data[key];
-    console.log(elem['id'])
+    console.log("asdfjaskldfj ",elem['total_amount']);
     if (elem['customers_table']) {
     row = '<tr>' +
       '<td>' + elem['customer_rank'] + '</td>' +

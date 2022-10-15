@@ -98,6 +98,7 @@ function paidModalSubmit() {
   let data;
   if ($("#paid_amount").val() > $("#pay_bill_modal_balance").val()) {
     alert("Paid amount is greater than Net Amount! Please enter less or equal Amount");
+    return false;
     // data = {
     //   id: $("#paid-form-id").val(),
     //   rv_no: $("#rv_no").val(),
@@ -112,9 +113,10 @@ function paidModalSubmit() {
       rv_no: $("#rv_no").val(),
       paid_date: $("#today-date").val(),
       amount: $("#paid_amount").val(),
-      remainint_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val()
+      remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val()
     };
   }
+  console.log(data);
   
   $.ajax({
     method: 'POST',
