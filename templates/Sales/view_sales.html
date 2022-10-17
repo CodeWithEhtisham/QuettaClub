@@ -83,17 +83,24 @@
                 <div>
                     <div class="row">
                         <h2>Customers</h2>
+                        
                         <div class="form-group ml-5 w-50">
-                            <select name="search_field" id="search_field" class="form-control option">
+                            <select name="select-rank" id="select-rank" class="form-control option" onchange="rankSelected(this)">
+                                <option value="" selected>Select Rank</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Army">Army</option>
+                                <option value="Members">Members</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <select name="search_field" id="search_field" class="form-control option ml-5">
                                 <!-- <option value="">Search By</option> -->
                                 <option value="bill_no" selected>Bill No.</option>
-                                <option value="pos_no">PoS No</option>
+                                <option value="PoS_no">PoS No</option>
                                 <option value="customer_id">Customer ID</option>
                                 <option value="month">Month</option>
                                 <option value="account_of">On Account of</option>
-                                <option value="date">Date</option>
-                                <option value="rank">Rank</option>
-                                <option value="name">Name</option>
+                                <option value="created_date">Date</option>
+                                <option value="customer_name">Name</option>
                                 <option value="address">Address</option>
                             </select>
                             <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"
