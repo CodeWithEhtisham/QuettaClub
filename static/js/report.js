@@ -58,12 +58,15 @@ function generate() {
 function SearchbyNameReport() {
   let field = document.getElementById('search_field').value;
   let value = document.getElementById('search_value').value;
+  let rank = document.getElementById('select-rank').value;
+
+  if (["Staff","Members","Army","other"].includes(rank)) {
 
   if (field != '' && value != '') {
     $.ajax({
       method: "GET",
       url: "/api/SearchbyNameReport/",
-      data: { "field": field, "value": value },
+      data: { "field": field, "value": value, "rank": rank },
       success: function (data) {
         // console.log("success on search" + data);
         update_table(data)
@@ -74,6 +77,32 @@ function SearchbyNameReport() {
 
     })
   }
+}
+else{
+  alert("Please select a rank");
+}
+};
+
+function SearchByRankReport(data){
+  let rank = data.value;
+  if (["Staff","Members","Army","other"].includes(rank)) {
+  $.ajax({
+    method: "GET",
+    url: "/api/sales/SearchByRankReport/",
+    data: {"rank": rank},
+    success: function (data) {
+      // console.log("success on search" + data);
+      update_table(data)
+    },
+    error: function () {
+      console.log('error');
+    }
+
+  })
+}
+else{
+  alert("Please select a rank");
+}
 };
 
 function update_table(data) {

@@ -15,6 +15,7 @@ import datetime
 import re
 import os
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q
 
 
 def long_process(df):
@@ -299,7 +300,25 @@ def update_view_sale(request):
 
 @login_required
 def reports(request):
-    return render(request, 'Sales/reports.html', {
+    # print(Sales.objects.filter(customer_id__id=request.GET.get(
+    #     "id")).select_related('customer_id').order_by("-id"))
+    if request.method == "POST":
+        from_date=request.POST.get('from-date')
+        to_date=request.POST.get('to-date')
+        status=request.POST.get('check')
+        print(from_date,to_date,status)
+        if status:
+            from_date = datetime.datetime.strptime(from_date, '%Y-%m-%d')
+            to_date = datetime.datetime.strptime(to_date, '%Y-%m-%d')
+            return render(request, 'Sales/reports.html', {
+                    'record': Bill.objects.select_related('sale_id').filter(status=status,date__range=[from_date,to_date] ).order_by('-id')
+                })
+        else:
+                return render(request, 'Sales/reports.html', {
+                    'record': Bill.objects.select_related('sale_id').filter(date__range=[from_date,to_date]).order_by('-id')
+                })
+    else:
+        return render(request, 'Sales/reports.html', {
         'record': Bill.objects.all().select_related('sale_id').order_by('-id'),
         'total_paid': Bill.objects.filter(
             status__startswith="Paid").annotate(
@@ -322,40 +341,7 @@ def reports(request):
         'total_amount': Bill.objects.aggregate(
             Sum('amount'))['amount__sum'],
     })
-    # print(Sales.objects.filter(customer_id__id=request.GET.get(
-    #     "id")).select_related('customer_id').order_by("-id"))
-    if request.method == "POST":
-        if request.POST.get("report_generate"):
-            from_date = request.POST.get("from-date")
-            to_date = request.POST.get("to-date")
-            from_date = datetime.datetime.strptime(from_date, '%Y-%m-%d')
-            to_date = datetime.datetime.strptime(to_date, '%Y-%m-%d')
 
-        if request.POST.get('check'):
-            value = request.POST.get('check')
-            if value == 'all_check':
-                #     print('all check')
-                pass
-            elif value == 'paid_check':
-                print('paid check')
-                return render(request, 'Sales/reports.html', {
-                    'record': Bill.objects.filter(status='Paid').select_related('sale_id').order_by('-id')
-                })
-            elif value == 'comp_check':
-                print('complementary check')
-                return render(request, 'Sales/reports.html', {
-                    'record': Bill.objects.filter(status='Complementery').select_related('sale_id').order_by('-id')
-                })
-            elif value == 'cancel_check':
-                print('cancel check')
-                return render(request, 'Sales/reports.html', {
-                    'record': Bill.objects.filter(status='Cancelled').select_related('sale_id').order_by('-id')
-                })
-            else:
-                print('no check')
-                return render(request, 'Sales/reports.html')
-
-from django.db.models import Q
 
 @api_view(['GET'])
 def SearchbyName(request):
@@ -397,26 +383,34 @@ def SearchbyName(request):
 def SearchbyNameReport(request):
     field = request.GET.get('field')
     value = request.GET.get('value')
-    print(field, value)
+    rank = request.GET.get('rank')
     try:
-        if field == 'rv_no':
-            return Response(BillSerializer(Bill.objects.filter(rv_no__icontains=value).order_by('-id'), many=True).data)
-        if field == 'name':
+        if field in ['rv_no','date']:
+            print('in if')
+            lookup = f"{field}__icontains"
+            query=Q(**{lookup: value})
+            return Response(BillSerializer(Bill.objects.filter(sale_id__customer_id__customer_rank__icontains=rank).filter(query).order_by('-id'), many=True).data)
+        elif field in ['name']:
             return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'rank':
-            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'bill_no':
-            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__bill_no__iexact=value).order_by('-id'), many=True).data)
-        elif field == 'pos_no':
-            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__PoS_no__iexact=value).order_by('-id'), many=True).data)
-        elif field == 'month':
-            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__month__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'account_of':
-            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__account_of__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'date':
-            return Response(BillSerializer(Bill.objects.filter(date__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'address':
-            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__address__icontains=value).order_by('-id'), many=True).data)
+        else:
+            lookup = f"sale_id__{field}__icontains"
+            query=Q(**{lookup: value})
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
+        
+        # elif field == 'rank':
+        #     # return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
+        # elif field == 'bill_no':
+        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__bill_no__iexact=value).order_by('-id'), many=True).data)
+        # elif field == 'pos_no':
+        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__PoS_no__iexact=value).order_by('-id'), many=True).data)
+        # elif field == 'month':
+        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__month__icontains=value).order_by('-id'), many=True).data)
+        # elif field == 'account_of':
+        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__account_of__icontains=value).order_by('-id'), many=True).data)
+        # # elif field == 'date':
+        # #     return Response(BillSerializer(Bill.objects.filter(date__icontains=value).order_by('-id'), many=True).data)
+        # elif field == 'address':
+        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__address__icontains=value).order_by('-id'), many=True).data)
     except Exception as e:
         return Response({"message": f"No data found {e}"})
 
@@ -538,6 +532,13 @@ def SearchByRank(request):
     else:
         return Response(SalesSerializer(Sales.objects.select_related('customer_id').order_by('-id'), many=True).data)
 
+@api_view(['GET'])
+def SearchByRankReport(request):
+    rank=request.GET.get('rank')
+    if rank in ['Satff','Army','Members','other']:
+        return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=rank).order_by('-id'), many=True).data)
+    else:
+        return Response(BillSerializer(Bill.objects.select_related('sale_id').order_by('-id'), many=True).data)
 
 sales_templates = [
     path('sales/', sales, name='sales'),
@@ -554,5 +555,7 @@ sales_templates = [
     path('api/sales/pay_bill/', sales_pay_bill, name='sales_pay_bill'),
     path('api/sales/comp_bill/', sales_comp_bill, name='sales_comp_bill'),
     path('api/sales/cancel_bill/', sales_cancel_bill, name='sales_cancel_bill'),
-    path('api/sales/sales_upload/', sales_upload, name='sales_upload')
+    path('api/sales/sales_upload/', sales_upload, name='sales_upload'),
+    path('api/sales/SearchByRankReport/', SearchByRankReport, name='SearchByRankReport'),
+
 ]
