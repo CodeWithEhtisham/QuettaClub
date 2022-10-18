@@ -249,6 +249,9 @@
                                             Bills</a>
                                         <a href="{% url 'Customers:customer_update' %}?id={{customer.customer_id.id}}"
                                             style="background-color: #1e659c; color: rgb(255, 255, 255);">Edit</a>
+
+                                        <a href="{% url 'Customers:delete_customer' customer.id %}"
+                                            style="background-color: #ae180d; color: rgb(255, 255, 255);">Delete</a>
                                     </div>
                                 </td>
                             </tr>

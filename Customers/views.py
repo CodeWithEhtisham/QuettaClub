@@ -209,6 +209,16 @@ def customer_update(request):
         return render(request, "Customers/customer_update.html",
                       {'customer_data': Customers.objects.filter(id=request.GET.get("id")).first()})
 
+@login_required
+def delete_customer(request, pk):
+    query = Customers.objects.get(id=pk)
+    if request.method == 'POST':
+        query.delete()
+        messages.success(request, 'Customer Deleted Successful')
+        return HttpResponseRedirect(reverse("Customers:customers"))
+    return render(request, 'Customers/delete_customer.html', {
+        'querysale': query
+    })
 
 @login_required
 def customer_details(request):
@@ -254,13 +264,7 @@ def customer_bill(request):
         'sales': Sales.objects.all()
     })
 
-# class SalesViewSets(viewsets.ModelViewSet):
-#     queryset = Sales.objects.all()
-#     serializer_class = SalesSerializer
 
-
-#     def get_queryset(self):
-#         return Sales.objects.all().select_related('customer_id').annotate(total_amount=Sum('net_amount')).order_by('-id')
         
 
 # @api_view(['GET'])
@@ -392,6 +396,7 @@ index_template = [
     path('customer_update/', customer_update, name='customer_update'),
     path('customer_bill/', customer_bill, name='customer_bill'),
     path('logout', logout_user, name='logout'),
+    path('delete_customer/<int:pk>/', delete_customer, name="delete_customer"),
     # api url paths
     # path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('api/customer/pay_bill/', pay_bill, name='pay_bill'),
