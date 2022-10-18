@@ -178,7 +178,7 @@
                                 <option value="Rank">Rank</option>
                                 <option value="Address">Address</option>
                             </select>
-                            <input type="search" name="search_value" id="search_value" oninput="SearchCustomer();"
+                            <input type="search" name="search_value" id="search_value"
                                 class="form-control ml-5 search" placeholder="search ....">
 
                         </div>
@@ -206,7 +206,7 @@
 
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbody">
                             {% if customer_table %}
                             {% for customer in customer_table %}
                             <tr>

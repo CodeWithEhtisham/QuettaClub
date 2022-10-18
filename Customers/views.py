@@ -17,6 +17,8 @@ from django.contrib.auth.models import User, auth
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
+from rest_framework import viewsets
+
 
 
 def long_process(df):
@@ -222,10 +224,6 @@ def customer_details(request):
 
 @login_required
 def customer_bill(request):
-    return render(request, 'Customers/customer_bill.html', {
-        'customer_data': Customers.objects.filter(id=request.GET.get("id")).first(),
-        'sales': Sales.objects.all()
-    })
     if request.method == 'POST':
         if request.POST.get('save_bill'):
             if Bill.objects.filter(sale_id__id=request.POST.get('sale_id')).exists():
@@ -250,27 +248,40 @@ def customer_bill(request):
                   ).save()
             messages.success(request, 'Sales Added Successful')
             return redirect("Customers:customers")
+    else:
+        return render(request, 'Customers/customer_bill.html', {
+        'customer_data': Customers.objects.filter(id=request.GET.get("id")).first(),
+        'sales': Sales.objects.all()
+    })
+
+# class SalesViewSets(viewsets.ModelViewSet):
+#     queryset = Sales.objects.all()
+#     serializer_class = SalesSerializer
 
 
-@api_view(['GET'])
-def SearchCustomer(request):
-    field = request.GET.get('field')
-    value = request.GET.get('value')
+#     def get_queryset(self):
+#         return Sales.objects.all().select_related('customer_id').annotate(total_amount=Sum('net_amount')).order_by('-id')
+        
 
-    try:
-        if field == 'Name':
-            return Response(CustomersSerializer(Customers.objects.filter(customer_name__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'Rank':
-            return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'ID':
-            # return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_id__icontains=value).annotate(total_amount=Sum('net_amount')),many=True).data)
+# @api_view(['GET'])
+# def SearchCustomer(request):
+#     field = request.GET.get('field')
+#     value = request.GET.get('value')
+
+#     try:
+#         if field == 'Name':
+#             return Response(Customers.objects.all())
+#         elif field == 'Rank':
+#             return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
+#         elif field == 'ID':
+#             # return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_id__icontains=value).annotate(total_amount=Sum('net_amount')),many=True).data)
             
-            return Response(CustomersSerializer(Customers.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
-        elif field == 'Address':
-            return Response(CustomersSerializer(Customers.objects.filter(customer_address__icontains=value).order_by('-id'), many=True).data)
+#             return Response(CustomersSerializer(Customers.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
+#         elif field == 'Address':
+#             return Response(CustomersSerializer(Customers.objects.filter(customer_address__icontains=value).order_by('-id'), many=True).data)
 
-    except Exception as e:
-        return Response({"message": "No data found {}".format(e)})
+#     except Exception as e:
+#         return Response({"message": "No data found {}".format(e)})
 
 
 @api_view(['GET', 'POST'])
@@ -382,7 +393,7 @@ index_template = [
     path('customer_bill/', customer_bill, name='customer_bill'),
     path('logout', logout_user, name='logout'),
     # api url paths
-    path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
+    # path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('api/customer/pay_bill/', pay_bill, name='pay_bill'),
     path('api/customer/comp_bill/', comp_bill, name='comp_bill'),
     path('api/customer/cancel_bill/', cancel_bill, name='cancel_bill'),

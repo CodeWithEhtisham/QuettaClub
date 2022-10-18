@@ -1,31 +1,71 @@
-function SearchCustomer() {
-  let field = document.getElementById('search_field').value;
-  let value = document.getElementById('search_value').value;
+// function SearchCustomer() {
+//   let field = document.getElementById('search_field').value;
+//   let value = document.getElementById('search_value').value;
 
-  if (field != '' && value != '') {
-    $.ajax({
-      method: "GET",
-      url: "/api/SearchCustomer/",
-      data: { "field": field, "value": value },
-      success: function (data) {
-        // console.log("success on search" + data);
-        update_table(data)
-      },
-      error: function () {
-        console.log('error');
-      }
+//   if (field != '' && value != '') {
+//     $.ajax({
+//       method: "GET",
+//       url: "/api/SearchCustomer/",
+//       data: { "field": field, "value": value },
+//       success: function (data) {
+//         // console.log("success on search" + data);
+//         update_table(data)
+//       },
+//       error: function () {
+//         console.log('error');
+//       }
 
-    })
-  }
-};
+//     })
+//   }
+// };
+
+var $rows = $('#tbody tr');
+$('#search_value').keyup(function() {
+    // var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    
+    // $rows.show().filter(function() {
+    //     var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+    //     return !~text.indexOf(val);
+    // }).hide();
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    let select= document.getElementById('search_field').value;
+    console.log(val);
+
+    if (select == 'Name') {
+      $rows.show().filter(function() {
+        var text = $(this).find('td').eq(1).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+      }).hide();
+    }
+    else if (select == 'ID') {
+      $rows.show().filter(function() {
+        var text = $(this).find('td').eq(3).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+      }).hide();
+    }
+    else if (select == 'Address') {
+      $rows.show().filter(function() {
+        var text = $(this).find('td').eq(2).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+      }).hide();
+    }
+    else if (select == 'Rank') {
+      $rows.show().filter(function() {
+        var text = $(this).find('td').eq(0).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+      }).hide();
+    }
+});
 
 function update_table(data) {
+  console.log(data);
   let row;
   let all_rows = '';
   Object.keys(data).forEach(key => {
     console.log(data[key]);
     elem = data[key];
-    console.log("asdfjaskldfj ",elem['total_amount']);
+    console.log(elem);
+    
     if (elem['customers_table']) {
     row = '<tr>' +
       '<td>' + elem['customer_rank'] + '</td>' +
