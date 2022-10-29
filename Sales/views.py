@@ -210,11 +210,11 @@ def delete_sale(request, pk):
 def view_sales(request):
 
     return render(request, "Sales/view_sales.html", {
-        'sales_data': Sales.objects.all().select_related('customer_id').order_by("-bill_no"),
-        'total_bills': Sales.objects.select_related('bill_no').count(),
-        'total_amount': Sales.objects.aggregate(Sum('amount'))['amount__sum'],
-        'total_discount': Sales.objects.aggregate(Sum('discount'))['discount__sum'],
-        'total_net_amount': Sales.objects.aggregate(Sum('net_amount'))['net_amount__sum'],
+        'sales_data': Sales.objects.filter(net_amount__gt=0).select_related('customer_id').order_by("-bill_no"),
+        'total_bills': Sales.objects.filter(net_amount__gt=0).count(),
+        'total_amount': Sales.objects.filter(net_amount__gt=0).aggregate(Sum('amount'))['amount__sum'],
+        'total_discount': Sales.objects.filter(net_amount__gt=0).aggregate(Sum('discount'))['discount__sum'],
+        'total_net_amount': Sales.objects.filter(net_amount__gt=0).aggregate(Sum('net_amount'))['net_amount__sum'],
     })
 
 
@@ -351,28 +351,24 @@ def SearchbyName(request):
     # print(SalesSerializer(Sales.objects.filter(query).order_by('-id'), many=True).data)
     try:
         lookup = f"{field}__icontains"
-        query=Q(**{lookup: value})
-        return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
-        # if field == 'name':
-        #     return Response(SalesSerializer(
-        #         Sales.objects.select_related('customer_id').filter(
-        #             customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
-        # # elif field == 'rank':
-        # #     return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
-        # elif field == 'bill_no':
-        #     return Response(SalesSerializer(Sales.objects.filter(bill_no__exact=value).order_by('-id'), many=True).data)
-        # elif field == 'Pos_no':
-        #     return Response(SalesSerializer(Sales.objects.filter(PoS_no__exact=value).order_by('-id'), many=True).data)
-        # elif field == 'customer_id':
-        #     return Response(SalesSerializer(Sales.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
-        # elif field == 'month':
-        #     return Response(SalesSerializer(Sales.objects.filter(month__icontains=value).order_by('-id'), many=True).data)
-        # elif field == 'account_of':
-        #     return Response(SalesSerializer(Sales.objects.filter(account_of__icontains=value).order_by('-id'), many=True).data)
-        # elif field == 'date':
-        #     return Response(SalesSerializer(Sales.objects.filter(date__icontains=value).order_by('-id'), many=True).data)
-        # elif field == 'address':
-        #     return Response(SalesSerializer(Sales.objects.filter(address__icontains=value).order_by('-id'), many=True).data)
+        if rank:
+            print(field)
+            if field=='customer_name':
+                # field=
+                lookup=f'customer_id__{field}__icontains'
+                query=Q(**{lookup:value})
+                return Response(SalesSerializer(Sales.objects.filter(customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
+            else:
+                query=Q(**{lookup: value})
+                return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
+        else:
+            if field=='customer_name':
+                lookup=f'customer_id__{field}__icontains'
+                query = Q(**{lookup: value})
+                return Response(SalesSerializer(Sales.objects.filter(query).order_by('-id'), many=True).data)
+            else:
+                query=Q(**{lookup: value})
+                return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(query).order_by('-id'), many=True).data)
     except Exception as e:
         lookup = f"customer_id__{field}__icontains"
         query=Q(**{lookup: value})
@@ -385,32 +381,44 @@ def SearchbyNameReport(request):
     value = request.GET.get('value')
     rank = request.GET.get('rank')
     try:
-        if field in ['rv_no','date']:
+        if rank:
+            if field in ['rv_no','date']:
+                print('in if')
+                lookup = f"{field}__icontains"
+                query=Q(**{lookup: value})
+                return Response(BillSerializer(Bill.objects.filter(sale_id__customer_id__customer_rank__icontains=rank).filter(query).order_by('-id'), many=True).data)
+            elif field in ['name']:
+                return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=rank).filter(sale_id__customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
+            else:
+                lookup = f"sale_id__{field}__icontains"
+                query=Q(**{lookup: value})
+                return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
+        elif field in ['rv_no','date']:
             print('in if')
             lookup = f"{field}__icontains"
             query=Q(**{lookup: value})
-            return Response(BillSerializer(Bill.objects.filter(sale_id__customer_id__customer_rank__icontains=rank).filter(query).order_by('-id'), many=True).data)
+            return Response(BillSerializer(Bill.objects.filter(query).order_by('-id'), many=True).data)
         elif field in ['name']:
             return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_name__icontains=value).order_by('-id'), many=True).data)
         else:
             lookup = f"sale_id__{field}__icontains"
             query=Q(**{lookup: value})
-            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
-        
-        # elif field == 'rank':
-        #     # return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
-        # elif field == 'bill_no':
-        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__bill_no__iexact=value).order_by('-id'), many=True).data)
-        # elif field == 'pos_no':
-        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__PoS_no__iexact=value).order_by('-id'), many=True).data)
-        # elif field == 'month':
-        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__month__icontains=value).order_by('-id'), many=True).data)
-        # elif field == 'account_of':
-        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__account_of__icontains=value).order_by('-id'), many=True).data)
-        # # elif field == 'date':
-        # #     return Response(BillSerializer(Bill.objects.filter(date__icontains=value).order_by('-id'), many=True).data)
-        # elif field == 'address':
-        #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__address__icontains=value).order_by('-id'), many=True).data)
+            return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(query).order_by('-id'), many=True).data)
+            
+            # elif field == 'rank':
+            #     # return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=value).order_by('-id'), many=True).data)
+            # elif field == 'bill_no':
+            #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__bill_no__iexact=value).order_by('-id'), many=True).data)
+            # elif field == 'pos_no':
+            #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__PoS_no__iexact=value).order_by('-id'), many=True).data)
+            # elif field == 'month':
+            #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__month__icontains=value).order_by('-id'), many=True).data)
+            # elif field == 'account_of':
+            #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__account_of__icontains=value).order_by('-id'), many=True).data)
+            # # elif field == 'date':
+            # #     return Response(BillSerializer(Bill.objects.filter(date__icontains=value).order_by('-id'), many=True).data)
+            # elif field == 'address':
+            #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__address__icontains=value).order_by('-id'), many=True).data)
     except Exception as e:
         return Response({"message": f"No data found {e}"})
 
@@ -474,16 +482,14 @@ def sales_cancel_bill(request):
 @login_required
 # @permission_required('Sales.sales', raise_exception=True)
 def sales_upload(request):
-    print("sale sale sale get ")
-    print('sale data ', Sales.objects.values().last())
     if request.method == "POST":
         jsons = request.data
         print(jsons['myrows'][0])
         for obj in jsons['myrows']:
-            if (Customers.objects.filter(customer_name=obj['Name'], customer_address=obj['Address']).exists()):
-
+            if (Customers.objects.filter(customer_name=obj['Name'], customer_address=obj['Address'],customer_rank=obj['Rank']).exists()):
+                print('already customer ')
                 customer = Customers.objects.get(
-                    customer_name=obj['Name'], customer_address=obj['Address'])
+                    customer_name=obj['Name'], customer_address=obj['Address'],customer_rank=obj['Rank'])
                 Sales.objects.create(
                     bill_no=obj['Bill No'],
                     PoS_no=obj['POS NO'],
@@ -499,6 +505,7 @@ def sales_upload(request):
                 # messages.success(request, "Sale Data Uploaded Successfully")
                 # print('sale date: ', Sales.objects.values().last())
             else:
+                print('create new customer')
                 customer = Customers.objects.create(
                     customer_name=obj['Name'],
                     customer_address=obj['Address'],
@@ -527,7 +534,7 @@ def sales_upload(request):
 @api_view(['GET'])
 def SearchByRank(request):
     rank=request.GET.get('rank')
-    if rank in ['Satff','Army','Members','Other']:
+    if rank in ['Staff','Army','Members','Other']:
         return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank).order_by('-id'), many=True).data)
     else:
         return Response(SalesSerializer(Sales.objects.select_related('customer_id').order_by('-id'), many=True).data)
@@ -535,10 +542,23 @@ def SearchByRank(request):
 @api_view(['GET'])
 def SearchByRankReport(request):
     rank=request.GET.get('rank')
-    if rank in ['Satff','Army','Members','other']:
+    if rank in ['Staff','Army','Members','other']:
         return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=rank).order_by('-id'), many=True).data)
     else:
         return Response(BillSerializer(Bill.objects.select_related('sale_id').order_by('-id'), many=True).data)
+
+@api_view(['GET'])
+def GetTotal(request):
+    rank=request.GET.get('rank')
+    print("dsafdddddd##########################",rank)
+    return Response(
+        {
+        'total_bills': Sales.objects.select_related('customer_id').filter(net_amount__gt=0).filter(customer_id__customer_rank=rank).count(),
+        'total_amount': Sales.objects.select_related('customer_id').filter(net_amount__gt=0).filter(customer_id__customer_rank=rank).aggregate(Sum('amount'))['amount__sum'],
+        'total_discount': Sales.objects.select_related('customer_id').filter(net_amount__gt=0).filter(customer_id__customer_rank=rank).aggregate(Sum('discount'))['discount__sum'],
+        'total_net_amount': Sales.objects.select_related('customer_id').filter(net_amount__gt=0).filter(customer_id__customer_rank=rank).aggregate(Sum('net_amount'))['net_amount__sum'],
+            }
+    )
 
 sales_templates = [
     path('sales/', sales, name='sales'),
@@ -557,5 +577,6 @@ sales_templates = [
     path('api/sales/cancel_bill/', sales_cancel_bill, name='sales_cancel_bill'),
     path('api/sales/sales_upload/', sales_upload, name='sales_upload'),
     path('api/sales/SearchByRankReport/', SearchByRankReport, name='SearchByRankReport'),
+    path('api/sales/GetTotal/', GetTotal, name='GetTotal'),
 
 ]

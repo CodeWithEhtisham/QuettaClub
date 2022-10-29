@@ -79,7 +79,22 @@ function SearchbyNameReport() {
   }
 }
 else{
-  alert("Please select a rank");
+  console.log(field,value)
+  if (field != '' && value != '') {
+    $.ajax({
+      method: "GET",
+      url: "/api/SearchbyNameReport/",
+      data: { "field": field, "value": value },
+      success: function (data) {
+        // console.log("success on search" + data);
+        update_table(data)
+      },
+      error: function () {
+        console.log('error');
+      }
+
+    })
+  }
 }
 };
 

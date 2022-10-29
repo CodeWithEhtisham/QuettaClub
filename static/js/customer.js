@@ -389,6 +389,11 @@ function paid_all_bills() {
   check=window.confirm("Are you sure you want to paid all bills?");
   if(check==true){
     let rv=window.prompt("Enter your RV number");
+    let datetime=window.prompt("enter Date");
+    datetime=new Date(datetime)
+    month=datetime.getMonth()+1
+    datetime=datetime.getDate()+'-'+month+'-'+datetime.getFullYear()
+    console.log(datetime)
 
      var csrftoken = $.cookie('csrftoken');
 
@@ -416,7 +421,7 @@ function paid_all_bills() {
       data: {
         "id": id,
         "rv_no": rv,
-        "paid_date": new Date(),
+        "paid_date": datetime,
         "amount": amount,
         "remaining_amount": 0,
         csrfmiddlewaretoken: window.CSRF_TOKEN,

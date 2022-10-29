@@ -141,8 +141,8 @@
 
                         <tbody>
                             {% for sale in sales_data %}
-
                             {% if sale.amount > 0 and sale.net_amount > 0 %}
+
                             <tr>
                                 <!-- <td>{{sale.id}}</td> -->
                                 <td>{{ sale.bill_no|default:"00" }}</td>
@@ -174,24 +174,24 @@
                                     </div>
                                 </td>
                             </tr>
-                            {% endif %}
+                            {%endif%}
                             {% endfor %}
                         </tbody>
                         <tfoot>
                             <tr style="background-color: #727272;">
                                 <td>Total Bills:</td>
-                                <td tyle="font-size: 1.5rem;"><b>{{total_bills|intcomma}}</b></td>
+                                <td id="total-bills" style="font-size: 1.5rem;" ><b>{{total_bills|intcomma}}</b></td>
                                 <td ></td>
                                 <td>Total Amount:</td>
-                                <td tyle="font-size: 1.5rem;"><b>{{total_amount|intcomma}}</b></td>
+                                <td id="total-amount" style="font-size: 1.5rem;"><b>{{total_amount|intcomma}}</b></td>
                                 <td></td>
                                 <td></td>
                                 <td>Total Discounts:</td>
-                                <td tyle="font-size: 1.5rem;"><b>{{total_discount|intcomma}}</b></td>
+                                <td id="total-discount" style="font-size: 1.5rem;"><b>{{total_discount|intcomma}}</b></td>
                                 <td></td>
                                 <td></td>
                                 <td>Total Net Amount:</td>
-                                <td tyle="font-size: 1.5rem;"><b>{{total_net_amount|intcomma}}</b></td>
+                                <td id="total-net-amount" style="font-size: 1.5rem;"><b>{{total_net_amount|intcomma}}</b></td>
                             </tr>
                         </tfoot>
                     </table>

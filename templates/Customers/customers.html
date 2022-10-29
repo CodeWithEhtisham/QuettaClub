@@ -235,22 +235,22 @@
                             {% if customers_table %}
                             {% for customer in customers_table %}
                             <tr>
-                                <td>{{ customer.customer_id.customer_rank}}</td>
-                                <td>{{ customer.customer_id.customer_name}}</td>
-                                <td>{{ customer.customer_id.customer_address}}</td>
-                                <td>{{ customer.customer_id.customer_id }}</td>
+                                <td>{{ customer.customer_rank}}</td>
+                                <td>{{ customer.customer_name}}</td>
+                                <td>{{ customer.customer_address}}</td>
+                                <td>{{ customer.customer_id }}</td>
                                 <td>{{ customer.total_amount}}</td>
                                 <td>
                                     <div class="list-btn">
-                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.customer_id.id}}"
+                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}"
                                             style="background-color:#1e659c; text-align: center;">Add a Bill</a>
-                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.customer_id.id}}"
+                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}"
                                             style="text-align: center;">All
                                             Bills</a>
-                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.customer_id.id}}"
+                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}"
                                             style="background-color: #1e659c; color: rgb(255, 255, 255);">Edit</a>
 
-                                        <a href="{% url 'Customers:delete_customer' customer.id %}"
+                                            <a href="{% url 'Customers:delete_customer' customer.id %}"
                                             style="background-color: #ae180d; color: rgb(255, 255, 255);">Delete</a>
                                     </div>
                                 </td>

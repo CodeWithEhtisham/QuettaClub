@@ -174,11 +174,24 @@ def customers(request):
             messages.error(request, 'Customer Added Failed {}'.format(e))
             return HttpResponseRedirect(reverse('Customers:customers'))
     else:
-        sales = Sales.objects.select_related(
-            'customer_id').annotate(total_amount=Sum('net_amount'))
+        # every customer net amount sales
+
         ids = Sales.objects.values_list('customer_id', flat=True).distinct()
         ids = [i for i in ids]
         customer = Customers.objects.exclude(id__in=ids).order_by('-id')
+        sales=[]
+        for i in list(set(ids)):
+            c=Customers.objects.filter(id=i).first()
+            sales.append(
+                {
+                    'total_amount':Sales.objects.filter(customer_id=c).aggregate(Sum('net_amount'))['net_amount__sum'] ,
+                    'customer_id':c.customer_id,
+                    'customer_name':c.customer_name,
+                    'customer_rank':c.customer_rank,
+                    'customer_address':c.customer_address,
+                    'id':c.id
+                },
+            )
         print(customer)
         return render(request, 'Customers/customers.html',
                       {
@@ -315,7 +328,8 @@ def pay_all_bills(request):
         id = request.POST.get('id')
         print('dasfjaskdfj ', id)
         rv_no = request.POST.get('rv_no')
-        paid_date = timezone.now()
+        print('#################################',request.POST.get('paid_date'))
+        paid_date = timezone.datetime.strptime((request.POST.get('paid_date')),'%d-%m-%Y')
         amount = request.POST.get('amount')
         remaining_amount = request.POST.get('remaining_amount')
         print("remaining amount ", remaining_amount)

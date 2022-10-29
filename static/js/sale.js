@@ -22,13 +22,44 @@ function SearchbyName() {
   }
 }
 else{
-  alert("Please select a rank");
+  $.ajax({
+    method: "GET",
+    url: "/api/SearchbyName/",
+    data: { "field": field, "value": value },
+    success: function (data) {
+      // console.log("success on search" + data);
+      update_table(data)
+    },
+    error: function () {
+      console.log('error');
+    }
+
+  })
 }
 };
+function update_totals(rank){
+  $.ajax({
+    method: "GET",
+    url: "/api/sales/GetTotal/",
+    data: {"rank": rank},
+    success: function (data) {
+      // console.log("success on search" + data);
+      document.getElementById('total-bills').innerHTML=data['total_bills']
+      document.getElementById('total-amount').innerHTML=data['total_amount']
+      document.getElementById('total-discount').innerHTML=data['total_discount']
+      document.getElementById('total-net-amount').innerHTML=data['total_net_amount']
+    },
+    error: function () {
+      console.log('error');
+    }
+
+  })
+}
 
 function rankSelected(data){
   let rank = document.getElementById('select-rank').value;
   if (["Staff","Army","Members","Other"].includes(rank)) {
+    update_totals(rank)
     $.ajax({
       method: "GET",
       url: "/api/sales/SearchByRank/",
