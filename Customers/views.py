@@ -17,6 +17,8 @@ from django.contrib.auth.models import User, auth
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
+from rest_framework import viewsets
+
 
 
 def long_process(df):
@@ -34,16 +36,16 @@ def long_process(df):
             if (Customers.objects.filter(
                 customer_rank=row['customer_rank'],
                 customer_address=row['customer_address'],
-                customer_name=row['customer_name']).exists()):
+                    customer_name=row['customer_name']).exists()):
                 continue
                 # messages.error("Customer id already exists")
             # else:
             Customers.objects.create(
-                    customer_id=row['customer_id'],
-                    customer_name=row['customer_name'],
-                    customer_address=row['customer_address'],
-                    customer_rank=row['customer_rank'],
-                ).save()
+                customer_id=row['customer_id'],
+                customer_name=row['customer_name'],
+                customer_address=row['customer_address'],
+                customer_rank=row['customer_rank'],
+            ).save()
         return True
 
     except Exception as e:
@@ -184,6 +186,33 @@ def customers(request):
                        'all_staffs': Customers.objects.all().filter(customer_rank__in=['Army', 'Staff', 'Members']).values('customer_rank').annotate(count=Count('pk', distinct=True))
 
                        })
+        # every customer net amount sales
+
+        ids = Sales.objects.values_list('customer_id', flat=True).distinct()
+        ids = [i for i in ids]
+        customer = Customers.objects.exclude(id__in=ids).order_by('-id')
+        sales=[]
+        for i in list(set(ids)):
+            c=Customers.objects.filter(id=i).first()
+            sales.append(
+                {
+                    'total_amount':Sales.objects.filter(customer_id=c).aggregate(Sum('net_amount'))['net_amount__sum'] ,
+                    'customer_id':c.customer_id,
+                    'customer_name':c.customer_name,
+                    'customer_rank':c.customer_rank,
+                    'customer_address':c.customer_address,
+                    'id':c.id
+                },
+            )
+        print(customer)
+        return render(request, 'Customers/customers.html',
+                      {
+                          'customer_table': customer,
+                          'customers_table': sales,
+                          'all_customers': Customers.objects.all().count(),
+                          'all_staffs': Customers.objects.all().filter(customer_rank__in=['Army', 'Staff', 'Members']).values('customer_rank').annotate(count=Count('pk', distinct=True))
+
+                      })
 
 
 @login_required
@@ -204,6 +233,16 @@ def customer_update(request):
         messages.error(request, f'Customer Update Failed {e}')
         return HttpResponseRedirect(reverse('Customers:customers'))
 
+@login_required
+def delete_customer(request, pk):
+    query = Customers.objects.get(id=pk)
+    if request.method == 'POST':
+        query.delete()
+        messages.success(request, 'Customer Deleted Successful')
+        return HttpResponseRedirect(reverse("Customers:customers"))
+    return render(request, 'Customers/delete_customer.html', {
+        'querysale': query
+    })
 
 @login_required
 def customer_details(request):
@@ -234,9 +273,14 @@ def customer_details(request):
         else:
             print('no check')
             return render(request, 'Customers/customer_details.html')
+
     return render(request, "Customers/customer_details.html", {
         'sale_id': request.GET.get("id"),
-        'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id")
+        'Sales_data': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('customer_id').order_by("-id"),
+        'all_bills': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').count(),
+        'total_amount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('amount'))['amount__sum'],
+        'total_discount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('discount'))['discount__sum'],
+        'total_net_amount': Sales.objects.filter(customer_id__id=request.GET.get("id")).select_related('bill_no').aggregate(Sum('net_amount'))['net_amount__sum'],
     })
 
 
@@ -271,25 +315,58 @@ def customer_bill(request):
         messages.success(request, 'Sales Added Successful')
         return redirect("Customers:customers")
         # return HttpResponse("success")
+    if request.method == 'POST':
+        if request.POST.get('save_bill'):
+            if Bill.objects.filter(sale_id__id=request.POST.get('sale_id')).exists():
+                messages.error(request, 'This Bill No is Already Exists')
+                return redirect('Customers:customer_bill')
+            customer = Customers.objects.filter(
+                customer_name=request.POST.get('customer_name'),
+                customer_rank=request.POST.get('customer_rank')).first()
 
+            Sales(bill_no=request.POST.get('bill_no'),
+                  PoS_no=request.POST.get('PoS_no'),
+                  month=request.POST.get('month'),
+                  created_date=request.POST.get('date'),
+                  created_on=request.POST.get('created_on'),
+                  address=request.POST.get('address'),
+                  account_of=request.POST.get('account_of'),
+                  amount=request.POST.get('amount'),
+                  discount=request.POST.get('discount'),
+                  net_amount=request.POST.get('net_amount'),
+                  remarks=request.POST.get('remarks'),
+                  customer_id=customer
+                  ).save()
+            messages.success(request, 'Sales Added Successful')
+            return redirect("Customers:customers")
+    else:
+        return render(request, 'Customers/customer_bill.html', {
+        'customer_data': Customers.objects.filter(id=request.GET.get("id")).first(),
+        'sales': Sales.objects.all()
+    })
 
-@api_view(['GET'])
-def SearchCustomer(request):
-    field = request.GET.get('field')
-    value = request.GET.get('value')
+        
 
-    try:
-        if field == 'Name':
-            return Response(CustomersSerializer(Customers.objects.filter(customer_name__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'Rank':
-            return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
-        elif field == 'ID':
-            return Response(CustomersSerializer(Customers.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
-        elif field == 'Address':
-            return Response(CustomersSerializer(Customers.objects.filter(customer_address__icontains=value).order_by('-id'), many=True).data)
-
+# @api_view(['GET'])
+# def SearchCustomer(request):
+#     field = request.GET.get('field')
+#     value = request.GET.get('value')
     except Exception as e:
         return Response({"message": f"No data found {e}"})
+#     try:
+#         if field == 'Name':
+#             return Response(Customers.objects.all())
+#         elif field == 'Rank':
+#             return Response(CustomersSerializer(Customers.objects.filter(customer_rank__icontains=value).order_by('-id'), many=True).data)
+#         elif field == 'ID':
+#             # return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_id__icontains=value).annotate(total_amount=Sum('net_amount')),many=True).data)
+            
+#             return Response(CustomersSerializer(Customers.objects.filter(customer_id__exact=value).order_by('-id'), many=True).data)
+#         elif field == 'Address':
+#             return Response(CustomersSerializer(Customers.objects.filter(customer_address__icontains=value).order_by('-id'), many=True).data)
+
+#     except Exception as e:
+#         return Response({"message": "No data found {}".format(e)})
 
 
 @api_view(['GET', 'POST'])
@@ -312,13 +389,15 @@ def pay_bill(request):
         print("sale net amount ", Sales.objects.filter(id=id).first())
         return Response({"message": "Bill Paid Successfully"})
 
-@api_view(['GET','POST'])
+
+@api_view(['GET', 'POST'])
 def pay_all_bills(request):
-    if request.method=="POST":
+    if request.method == "POST":
         id = request.POST.get('id')
-        print('dasfjaskdfj ',id)
+        print('dasfjaskdfj ', id)
         rv_no = request.POST.get('rv_no')
-        paid_date = timezone.now()
+        print('#################################',request.POST.get('paid_date'))
+        paid_date = timezone.datetime.strptime((request.POST.get('paid_date')),'%d-%m-%Y')
         amount = request.POST.get('amount')
         remaining_amount = request.POST.get('remaining_amount')
         print("remaining amount ", remaining_amount)
@@ -399,8 +478,9 @@ index_template = [
     path('customer_update/', customer_update, name='customer_update'),
     path('customer_bill/', customer_bill, name='customer_bill'),
     path('logout', logout_user, name='logout'),
+    path('delete_customer/<int:pk>/', delete_customer, name="delete_customer"),
     # api url paths
-    path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
+    # path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('api/customer/pay_bill/', pay_bill, name='pay_bill'),
     path('api/customer/comp_bill/', comp_bill, name='comp_bill'),
     path('api/customer/cancel_bill/', cancel_bill, name='cancel_bill'),

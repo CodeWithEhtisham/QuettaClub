@@ -62,8 +62,8 @@
                     <div class="row ml-5">
                         <div class="row">
                             <select name="search_field" id="search_field" class="form-control" style="height: 2.5rem;">
-                                <option value="">Search By</option>
-                                <option value="bill_no">Bill No.</option>
+                                <!-- <option value="">Search By</option> -->
+                                <option value="bill_no" selected>Bill No.</option>
                                 <option value="pos_no">PoS No</option>
                                 <option value="month">Month</option>
                                 <option value="account_of">On Account of</option>
@@ -137,15 +137,15 @@
                             <td>
                                 <div class="list">
 
-                                    <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
-                                        style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                    <a href="{% url 'Sales:update_view_sale' %}?id={{sale.id}}"
+                                        style="background-color: #1e659c; color: rgb(255, 255, 255);">Edit</a>
                                     <button class="modal" id="paid_modal"
                                         onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')"
-                                        style="background-color: green; color: rgb(246, 244, 244);">Paid</button>
-                                    <button id="comp_modal" class="modal"
+                                        style="background-color: #0c7ed6; color: rgb(246, 244, 244);">Paid</button>
+                                    <button id="comp_modal" class="modal" style="background-color: #1e659c;"
                                         onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
                                     <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}')"
-                                        style="background-color: #fd7e14;">Cancelled</button>
+                                        style="background-color: #6a6a6a;">Cancelled</button>
                                 </div>
             </div>
             </td>
@@ -153,19 +153,23 @@
             {% endif %}
             {% endfor %}
             <tfoot>
-                <tr>
+                {% if total_net_amount > 0 %}
+                <tr style="background-color: #727272;">
                     <td>Total Bills:</td>
-                    <td><b>{{all_bills|intcomma}}</b></td>
+                    <td tyle="font-size: 1.5rem;"><b>{{all_bills|intcomma}}</b></td>
                     <td></td>
                     <td>Total Amount:</td>
-                    <td><b>{{total_amount|intcomma}}</b></td>
+                    <td tyle="font-size: 1.5rem;"><b>{{total_amount|intcomma}}</b></td>
+                    <td></td>
                     <td></td>
                     <td>Total Discounts:</td>
-                    <td><b>{{total_discount|intcomma}}</b></td>
+                    <td tyle="font-size: 1.5rem;"><b>{{total_discount|intcomma}}</b></td>
+                    <td></td>
                     <td></td>
                     <td>Total Net Amount:</td>
-                    <td><b>{{total_net_amount|intcomma}}</b></td>
+                    <td tyle="font-size: 1.5rem;"><b>{{total_net_amount|intcomma}}</b></td>
                 </tr>
+                {% endif %}
             </tfoot>
             </tbody>
             </table>

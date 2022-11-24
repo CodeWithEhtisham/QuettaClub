@@ -1,44 +1,103 @@
-function SearchCustomer() {
-  let field = document.getElementById('search_field').value;
-  let value = document.getElementById('search_value').value;
+// function SearchCustomer() {
+//   let field = document.getElementById('search_field').value;
+//   let value = document.getElementById('search_value').value;
 
-  if (field != '' && value != '') {
-    $.ajax({
-      method: "GET",
-      url: "/api/SearchCustomer/",
-      data: { "field": field, "value": value },
-      success: function (data) {
-        // console.log("success on search" + data);
-        update_table(data)
-      },
-      error: function () {
-        console.log('error');
-      }
+//   if (field != '' && value != '') {
+//     $.ajax({
+//       method: "GET",
+//       url: "/api/SearchCustomer/",
+//       data: { "field": field, "value": value },
+//       success: function (data) {
+//         // console.log("success on search" + data);
+//         update_table(data)
+//       },
+//       error: function () {
+//         console.log('error');
+//       }
 
-    })
-  }
-};
+//     })
+//   }
+// };
+
+var $rows = $('#tbody tr');
+$('#search_value').keyup(function() {
+    // var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    
+    // $rows.show().filter(function() {
+    //     var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+    //     return !~text.indexOf(val);
+    // }).hide();
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    let select= document.getElementById('search_field').value;
+    console.log(val);
+
+    if (select == 'Name') {
+      $rows.show().filter(function() {
+        var text = $(this).find('td').eq(1).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+      }).hide();
+    }
+    else if (select == 'ID') {
+      $rows.show().filter(function() {
+        var text = $(this).find('td').eq(3).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+      }).hide();
+    }
+    else if (select == 'Address') {
+      $rows.show().filter(function() {
+        var text = $(this).find('td').eq(2).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+      }).hide();
+    }
+    else if (select == 'Rank') {
+      $rows.show().filter(function() {
+        var text = $(this).find('td').eq(0).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+      }).hide();
+    }
+});
 
 function update_table(data) {
+  console.log(data);
   let row;
   let all_rows = '';
   Object.keys(data).forEach(key => {
     console.log(data[key]);
     elem = data[key];
-    console.log(elem['id'])
+    console.log(elem);
+    
+    if (elem['customers_table']) {
     row = '<tr>' +
       '<td>' + elem['customer_rank'] + '</td>' +
       '<td>' + elem['customer_name'] + '</td>' +
       '<td>' + elem['customer_address'] + '</td>' +
       '<td>' + elem['customer_id'] + '</td>' +
+      '<td>' + elem['total_amount'] + '</td>' +
       '<td>' +
       '<div class="list-btn">' +
-      '<a href="/customer_bill/?id='+elem['id']+'" style="background-color:green ;">Add a Bill</a>' +
-      '<a href="/customer_details/?id='+elem['id']+'">All Bills</a>' +
-      '<a href="/customer_update/?id='+elem['id']+'" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
+      '<a href="/customer_bill/?id='+elem['id']+'" style="background-color:#1e659c; text-align: center;">Add a Bill</a>' +
+      '<a href="/customer_details/?id='+elem['id']+'" style="text-align: center;">All Bills</a>' +
+      '<a href="/customer_update/?id='+elem['id']+'" style="background-color: #1e659c;">Edit</a>' +
       '</div>' +
       '</td>' +
       '</tr>'
+    }
+    else {
+      row = '<tr>' +
+      '<td>' + elem['customer_rank'] + '</td>' +
+      '<td>' + elem['customer_name'] + '</td>' +
+      '<td>' + elem['customer_address'] + '</td>' +
+      '<td>' + elem['customer_id'] + '</td>' +
+      '<td>' + elem['0'] + '</td>' +
+      '<td>' +
+      '<div class="list-btn">' +
+      '<a href="/customer_bill/?id='+elem['id']+'" style="background-color:#1e659c; text-align: center;">Add a Bill</a>' +
+      '<a href="/customer_details/?id='+elem['id']+'" style="text-align: center;">All Bills</a>' +
+      '<a href="/customer_update/?id='+elem['id']+'" style="background-color: #1e659c;">Edit</a>' +
+      '</div>' +
+      '</td>' +
+      '</tr>'
+    }
     all_rows += row;
   });
   $('#Customers_Data tbody').html(all_rows);
@@ -92,10 +151,10 @@ function update_bill_table(data) {
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href="/Sales/update_sales/?id=' +elem['id']+'" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
-        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
+        '<a href="/Sales/update_sales/?id=' +elem['id']+'" style="background-color: #1e659c; ">Edit</a>' +
+        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: #1e659c; ">Paid</button>' +
         '<button id="comp_modal" class="modal" onclick="compModalOpen('+elem['id']+','+elem['net_amount']+')">Complemantery</button>' +
-        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: #dc3545;">Cancelled</button>' +
+        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen('+elem['id']+','+elem['net_amount']+')" style="background-color: #6a6a6a;;">Cancelled</button>' +
         '</div>' +
         '</td>' +
         '</tr>'
@@ -136,17 +195,35 @@ function paidModalSubmit() {
       }
     }
   });
+
+  let data;
+  if ($("#paid_amount").val() > $("#pay_bill_modal_balance").val()) {
+    alert("Paid amount is greater than Net Amount! Please enter less or equal Amount");
+    return false;
+  }
+  else {
+    data = {
+      id: $("#paid-form-id").val(),
+      rv_no: $("#rv_no").val(),
+      paid_date: $("#today-date").val(),
+      amount: $("#paid_amount").val(),
+      remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val()
+    };
+  }
+  console.log(data);
   $.ajax({
     method: 'POST',
     url: "/api/customer/pay_bill/",
-    data: {
-      "id": $("#paid-form-id").val(),
-      "rv_no": $("#rv_no").val(),
-      "paid_date": $("#today-date").val(),
-      "amount": $("#paid_amount").val(),
-      "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
-      csrfmiddlewaretoken: window.CSRF_TOKEN,
-    },
+    data: data,
+    csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // data: {
+    //   "id": $("#paid-form-id").val(),
+    //   "rv_no": $("#rv_no").val(),
+    //   "paid_date": $("#today-date").val(),
+    //   "amount": $("#paid_amount").val(),
+    //   "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+    //   csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // },
     dataType: "json",
   })
   paidModal.style.display = "none";
@@ -183,18 +260,35 @@ function compModalSubmit() {
       }
     }
   });
+
+  let data;
+  if ($("#comp_amount").val() > $("#comp_bill_modal_balance").val()) {
+    alert("Complementary amount is greater than Net Amount! Please enter less or equal Amount");
+    return false;
+  }
+  else {
+    data = {
+      id: $("#comp-form-id").val(),
+      comp_date: $("#comp-today-date").val(),
+      comp_remarks: $("#comp_remarks").val(),
+      comp_amount: $("#comp_amount").val(),
+      remaining_amount: $("#comp_bill_modal_balance").val() - $("#comp_amount").val()
+    };
+  }
   $.ajax({
     method: "POST",
     url: "/api/customer/comp_bill/",
-    data: {
-      "id": $("#comp-form-id").val(),
-      'comp_date': $("#comp-today-date").val(),
-      'comp_remarks': $("#comp_remarks").val(),
-      'comp_amount': $("#comp_amount").val(),
-      // 'balance': $("#comp_bill_modal_balance").val(),
-      "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
-      csrfmiddlewaretoken: window.CSRF_TOKEN,
-    },
+    data: data,
+    csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // data: {
+    //   "id": $("#comp-form-id").val(),
+    //   'comp_date': $("#comp-today-date").val(),
+    //   'comp_remarks': $("#comp_remarks").val(),
+    //   'comp_amount': $("#comp_amount").val(),
+    //   // 'balance': $("#comp_bill_modal_balance").val(),
+    //   "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
+    //   csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // },
     dataType: "json",
   })
   compModal.style.display = "none";
@@ -290,57 +384,16 @@ document.getElementById("paid_amount").onchange = function () {
   document.getElementById('remaing_amount').value = total;
 };
 
-// function sendBillsTable() {
-//   var myRows = [];
-//   var $headers = $("th");
-//   var $rows = $("tbody tr").each(function (index) {
-//     $cells = $(this).find("td");
-//     myRows[index] = {};
-//     $cells.each(function (cellIndex) {
-//       myRows[index][$($headers[cellIndex]).html()] = $(this).html();
-//     });
-//   });
-
-//   // Let's put this in the object like you want and convert to JSON (Note: jQuery will also do this for you on the Ajax request)
-//   var myObj = {};
-//   myObj.myrows = myRows;
-
-//   var csrftoken = $.cookie('csrftoken');
-
-//   function csrfSafeMethod(method) {
-//     // these HTTP methods do not require CSRF protection
-//     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-//   }
-
-//   $.ajaxSetup({
-//     beforeSend: function (xhr, settings) {
-//       if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-//         xhr.setRequestHeader("X-CSRFToken", csrftoken);
-//       }
-//     }
-//   });
-//   // Ajax request goes here
-//   $.ajax({
-//     type: "POST",
-//     url: "/api/customer/bills_upload/",
-//     data: JSON.stringify(myObj),
-//     csrfmiddlewaretoken: window.CSRF_TOKEN,
-//     contentType: "application/json; charset=utf-8",
-//     dataType: "json",
-//     success: function (data) {
-//       // clear table all data
-//       $("#Sales_data tbody").empty();
-//     }
-//   });
-
-// }
-
-
 
 function paid_all_bills() {
   check=window.confirm("Are you sure you want to paid all bills?");
   if(check==true){
     let rv=window.prompt("Enter your RV number");
+    let datetime=window.prompt("enter Date");
+    datetime=new Date(datetime)
+    month=datetime.getMonth()+1
+    datetime=datetime.getDate()+'-'+month+'-'+datetime.getFullYear()
+    console.log(datetime)
 
      var csrftoken = $.cookie('csrftoken');
 
@@ -368,7 +421,7 @@ function paid_all_bills() {
       data: {
         "id": id,
         "rv_no": rv,
-        "paid_date": new Date(),
+        "paid_date": datetime,
         "amount": amount,
         "remaining_amount": 0,
         csrfmiddlewaretoken: window.CSRF_TOKEN,

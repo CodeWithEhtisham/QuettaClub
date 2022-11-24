@@ -60,78 +60,82 @@
                     <div class="row">
                         <h2>Customers</h2>
                         <div class="form-group ml-5">
+                            <select name="select-rank" id="select-rank" class="form-control" onchange="SearchByRankReport(this)">
+                                <option value="" selected>select rank</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Members">Members</option>
+                                <option value="Army">Army</option>
+                                <option value="other">other</option>
+                            </select>
                             <select name="search_field" id="search_field" class="form-control">
-                                <option value="">Search By</option>
-                                <option value="bill_no">Bill No.</option>
-                                <option value="pos_no">PoS No</option>
+                                <!-- <option value="">Search By</option> -->
+                                <option value="bill_no" selected>Bill No</option>
+                                <option value="rv_no">RV No</option>
+                                <option value="PoS_no">PoS No</option>
                                 <option value="month">Month</option>
                                 <option value="account_of">On Account of</option>
                                 <option value="date">Date</option>
-                                <option value="rank">Rank</option>
+                                <!-- <option value="rank">Rank</option> -->
                                 <option value="name">Name</option>
                                 <option value="address">Address</option>
                             </select>
-                            <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"
+                            <input type="search" name="search_value" id="search_value" oninput="SearchbyNameReport();"
                                 class="form-control ml-5 search" placeholder="search ....">
 
                         </div>
                         <!--  -->
                         <form class="row" action="{% url 'Sales:reports' %}" method="post">
                             {% csrf_token %}
-                            
+
                             <div class="form-data ml-5">
                                 <label for="" class="form-label">Paid</label>
                                 <hr>
                                 <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="paid_check" onclick="onlyOne(this)" style="width:20px; height:20px;">
+                                    value="Paid" onclick="onlyOne(this)" style="width:20px; height:20px;">
                             </div>
                             <div class="form-data ml-5">
-                                <label for="" class="form-label">Complementary</label><hr>
+                                <label for="" class="form-label">Complementary</label>
+                                <hr>
                                 <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="comp_check" onclick="onlyOne(this)" style="width:20px; height:20px;">
+                                    value="Complementery" onclick="onlyOne(this)" style="width:20px; height:20px;">
                             </div>
                             <div class="form-data ml-5">
-                                <label for="" class="form-label">Cancelled</label><hr>
+                                <label for="" class="form-label">Cancelled</label>
+                                <hr>
                                 <input type="checkbox" class="cursor-pointer rounded-md" id="check" name="check"
-                                    value="cancel_check" onclick="onlyOne(this)" style="width:20px; height:20px;">
+                                    value="Cancel" onclick="onlyOne(this)" style="width:20px; height:20px;">
                             </div>
                             <div class="flex flex-row gap-x-2 ml-5">
                                 <div class="form-data ml-5">
                                     <label for="" class="m-1">From</label>
                                     <input type="date" id="from-date" name="from-date" required
-                                        value="{{from_date|date:'Y-m-d'}}"
-                                        class="form-control">
+                                        value="{{from_date|date:'Y-m-d'}}" class="form-control">
                                 </div>
 
                                 <div class="form-data ml-5">
                                     <label for="" class="m-1">To</label>
                                     <input type="date" id="to-date" name="to-date" required
-                                        value='{{to_date|date:"Y-m-d"}}'
-                                        class="form-control">
+                                        value='{{to_date|date:"Y-m-d"}}' class="form-control">
                                 </div>
                             </div>
                             <div class="form-data ml-5">
-                                <button class="icon" name="report_generate" value="report_generate"><strong>Generate</strong></button>
+                                <button class="icon" name="report_generate"
+                                    value="report_generate"><strong>Generate</strong></button>
                             </div>
                             <div class="form-data ml-5">
-                                <input type="button" class="icon" id="print_bill" value=" Print " style="font-weight: bold;"/>
+                                <input type="button" class="icon" id="print_bill" value=" Print "
+                                    style="font-weight: bold;" />
                             </div>
 
                             <div class="choose_file ml-5">
                                 <button type="button" class="icon" onclick="download_table_as_csv('report');">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" height="26px">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
-                                </svg>
-                            </button>
-                                <!-- <a class="form-data ml-5">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" height="26px">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                                        stroke-width="1.5" stroke="currentColor" height="26px">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
                                     </svg>
-                                </a> -->
+                                </button>
+                                
                             </div>
                     </div>
                     {% if record %}
@@ -166,50 +170,53 @@
                                 <td>{{paid.sale_id.customer_id.customer_rank}}</td>
                                 <td>{{paid.sale_id.customer_id.customer_name}}</td>
                                 <td>{{ paid.sale_id.address }}</td>
-                                <td>{{ paid.sale_id.created_date }}</td>
+                                <td>{{ paid.sale_id.created_date|date:"d-M-Y" }}</td>
                                 <td>{{ paid.sale_id.account_of }}</td>
                                 <td>{{ paid.sale_id.month|default:"Nil" }}</td>
                                 <td>{{ paid.amount|intcomma }}</td>
-                                <td>{{ paid.date }}</td>
-                                
+                                <td>{{ paid.date|date:"d-M-Y" }}</td>
+
                                 <td>
                                     {% if paid.status == "Paid" %}
-                                    <p class="modal" style="background-color: green; color: rgb(246, 244, 244);">
-                                        {{paid.status}}</p> 
+                                    <p class="modal"
+                                        style="background-color: #0c7ed6; text-align: center; color: rgb(246, 244, 244);">
+                                        {{paid.status}}</p>
                                     {% elif paid.status == "Complementery" %}
-                                    <p class="modal" style="background-color: blue; color: rgb(246, 244, 244);">
-                                        {{paid.status}}</p> 
-                                    {% elif paid.status == "Cancel" %}
-                                    <p class="modal" style="background-color: red; color: rgb(246, 244, 244);">
-                                        {{paid.status}}</p> 
+                                    <p class="modal"
+                                        style="background-color: #1e659c; text-align: center; color: rgb(246, 244, 244);">
+                                        {{paid.status}}</p>
+                                    {% elif paid.status == "Cancelled" %}
+                                    <p class="modal"
+                                        style="background-color: #6a6a6a; text-align: center; color: rgb(246, 244, 244);">
+                                        {{paid.status}}</p>
                                     {% endif %}
 
                                 </td>
-                                
+
                             </tr>
                             {% endfor %}
-                            <tfoot>
-                                <tr >
-                                    <td>Total Paid Bills:</td>
-                                    <td><b>{{total_paid|intcomma|default:"00"}}</b></td>
-                                    <!-- <td></td> -->
-                                    <td>Total Complementary Bills:</td>
-                                    <td><b>{{total_complementary|intcomma|default:"00"}}</b></td>
-                                    <!-- <td></td> -->
-                                    <td>Total Cancelled Bills:</td>
-                                    <td><b>{{total_cancelled|intcomma|default:"00"}}</b></td>
-                                    <!-- <td></td> -->
-                                    <td>Total Paid Amount:</td>
-                                    <td><b>{{total_paid_amount|intcomma|default:"00"}}</b></td>
-                                    <td>Total Complementary Amount:</td>
-                                    <td><b>{{total_comp_amount|intcomma|default_if_none:"0"}}</b></td>
-                                    <!-- <td>Total Cancelled Amount:</td>
-                                    <td><b>{{total_cancel_amount|intcomma|default:"00"}}</b></td> -->
-                                    <td>Total Bills Amount:</td>
-                                    <td><b>{{total_amount|intcomma|default:"0"}}</b></td>
-                                </tr>
-                            </tfoot>
                         </tbody>
+                        <tfoot>
+                            <tr style="background-color: #727272;">
+                                <td>Total Paid Bills:</td>
+                                <td style="font-size: 1.5rem;"><b>{{total_paid|intcomma|default:"00"}}</b></td>
+                                <!-- <td></td> -->
+                                <td>Total Complementary Bills:</td>
+                                <td style="font-size: 1.5rem;"><b>{{total_complementary|intcomma|default:"00"}}</b></td>
+                                <!-- <td></td> -->
+                                <td>Total Cancelled Bills:</td>
+                                <td style="font-size: 1.5rem;"><b>{{total_cancelled|intcomma|default:"00"}}</b></td>
+                                <!-- <td></td> -->
+                            <td>Total Paid Amount:</td>
+                            <td style="font-size: 1.5rem;"><b>{{total_paid_amount|intcomma|default:"00"}}</b></td>
+                            <td>Total CompAmount:</td>
+                            <td style="font-size: 1.5rem;"><b>{{total_comp_amount|intcomma|default:"00"}}</b></td>
+                            <!-- <td>Total Cancelled Amount:</td>
+                                <td><b>{{total_cancel_amount|intcomma|default:"00"}}</b></td> -->
+                                <td>Total Bills Amount:</td>
+                                <td style="font-size: 1.5rem;"><b>{{total_amount|intcomma|default:"0"}}</b></td>
+                            </tr>
+                        </tfoot>
                     </table>
                     {% endif %}
 
@@ -217,7 +224,7 @@
             </div>
         </div>
 
-       
+
     </div>
 
     <script>
@@ -259,10 +266,10 @@
             })
         }
         const print = document.getElementById('print_bill');
-        print.addEventListener('click', () => {window.print();});
+        print.addEventListener('click', () => { window.print(); });
     </script>
-    <script src="{% static 'js/sales.js' %}"></script>
     <script src="{% static 'js/report.js' %}"></script>
+    <!-- <script src="{% static 'js/sales.js' %}"></script> -->
     <script src="{% static 'js/jquery.cookie.js' %}"></script>
 </body>
 

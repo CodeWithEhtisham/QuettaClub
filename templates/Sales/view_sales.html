@@ -62,28 +62,50 @@
                 </li>
             </ul>
         </div>
+        <!-- {% for message in messages %}
+        {% if message.tags == "error" %}
+        <div class="messages">
+            <div class="error">
+                {{message}}
+            </div>
+        </div>
+        {% else %}
+        <div class="messages">
+            <div class="success">
+                {{message}}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %} -->
 
         <div class="row">
-            <div class="card">
+            <div class="card w-100">
                 <div>
                     <div class="row">
                         <h2>Customers</h2>
+                        
                         <div class="form-group ml-5 w-50">
-                            <select name="search_field" id="search_field" class="form-control option">
-                                <option value="">Search By</option>
-                                <option value="bill_no">Bill No.</option>
-                                <option value="pos_no">PoS No</option>
+                            <select name="select-rank" id="select-rank" class="form-control option" onchange="rankSelected(this)">
+                                <option value="" selected>Select Rank</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Army">Army</option>
+                                <option value="Members">Members</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <select name="search_field" id="search_field" class="form-control option ml-5">
+                                <!-- <option value="">Search By</option> -->
+                                <option value="bill_no" selected>Bill No.</option>
+                                <option value="PoS_no">PoS No</option>
                                 <option value="customer_id">Customer ID</option>
                                 <option value="month">Month</option>
                                 <option value="account_of">On Account of</option>
-                                <option value="date">Date</option>
-                                <option value="rank">Rank</option>
-                                <option value="name">Name</option>
+                                <option value="created_date">Date</option>
+                                <option value="customer_name">Name</option>
                                 <option value="address">Address</option>
                             </select>
                             <input type="search" name="search_value" id="search_value" oninput="SearchbyName();"
                                 class="form-control ml-5 search" placeholder="search ....">
-                           
+
                         </div>
                         <!--  -->
                         <div class="choose_file ml-5">
@@ -119,8 +141,8 @@
 
                         <tbody>
                             {% for sale in sales_data %}
-
                             {% if sale.amount > 0 and sale.net_amount > 0 %}
+
                             <tr>
                                 <!-- <td>{{sale.id}}</td> -->
                                 <td>{{ sale.bill_no|default:"00" }}</td>
@@ -138,37 +160,40 @@
                                 <td>
                                     <div class="list">
                                         <a href="{% url 'Sales:update_view_sale' %}?id={{sale.id}}"
-                                            style="background-color: blue; color: white;">Edit</a>
+                                            style="background-color: #1e659c; color: white;">Edit</a>
                                         <button class="modal" id="paid_modal"
                                             onclick="paidMOdalOpen('{{sale.id}}','{{sale.net_amount}}')"
-                                            style="background-color: green; color: white;">Paid</button>
-                                        <button id="comp_modal" class="modal" style="background-color: yellow; color: black;"
+                                            style="background-color: #0c7ed6; color: white;">Paid</button>
+                                        <button id="comp_modal" class="modal" style="background-color: #1e659c;"
                                             onclick="compModalOpen('{{sale.id}}','{{sale.net_amount}}')">Complemantery</button>
-                                        <button id="cancel_modal" class="modal" onclick="cancelModalOpen('{{sale.id}}','{{sale.net_amount}}', '{{sale.amount}}')"
-                                            style="background-color: red;">Cancelled</button>
+                                        <button id="cancel_modal" class="modal"
+                                            onclick="cancelModalOpen('{{sale.id}}','{{sale.net_amount}}', '{{sale.amount}}')"
+                                            style="background-color: #6a6a6a;">Cancelled</button>
+                                        <a href="{% url 'Sales:delete_sale' sale.id %}"
+                                            style="background-color: #ae180d; color: white;">Delete</a>
                                     </div>
                                 </td>
                             </tr>
-                            {% endif %}
+                            {%endif%}
                             {% endfor %}
-                            <tfoot>
-                                <tr style="color: black;">
-                                    <td>Total Bills:</td>
-                                    <td><b>{{total_bills|intcomma}}</b></td>
-                                    <td></td>
-                                    <td>Total Amount:</td>
-                                    <td><b>{{total_amount|intcomma}}</b></td>
-                                    <td></td>
-                                    <td>Total Discounts:</td>
-                                    <td><b>{{total_discount|intcomma}}</b></td>
-                                    <td></td>
-                                    <td>Total Net Amount:</td>
-                                    <td><b>{{total_net_amount|intcomma}}</b></td>
-                                </tr>
-                            </tfoot>
                         </tbody>
-
-
+                        <tfoot>
+                            <tr style="background-color: #727272;">
+                                <td>Total Bills:</td>
+                                <td id="total-bills" style="font-size: 1.5rem;" ><b>{{total_bills|intcomma}}</b></td>
+                                <td ></td>
+                                <td>Total Amount:</td>
+                                <td id="total-amount" style="font-size: 1.5rem;"><b>{{total_amount|intcomma}}</b></td>
+                                <td></td>
+                                <td></td>
+                                <td>Total Discounts:</td>
+                                <td id="total-discount" style="font-size: 1.5rem;"><b>{{total_discount|intcomma}}</b></td>
+                                <td></td>
+                                <td></td>
+                                <td>Total Net Amount:</td>
+                                <td id="total-net-amount" style="font-size: 1.5rem;"><b>{{total_net_amount|intcomma}}</b></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -197,7 +222,7 @@
                 <input class="form-control" type="text" id="pay_bill_modal_balance" name="paid_balance">
 
                 <label class="form-label">Amount</label>
-                <input class="form-control" type="text" name="paid_amount" id="paid_amount">
+                <input class="form-control" type="text" name="paid_amount" id="paid_amount" required>
 
 
                 <label class="form-label">Remaining</label>
@@ -289,36 +314,6 @@
     </div>
 
     <script>
-
-    </script>
-    <!-- <script>
-        function download_to_excel() {
-
-            var tab_text = "<table><tr>";
-            var textRange = '';
-            var j = 0;
-            var tab = document.getElementById('MyTableID_Value'); // id of table
-
-            for (j = 0; j < tab.rows.length; j++) {
-                tab_text += tab.rows[j].innerHTML + "</tr>";
-            }
-
-            tab_text += "</table>";
-
-            var a = document.createElement('a');
-            var data_type = 'data:application/vnd.ms-excel';
-            a.href = data_type + ', ' + encodeURIComponent(tab_text);
-            //setting the file name
-            a.download = 'file_name.xls';
-            //triggering the function
-            a.click();
-            //just in case, prevent default behaviour
-            e.preventDefault();
-
-        }
-    </script> -->
-
-    <script>
         function download_table_as_csv(Sales_data, separator = ',') {
             // Select rows from table_id
             var rows = document.querySelectorAll('table#' + Sales_data + ' tr');
@@ -357,6 +352,12 @@
         };
 
         document.getElementById('today-date').value = new Date().toDateInputValue();
+
+        setTimeout(fade_out, 3000);
+        function fade_out() {
+            $(".messages").fadeOut().empty();
+        }
+        $(".post-form")[0].reset();
 
     </script>
 

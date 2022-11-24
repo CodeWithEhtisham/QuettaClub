@@ -1,12 +1,15 @@
 function SearchbyName() {
   let field = document.getElementById('search_field').value;
   let value = document.getElementById('search_value').value;
+  let rank = document.getElementById('select-rank').value;
+
+  if (["Staff","Army","Members","Other"].includes(rank)) {
 
   if (field != '' && value != '') {
     $.ajax({
       method: "GET",
       url: "/api/SearchbyName/",
-      data: { "field": field, "value": value },
+      data: { "field": field, "value": value , "rank": rank},
       success: function (data) {
         // console.log("success on search" + data);
         update_table(data)
@@ -17,7 +20,64 @@ function SearchbyName() {
 
     })
   }
+}
+else{
+  $.ajax({
+    method: "GET",
+    url: "/api/SearchbyName/",
+    data: { "field": field, "value": value },
+    success: function (data) {
+      // console.log("success on search" + data);
+      update_table(data)
+    },
+    error: function () {
+      console.log('error');
+    }
+
+  })
+}
 };
+function update_totals(rank){
+  $.ajax({
+    method: "GET",
+    url: "/api/sales/GetTotal/",
+    data: {"rank": rank},
+    success: function (data) {
+      // console.log("success on search" + data);
+      document.getElementById('total-bills').innerHTML=data['total_bills']
+      document.getElementById('total-amount').innerHTML=data['total_amount']
+      document.getElementById('total-discount').innerHTML=data['total_discount']
+      document.getElementById('total-net-amount').innerHTML=data['total_net_amount']
+    },
+    error: function () {
+      console.log('error');
+    }
+
+  })
+}
+
+function rankSelected(data){
+  let rank = document.getElementById('select-rank').value;
+  if (["Staff","Army","Members","Other"].includes(rank)) {
+    update_totals(rank)
+    $.ajax({
+      method: "GET",
+      url: "/api/sales/SearchByRank/",
+      data: {"rank": rank},
+      success: function (data) {
+        // console.log("success on search" + data);
+        update_table(data)
+      },
+      error: function () {
+        console.log('error');
+      }
+
+    })
+  }
+  else{
+    alert("Please select a rank");
+  }
+}
 
 function update_table(data) {
   console.log(data);
@@ -32,25 +92,25 @@ function update_table(data) {
       row = '<tr>' +
         // '<td>'+elem['id']+'</td>' +
         '<td>' + elem['bill_no'] + '</td>' +
-        '<td>' + elem['month'] + '</td>' +
         '<td>' + elem['customer_id']['customer_rank'] + '</td>' +
         '<td>' + elem['PoS_no'] + '</td>' +
         '<td>' + elem['customer_id']['customer_name'] + '</td>' +
         // '<td>'+elem['customer_id']+'</td>' +
-        '<td>' + elem['address'] + '</td>' +
+        '<td>' + elem['customer_id']['customer_address'] + '</td>' +
         '<td>' + elem['account_of'] + '</td>' +
-        '<td>' + elem['date'] + '</td>' +
+        '<td>' + elem['created_date'] + '</td>' +
+        '<td>' + elem['month'] + '</td>' +
         '<td>' + elem['amount'] + '</td>' +
         '<td>' + elem['discount'] + '</td>' +
         '<td>' + elem['net_amount'] + '</td>' +
         '<td>' + elem['remarks'] + '</td>' +
         '<td>' +
         '<div class="list">' +
-        '<a href="/Sales/update_sales/?id=' + elem['id'] + '" style="background-color: rgb(255, 204, 0); color: black;">Edit</a>' +
-        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: green; color: rgb(246, 244, 244);">Paid</button>' +
-        '<button id="comp_modal" class="modal" onclick="compModalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')">Complemantery</button>' +
-        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: #dc3545;">Cancelled</button>' +
-
+        '<a href="/Sales/update_sales/?id=' + elem['id'] + '" style="background-color: #1e659c; color: white;">Edit</a>' +
+        '<button class="modal" id="paid_modal" onclick="paidMOdalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: #0c7ed6; color: white;">Paid</button>' +
+        '<button id="comp_modal" class="modal" onclick="compModalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: #1e659c;">Complemantery</button>' +
+        '<button id="cancel_modal" class="modal" onclick="cancelModalOpen(' + elem['id'] + ',' + elem['net_amount'] + ')" style="background-color: #6a6a6a;">Cancelled</button>' +
+        '<a href="/Sales/delete_sale/sale.id %}" style="background-color: #ae180d; color: white;">Delete</a>'+
         '</div>' +
         '</td>' +
         '</tr>'
@@ -72,10 +132,14 @@ function paidMOdalOpen(id, value) {
   document.getElementById("paid-form-id").value = id;
   document.getElementById("pay_bill_modal_balance").value = value;
   todays('today-date');
+  
 }
 
 // paid Modal submit
 function paidModalSubmit() {
+  
+  
+
   var csrftoken = $.cookie('csrftoken');
 
   function csrfSafeMethod(method) {
@@ -90,17 +154,38 @@ function paidModalSubmit() {
       }
     }
   });
+
+  let data;
+  if ($("#paid_amount").val() > $("#pay_bill_modal_balance").val()) {
+    alert("Paid amount is greater than Net Amount! Please enter less or equal Amount");
+    return false;
+  }
+  else {
+    data = {
+      id: $("#paid-form-id").val(),
+      rv_no: $("#rv_no").val(),
+      paid_date: $("#today-date").val(),
+      amount: $("#paid_amount").val(),
+      remaining_amount: $("#pay_bill_modal_balance").val() - $("#paid_amount").val()
+    };
+  }
+  console.log(data);
+  
   $.ajax({
     method: 'POST',
     url: "/api/sales/pay_bill/",
-    data: {
-      "id": $("#paid-form-id").val(),
-      "rv_no": $("#rv_no").val(),
-      "paid_date": $("#today-date").val(),
-      "amount": $("#paid_amount").val(),
-      "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
-      csrfmiddlewaretoken: window.CSRF_TOKEN,
-    },
+    data: data,
+    csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // data: {
+    //   "id": $("#paid-form-id").val(),
+    //   "rv_no": $("#rv_no").val(),
+    //   "paid_date": $("#today-date").val(),
+    //   "amount": $("#paid_amount").val(),
+    //   "balance": $("#pay_bill_modal_balance").val(),
+      
+    //   "remaining_amount": $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+    //   csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // },
     dataType: "json",
   })
   paidModal.style.display = "none";
@@ -132,18 +217,35 @@ function compModalSubmit() {
       }
     }
   });
+
+  let data;
+  if ($("#comp_amount").val() > $("#comp_bill_modal_balance").val()) {
+    alert("Complementary amount is greater than Net Amount! Please enter less or equal Amount");
+    return false;
+  }
+  else {
+    data = {
+      id: $("#comp-form-id").val(),
+      comp_date: $("#comp-today-date").val(),
+      comp_remarks: $("#comp_remarks").val(),
+      comp_amount: $("#comp_amount").val(),
+      remaining_amount: $("#comp_bill_modal_balance").val() - $("#comp_amount").val()
+    };
+  }
   $.ajax({
     method: "POST",
     url: "/api/sales/comp_bill/",
-    data: {
-      "id": $("#comp-form-id").val(),
-      'comp_date': $("#comp-today-date").val(),
-      'comp_remarks': $("#comp_remarks").val(),
-      'comp_amount': $("#comp_amount").val(),
-      // 'balance': $("#comp_bill_modal_balance").val(),
-      "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
-      csrfmiddlewaretoken: window.CSRF_TOKEN,
-    },
+    data: data,
+    csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // data: {
+    //   "id": $("#comp-form-id").val(),
+    //   'comp_date': $("#comp-today-date").val(),
+    //   'comp_remarks': $("#comp_remarks").val(),
+    //   'comp_amount': $("#comp_amount").val(),
+    //   // 'balance': $("#comp_bill_modal_balance").val(),
+    //   "remaining_amount": $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
+    //   csrfmiddlewaretoken: window.CSRF_TOKEN,
+    // },
     dataType: "json",
   })
   compModal.style.display = "none";

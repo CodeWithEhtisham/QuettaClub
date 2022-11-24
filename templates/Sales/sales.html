@@ -91,8 +91,10 @@
                             <input name="sale_file" type="file" accept=".xlsx, .xls, .csv" />
 
                         </div>
+                        <div>
+                            <input class="btn ml-5" type="submit" id="sale_file_submit" name="sale_file_submit">
+                        </div>
                     </div>
-                    <input class="btn ml-5" type="submit" id="sale_file_submit" name="sale_file_submit">
 
                 </form>
                 <form class="post-form" action="{% url 'Sales:sales' %}" method="post">
@@ -112,11 +114,11 @@
                         </div>
                         <div class="grid-item">
                             <label class="form-label">Date</label>
-                            <input class="form-control" id="datePicker" type="date" name="date"
+                            <input class="form-control" id="todayDate" type="date" name="date"
                             >
                         </div>
                         <script>
-                            document.getElementById('datePicker').valueAsDate = new Date();
+                            document.getElementById("todayDate").valueAsDate  = new Date();
                         </script>
 
                         <div class="grid-item">
@@ -243,9 +245,9 @@
                                     <td>
                                         <div class="list">
                                             <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
-                                                style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                                style="background-color: #1e659c; color: rgb(251, 251, 251);">Edit</a>
                                             <a href="{% url 'Sales:delete_items' sale.id %}"
-                                                style="background-color: #f44336; color: black;">Delete</a>
+                                                style="background-color: #ae180d; color: rgb(255, 255, 255);">Delete</a>
 
                                         </div>
                                     </td>
@@ -268,9 +270,9 @@
                                     <td>
                                         <div class="list">
                                             <a href="{% url 'Sales:update_sales' %}?id={{sale.id}}"
-                                                style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                                style="background-color: #1e659c; color: rgb(255, 255, 255);">Edit</a>
                                             <a href="{% url 'Sales:delete_items' sale.id %}"
-                                                style="background-color: #de0f00; color: white;">Delete</a>
+                                                style="background-color: #ae180d; color: white;">Delete</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -376,10 +378,7 @@
             var total = amount - discount;
             document.getElementById('net-amount').value = total;
         };
-        // let today = new Date();
-        // document.getElementById("todayDate").value =
-        //     today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) +
-        //     '-' + ('0' + today.getDate()).slice(-2);
+        
 
         setTimeout(fade_out, 3000);
         function fade_out() {

@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script> -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
 
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> -->
 
@@ -89,8 +90,10 @@
                             </button>
                             <input name="customer_file" type="file" accept=".xlsx, .xls, .csv" />
                         </div>
+                        <div>
+                            <input class="btn ml-5" type="submit" id="customer_file_submit" name="customer_file_submit">
+                        </div>
                     </div>
-                    <input class="btn" type="submit" id="customer_file_submit" name="customer_file_submit">
                 </form>
                 <form action="{% url 'Customers:customers' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -169,13 +172,13 @@
                         <h2>Customers</h2>
                         <div class="form-group ml-5 w-50">
                             <select name="search_field" id="search_field" class="form-control">
-                                <option value="">Search By</option>
+                                <!-- <option value="">Search By</option> -->
+                                <option value="ID" selected>ID</option>
                                 <option value="Name">Name</option>
                                 <option value="Rank">Rank</option>
-                                <option value="ID">ID</option>
                                 <option value="Address">Address</option>
                             </select>
-                            <input type="search" name="search_value" id="search_value" oninput="SearchCustomer();"
+                            <input type="search" name="search_value" id="search_value"
                                 class="form-control ml-5 search" placeholder="search ....">
 
                         </div>
@@ -203,7 +206,7 @@
 
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbody">
                             {% if customer_table %}
                             {% for customer in customer_table %}
                             <tr>
@@ -216,11 +219,12 @@
                                 <td>
                                     <div class="list-btn">
                                         <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}"
-                                            style="background-color:green ;">Add a Bill</a>
-                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}">All
+                                            style="background-color:#1e659c; text-align: center;">Add a Bill</a>
+                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}"
+                                            style="text-align: center;">All
                                             Bills</a>
                                         <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}"
-                                            style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                            style="background-color: #1e659c; color: rgb(255, 255, 255);">Edit</a>
                                     </div>
                                 </td>
                             </tr>
@@ -231,19 +235,23 @@
                             {% if customers_table %}
                             {% for customer in customers_table %}
                             <tr>
-                                <td>{{ customer.customer_id.customer_rank}}</td>
-                                <td>{{ customer.customer_id.customer_name}}</td>
-                                <td>{{ customer.customer_id.customer_address}}</td>
-                                <td>{{ customer.customer_id.customer_id }}</td>
+                                <td>{{ customer.customer_rank}}</td>
+                                <td>{{ customer.customer_name}}</td>
+                                <td>{{ customer.customer_address}}</td>
+                                <td>{{ customer.customer_id }}</td>
                                 <td>{{ customer.total_amount}}</td>
                                 <td>
                                     <div class="list-btn">
-                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.customer_id.id}}"
-                                            style="background-color:green ;">Add a Bill</a>
-                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.customer_id.id}}">All
+                                        <a href="{% url 'Customers:customer_bill' %}?id={{customer.id}}"
+                                            style="background-color:#1e659c; text-align: center;">Add a Bill</a>
+                                        <a href="{% url 'Customers:customer_details' %}?id={{customer.id}}"
+                                            style="text-align: center;">All
                                             Bills</a>
-                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.customer_id.id}}"
-                                            style="background-color: rgb(255, 204, 0); color: black;">Edit</a>
+                                        <a href="{% url 'Customers:customer_update' %}?id={{customer.id}}"
+                                            style="background-color: #1e659c; color: rgb(255, 255, 255);">Edit</a>
+
+                                            <a href="{% url 'Customers:delete_customer' customer.id %}"
+                                            style="background-color: #ae180d; color: rgb(255, 255, 255);">Delete</a>
                                     </div>
                                 </td>
                             </tr>
