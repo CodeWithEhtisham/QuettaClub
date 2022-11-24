@@ -118,8 +118,9 @@ def sales(request):
                     discount=request.POST.get('discount'),
                     net_amount=request.POST.get('net_amount'),
                     remarks=request.POST.get('remarks'),
-                    status="new" if not customer else "already exists"
+                    status="already exists" if customer else "new",
                 ).save()
+
                 # print('dummy date ', dummyTable.date)
                 messages.success(request, 'Sales Added Successful')
                 return HttpResponseRedirect(reverse("Sales:sales"))
@@ -138,7 +139,7 @@ def sales(request):
             elif request.POST.get('sale_file_submit'):
                 print("customer_file_submit")
                 csv = request.FILES['sale_file']
-                if not csv.name.split('.')[1] in ['csv', 'xlsx', 'xls']:
+                if csv.name.split('.')[1] not in ['csv', 'xlsx', 'xls']:
                     messages.error(
                         request, 'This is not a correct format file')
                 else:
@@ -172,7 +173,11 @@ def sales(request):
                 raise Exception("File not found")
         except Exception as e:  # Exception as e:
             messages.error(request, 'Sales Added Failed', e)
-            return HttpResponse("Please fill the required fields! Back to Sales page {}".format(e), status=400)
+            return HttpResponse(
+                f"Please fill the required fields! Back to Sales page {e}",
+                status=400,
+            )
+
 
     else:
         print(dummyTable.objects.all())
@@ -220,6 +225,7 @@ def view_sales(request):
 
 @login_required
 def update_sales(request):
+    if request.method != "POST":
     if request.method == "POST":
         try:
             if request.POST.get('update_bill'):
@@ -256,6 +262,35 @@ def update_sales(request):
             'customers': Customers.objects.all(),
             'sales': Sales.objects.all(),
         })
+    try:
+        if request.POST.get('update_bill'):
+            customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                                                customer_rank=request.POST.get('customer_rank'))
+
+            dummyTable.objects.filter(id=request.POST.get('edit_id')).update(
+                bill_no=request.POST.get('bill_no'),
+                pos_no=request.POST.get('PoS_no'),
+                month=request.POST.get('month'),
+                date=request.POST.get('date'),
+                address=request.POST.get('address'),
+                account_of=request.POST.get('account_of'),
+                amount=request.POST.get('amount'),
+                discount=request.POST.get('discount'),
+                net_amount=request.POST.get('net_amount'),
+                remarks=request.POST.get('remarks'),
+                status="already exists" if customer else "new",
+                cname=request.POST.get('customer_name'),
+                rank=request.POST.get('customer_rank'),
+            )
+
+
+            return HttpResponseRedirect(reverse("Sales:sales"))
+
+        elif request.POST.get('cancel'):
+            return HttpResponseRedirect(reverse("Sales:sales"))
+    except Exception as e:
+        messages.error(request, f'Sales Update Failed {e}')
+        return HttpResponseRedirect(reverse("Sales:view_sales"))
 
 
 @login_required
@@ -268,6 +303,12 @@ def update_view_sale(request):
         })
     try:
         if request.POST.get("update_sale"):
+            customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
+                                                customer_rank=request.POST.get('customer_rank'))
+            print("customer... ",customer.count())
+
+            Sales.objects.filter(id=request.POST.get('saleId')).update(
+
             customer = Customers.objects.get(
                 customer_name=request.POST.get('customer_name'), 
                 customer_rank=request.POST.get('customer_rank'))
@@ -276,6 +317,7 @@ def update_view_sale(request):
 
             Sales.objects.filter(
                 id=request.POST.get('saleId')).update(
+
                 bill_no=request.POST.get('bill_no'),
                 PoS_no=request.POST.get('PoS_no'),
                 month=request.POST.get('month'),
@@ -286,6 +328,7 @@ def update_view_sale(request):
                 discount=request.POST.get('discount'),
                 net_amount=request.POST.get('net_amount'),
                 remarks=request.POST.get('remarks'),
+                customer_id = customer
                 customer_id=customer
             )
             messages.success(request, "sale bill updated successfully")
@@ -296,7 +339,6 @@ def update_view_sale(request):
     except Exception as e:
         messages.error(request, f"Sales update failed {e}")
         return HttpResponse(f"Error: {e}", status=400)
-
 
 @login_required
 def reports(request):
@@ -370,6 +412,7 @@ def SearchbyName(request):
                 query=Q(**{lookup: value})
                 return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(query).order_by('-id'), many=True).data)
     except Exception as e:
+
         lookup = f"customer_id__{field}__icontains"
         query=Q(**{lookup: value})
         return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
@@ -420,6 +463,7 @@ def SearchbyNameReport(request):
             # elif field == 'address':
             #     return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__address__icontains=value).order_by('-id'), many=True).data)
     except Exception as e:
+
         return Response({"message": f"No data found {e}"})
 
 
@@ -480,8 +524,42 @@ def sales_cancel_bill(request):
 
 @api_view(['POST'])
 @login_required
-# @permission_required('Sales.sales', raise_exception=True)
 def sales_upload(request):
+    print("sale sale sale get ")
+    print('sale data ', Sales.objects.values().last())
+    if request.method != "POST":
+        return Response({"message": "Sales Data Not Uploaded"})
+    jsons = request.data
+    print(jsons['myrows'][0])
+    for obj in jsons['myrows']:
+        if (Customers.objects.filter(customer_name=obj['Name'], customer_address=obj['Address']).exists()):
+
+            customer = Customers.objects.get(
+                customer_name=obj['Name'], customer_address=obj['Address'])
+                        # messages.success(request, "Sale Data Uploaded Successfully")
+                        # print('sale date: ', Sales.objects.values().last())
+        else:
+            customer = Customers.objects.create(
+                customer_name=obj['Name'],
+                customer_address=obj['Address'],
+                customer_rank=obj['Rank']
+            )
+            customer.save()
+        Sales.objects.create(
+            bill_no=obj['Bill No'],
+            PoS_no=obj['POS NO'],
+            created_date=datetime.datetime.strptime(
+                obj['Dated'], "%d-%m-%Y").date(),
+            month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
+            account_of=obj['On Account Of'],
+            amount=obj['Amount'],
+            net_amount=obj['Net Amount'],
+            discount=obj['Discount'],
+            customer_id=customer
+        ).save()
+    dummyTable.objects.all().delete()
+    messages.success(request, "Sale Data Uploaded Successfully")
+    return Response({"message": "Sales Data Uploaded Successfully"})
     if request.method == "POST":
         jsons = request.data
         print(jsons['myrows'][0])
@@ -546,6 +624,7 @@ def SearchByRankReport(request):
         return Response(BillSerializer(Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank__icontains=rank).order_by('-id'), many=True).data)
     else:
         return Response(BillSerializer(Bill.objects.select_related('sale_id').order_by('-id'), many=True).data)
+
 
 @api_view(['GET'])
 def GetTotal(request):
