@@ -226,7 +226,6 @@ def view_sales(request):
 @login_required
 def update_sales(request):
     if request.method != "POST":
-    if request.method == "POST":
         try:
             if request.POST.get('update_bill'):
                 customer = Customers.objects.filter(customer_name=request.POST.get('customer_name'),
@@ -311,7 +310,7 @@ def update_view_sale(request):
 
             customer = Customers.objects.get(
                 customer_name=request.POST.get('customer_name'), 
-                customer_rank=request.POST.get('customer_rank'))
+                customer_rank=request.POST.get('customer_rank')))
             # print("customer... ",customer.count())
             # print("sale id ",Sales.objects.filter(id=request.POST.get('saleId')).count())
 
@@ -329,7 +328,6 @@ def update_view_sale(request):
                 net_amount=request.POST.get('net_amount'),
                 remarks=request.POST.get('remarks'),
                 customer_id = customer
-                customer_id=customer
             )
             messages.success(request, "sale bill updated successfully")
             return HttpResponseRedirect(reverse("Sales:view_sales"))

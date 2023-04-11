@@ -351,8 +351,8 @@ def customer_bill(request):
 # def SearchCustomer(request):
 #     field = request.GET.get('field')
 #     value = request.GET.get('value')
-    except Exception as e:
-        return Response({"message": f"No data found {e}"})
+    # except Exception as e:
+    #     return Response({"message": f"No data found {e}"})
 #     try:
 #         if field == 'Name':
 #             return Response(Customers.objects.all())
