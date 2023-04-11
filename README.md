@@ -43,9 +43,8 @@ http://127.0.0.1:8000
 
 | Developer | Github |
 | ------ | ------ |
-| Ehtisham | [profile](https://github.com/CodeWithEhtisham) |
 | Abid khan | [profile](https://github.com/abidkhan03) |
-| Sami shah | [profile](https://github.com/sami-shah) |
+| Ehtisham | [profile](https://github.com/CodeWithEhtisham) |
 
 
 
